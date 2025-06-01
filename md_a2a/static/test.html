@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-2xl font-bold mb-4">JavaScript Test</h1>
+        
+        <form id="test-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-2">Test Input:</label>
+                <input type="text" id="test-input" class="w-full px-3 py-2 border rounded-lg" placeholder="Enter something...">
+            </div>
+            <button type="submit" id="test-btn" class="w-full bg-blue-600 text-white py-2 rounded-lg">
+                Test API Call
+            </button>
+        </form>
+        
+        <div id="result" class="mt-4 p-3 bg-gray-50 rounded-lg hidden">
+            <h3 class="font-medium">Result:</h3>
+            <pre id="result-content" class="text-sm mt-2"></pre>
+        </div>
+        
+        <div id="log" class="mt-4 p-3 bg-yellow-50 rounded-lg">
+            <h3 class="font-medium">Console Log:</h3>
+            <div id="log-content" class="text-sm mt-2"></div>
+        </div>
+    </div>
+
+    <script>
+        // Override console.log to show in page
+        const originalLog = console.log;
+        const logDiv = document.getElementById('log-content');
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            logDiv.innerHTML += '<div>' + message + '</div>';
+        };
+        
+        console.log('JavaScript loaded successfully');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            
+            const form = document.getElementById('test-form');
+            const btn = document.getElementById('test-btn');
+            const resultDiv = document.getElementById('result');
+            const resultContent = document.getElementById('result-content');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                console.log('Form submitted');
+                
+                const input = document.getElementById('test-input').value;
+                console.log('Input value:', input);
+                
+                btn.textContent = 'Testing...';
+                btn.disabled = true;
+                
+                try {
+                    console.log('Making API request...');
+                    const response = await fetch('/api/v2/cases/assess', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            symptoms: input || 'test symptoms',
+                            age: 25,
+                            severity: 'medium'
+                        })
+                    });
+                    
+                    console.log('Response status:', response.status);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Response data:', data);
+                        
+                        resultContent.textContent = JSON.stringify(data, null, 2);
+                        resultDiv.classList.remove('hidden');
+                    } else {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    console.log('Error:', error);
+                    resultContent.textContent = 'Error: ' + error.message;
+                    resultDiv.classList.remove('hidden');
+                } finally {
+                    btn.textContent = 'Test API Call';
+                    btn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

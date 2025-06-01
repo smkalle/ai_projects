@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Insights Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-center">Enhanced AI Insights Demo</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Input Form -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4">Test Symptoms</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Age (years)</label>
+                        <input type="number" id="age" class="w-full px-3 py-2 border rounded-lg" value="10">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Severity</label>
+                        <select id="severity" class="w-full px-3 py-2 border rounded-lg">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="emergency">Emergency</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Symptoms</label>
+                        <textarea id="symptoms" rows="4" class="w-full px-3 py-2 border rounded-lg" 
+                                  placeholder="Enter symptoms...">Fever, headache, vomitting, bloated belly</textarea>
+                    </div>
+                    
+                    <button onclick="updateInsights()" class="w-full bg-blue-600 text-white py-2 rounded-lg">
+                        Update Insights
+                    </button>
+                </div>
+                
+                <div class="mt-6">
+                    <h3 class="font-semibold mb-2">Test Cases:</h3>
+                    <div class="space-y-2">
+                        <button onclick="testCase1()" class="w-full text-left p-2 bg-gray-50 rounded text-sm">
+                            Infant fever (6 months)
+                        </button>
+                        <button onclick="testCase2()" class="w-full text-left p-2 bg-gray-50 rounded text-sm">
+                            Meningitis symptoms (8 years)
+                        </button>
+                        <button onclick="testCase3()" class="w-full text-left p-2 bg-gray-50 rounded text-sm">
+                            Chest pain (45 years)
+                        </button>
+                        <button onclick="testCase4()" class="w-full text-left p-2 bg-gray-50 rounded text-sm">
+                            Gastroenteritis (3 years)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Insights Display -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4">AI Insights</h2>
+                <div id="insights-content">
+                    <div class="text-center py-8">
+                        <i class="fas fa-robot text-gray-300 text-4xl mb-4"></i>
+                        <p class="text-gray-500">Click "Update Insights" to see AI analysis</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test cases
+        function testCase1() {
+            document.getElementById('age').value = '0.5';
+            document.getElementById('severity').value = 'high';
+            document.getElementById('symptoms').value = 'fever, not eating, crying';
+            updateInsights();
+        }
+        
+        function testCase2() {
+            document.getElementById('age').value = '8';
+            document.getElementById('severity').value = 'emergency';
+            document.getElementById('symptoms').value = 'high fever, severe headache, vomiting, neck stiffness';
+            updateInsights();
+        }
+        
+        function testCase3() {
+            document.getElementById('age').value = '45';
+            document.getElementById('severity').value = 'emergency';
+            document.getElementById('symptoms').value = 'chest pain, shortness of breath, sweating';
+            updateInsights();
+        }
+        
+        function testCase4() {
+            document.getElementById('age').value = '3';
+            document.getElementById('severity').value = 'medium';
+            document.getElementById('symptoms').value = 'vomiting, diarrhea, bloated stomach, fever';
+            updateInsights();
+        }
+
+        // Enhanced insights function (copied from assess.html)
+        function updateInsights() {
+            const symptoms = document.getElementById('symptoms').value;
+            const age = document.getElementById('age').value;
+            const severity = document.getElementById('severity').value;
+            
+            if (!symptoms.trim()) {
+                document.getElementById('insights-content').innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-robot text-gray-300 text-4xl mb-4"></i>
+                        <p class="text-gray-500">Enter symptoms to get AI-powered insights</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Advanced symptom analysis
+            let insights = [];
+            const symptomsLower = symptoms.toLowerCase();
+            const ageNum = parseFloat(age) || 0;
+            
+            // Comprehensive symptom pattern recognition
+            const symptomPatterns = {
+                fever: symptomsLower.includes('fever') || symptomsLower.includes('temperature'),
+                headache: symptomsLower.includes('headache') || symptomsLower.includes('head pain'),
+                vomiting: symptomsLower.includes('vomit') || symptomsLower.includes('throwing up') || symptomsLower.includes('nausea'),
+                bloating: symptomsLower.includes('bloat') || symptomsLower.includes('swollen') || symptomsLower.includes('distended'),
+                diarrhea: symptomsLower.includes('diarr') || symptomsLower.includes('loose stool'),
+                breathing: symptomsLower.includes('breathing') || symptomsLower.includes('breath') || symptomsLower.includes('shortness'),
+                chestPain: symptomsLower.includes('chest pain') || symptomsLower.includes('chest pressure'),
+                abdominalPain: symptomsLower.includes('stomach') || symptomsLower.includes('abdom') || symptomsLower.includes('belly'),
+                rash: symptomsLower.includes('rash') || symptomsLower.includes('spots') || symptomsLower.includes('skin'),
+                cough: symptomsLower.includes('cough') || symptomsLower.includes('coughing'),
+                soreThroat: symptomsLower.includes('throat') || symptomsLower.includes('swallow'),
+                fatigue: symptomsLower.includes('tired') || symptomsLower.includes('fatigue') || symptomsLower.includes('weak'),
+                dizziness: symptomsLower.includes('dizz') || symptomsLower.includes('lightheaded'),
+                neckStiffness: symptomsLower.includes('neck') || symptomsLower.includes('stiff')
+            };
+            
+            // Age-specific considerations
+            if (ageNum > 0) {
+                if (ageNum < 2) {
+                    insights.push({
+                        icon: 'fa-baby',
+                        color: 'text-red-600',
+                        priority: 'high',
+                        text: 'INFANT ALERT: Any symptoms in infants require immediate medical attention'
+                    });
+                } else if (ageNum < 5) {
+                    insights.push({
+                        icon: 'fa-child',
+                        color: 'text-orange-600',
+                        priority: 'medium',
+                        text: 'Toddler case: Dehydration risk high, monitor fluid intake closely'
+                    });
+                } else if (ageNum > 65) {
+                    insights.push({
+                        icon: 'fa-user',
+                        color: 'text-yellow-600',
+                        priority: 'medium',
+                        text: 'Elderly patient: Higher risk for complications, consider comorbidities'
+                    });
+                }
+            }
+            
+            // Complex symptom pattern analysis
+            if (symptomPatterns.fever && symptomPatterns.headache && symptomPatterns.vomiting) {
+                insights.push({
+                    icon: 'fa-exclamation-triangle',
+                    color: 'text-red-600',
+                    priority: 'high',
+                    text: 'MENINGITIS CONCERN: Fever + headache + vomiting triad requires urgent evaluation'
+                });
+            }
+            
+            if (symptomPatterns.fever && symptomPatterns.vomiting && symptomPatterns.bloating) {
+                insights.push({
+                    icon: 'fa-procedures',
+                    color: 'text-red-600',
+                    priority: 'high',
+                    text: 'GASTROENTERITIS PATTERN: Risk of severe dehydration, monitor vital signs'
+                });
+            }
+            
+            if (symptomPatterns.fever && symptomPatterns.headache && ageNum < 12) {
+                insights.push({
+                    icon: 'fa-thermometer-full',
+                    color: 'text-orange-600',
+                    priority: 'medium',
+                    text: 'Pediatric fever + headache: Rule out serious bacterial infections'
+                });
+            }
+            
+            if (symptomPatterns.vomiting && symptomPatterns.bloating && symptomPatterns.abdominalPain) {
+                insights.push({
+                    icon: 'fa-stomach',
+                    color: 'text-orange-600',
+                    priority: 'medium',
+                    text: 'BOWEL OBSTRUCTION RISK: Vomiting + bloating + pain pattern needs assessment'
+                });
+            }
+            
+            if (symptomPatterns.breathing && symptomPatterns.fever) {
+                insights.push({
+                    icon: 'fa-lungs',
+                    color: 'text-red-600',
+                    priority: 'high',
+                    text: 'PNEUMONIA CONCERN: Breathing issues + fever requires immediate evaluation'
+                });
+            }
+            
+            if (symptomPatterns.chestPain) {
+                insights.push({
+                    icon: 'fa-heart',
+                    color: 'text-red-600',
+                    priority: 'high',
+                    text: 'CARDIAC ALERT: Chest pain always requires immediate medical evaluation'
+                });
+            }
+            
+            // Individual symptom insights with medical context
+            if (symptomPatterns.fever) {
+                const feverInsight = ageNum < 3 ? 
+                    'Fever in young children: Risk of febrile seizures, monitor temperature q1h' :
+                    'Fever detected: Monitor temperature, ensure adequate hydration';
+                insights.push({
+                    icon: 'fa-thermometer-half',
+                    color: 'text-orange-600',
+                    priority: 'medium',
+                    text: feverInsight
+                });
+            }
+            
+            if (symptomPatterns.vomiting) {
+                const vomitInsight = ageNum < 5 ? 
+                    'Vomiting in children: High dehydration risk, assess fluid tolerance' :
+                    'Vomiting present: Monitor for dehydration signs, consider antiemetics';
+                insights.push({
+                    icon: 'fa-tint',
+                    color: 'text-blue-600',
+                    priority: 'medium',
+                    text: vomitInsight
+                });
+            }
+            
+            if (symptomPatterns.headache && ageNum > 5) {
+                insights.push({
+                    icon: 'fa-brain',
+                    color: 'text-purple-600',
+                    priority: 'low',
+                    text: 'Headache assessment: Check for photophobia, neck stiffness, recent trauma'
+                });
+            }
+            
+            // Severity-based insights
+            if (severity === 'emergency') {
+                insights.unshift({
+                    icon: 'fa-ambulance',
+                    color: 'text-red-600',
+                    priority: 'high',
+                    text: 'EMERGENCY SEVERITY: Immediate AI analysis and potential escalation required'
+                });
+            } else if (severity === 'high') {
+                insights.push({
+                    icon: 'fa-exclamation',
+                    color: 'text-orange-600',
+                    priority: 'medium',
+                    text: 'High severity case: Comprehensive AI assessment recommended'
+                });
+            }
+            
+            // Dehydration risk assessment
+            if ((symptomPatterns.vomiting || symptomPatterns.diarrhea) && ageNum < 10) {
+                insights.push({
+                    icon: 'fa-tint-slash',
+                    color: 'text-red-600',
+                    priority: 'high',
+                    text: 'DEHYDRATION RISK: Young child with fluid losses - assess skin turgor, mucous membranes'
+                });
+            }
+            
+            // Default insight if no specific patterns
+            if (insights.length === 0) {
+                insights.push({
+                    icon: 'fa-search',
+                    color: 'text-blue-600',
+                    priority: 'low',
+                    text: 'Symptoms documented - Ready for comprehensive AI analysis'
+                });
+            }
+            
+            // Sort by priority (high, medium, low)
+            const priorityOrder = { high: 0, medium: 1, low: 2 };
+            insights.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+            
+            // Generate HTML with priority styling
+            const insightsHtml = insights.map(insight => {
+                const bgColor = insight.priority === 'high' ? 'bg-red-50 border-red-200' : 
+                               insight.priority === 'medium' ? 'bg-yellow-50 border-yellow-200' : 
+                               'bg-blue-50 border-blue-200';
+                
+                return `
+                    <div class="flex items-start p-3 ${bgColor} border rounded-lg mb-2">
+                        <i class="fas ${insight.icon} ${insight.color} mr-3 mt-1 flex-shrink-0"></i>
+                        <div>
+                            <span class="text-gray-800 text-sm font-medium">${insight.text}</span>
+                            ${insight.priority === 'high' ? '<div class="text-xs text-red-600 mt-1">⚠️ High Priority</div>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('insights-content').innerHTML = insightsHtml;
+        }
+        
+        // Auto-update insights when inputs change
+        document.getElementById('symptoms').addEventListener('input', updateInsights);
+        document.getElementById('age').addEventListener('input', updateInsights);
+        document.getElementById('severity').addEventListener('change', updateInsights);
+        
+        // Initialize with default values
+        updateInsights();
+    </script>
+</body>
+</html> 
