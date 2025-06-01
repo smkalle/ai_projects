@@ -1,4 +1,5 @@
-# Medical AI Assistant MVP
+# Medical AI Assistant
+   ![Medical AI Assistant](./Medical AI Assistant.png)
 
 A comprehensive Medical AI Assistant designed for NGOs providing healthcare services in remote, underserved areas. This system leverages hybrid AI architecture with GPT-4o-mini for intelligent medical assessments, dosage calculations, and photo analysis.
 
