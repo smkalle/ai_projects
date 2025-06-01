@@ -1,0 +1,426 @@
+{% extends "base.html" %}
+
+{% block title %}Dosage Calculator - Medical AI Assistant{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">
+        <i class="fas fa-pills text-green-600 mr-3"></i>AI Dosage Calculator
+    </h1>
+    <p class="text-gray-600">Calculate safe medication dosages with AI-enhanced safety warnings</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Dosage Form -->
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-xl card-shadow p-6">
+            <form id="dosage-form" class="space-y-6">
+                <!-- Medication Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Medication</label>
+                    <select id="medication" name="medication" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="">Select medication...</option>
+                        <option value="acetaminophen">Acetaminophen (Paracetamol)</option>
+                        <option value="ibuprofen">Ibuprofen</option>
+                        <option value="paracetamol">Paracetamol</option>
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">Available medications for safe dosing</p>
+                </div>
+
+                <!-- Patient Information -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Patient Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Age (years)</label>
+                            <input type="number" id="age_years" name="age_years" min="0" max="120" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Weight (kg)</label>
+                            <input type="number" id="weight_kg" name="weight_kg" min="1" max="200" step="0.1" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Safety Warnings -->
+                <div id="safety-warnings" class="hidden bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h4 class="font-semibold text-yellow-800 mb-2">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>Safety Considerations
+                    </h4>
+                    <ul id="safety-list" class="text-yellow-700 text-sm space-y-1"></ul>
+                </div>
+
+                <!-- AI Processing Indicator -->
+                <div id="ai-indicator" class="hidden bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-green-600 mr-3"></div>
+                        <div>
+                            <p class="text-green-800 font-medium">AI Calculation in Progress</p>
+                            <p class="text-green-600 text-sm">Calculating safe dosage with AI safety checks...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="calculate-btn"
+                        class="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                    <i class="fas fa-calculator mr-2"></i>Calculate Dosage
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Medication Info Panel -->
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-xl card-shadow p-6 sticky top-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                <i class="fas fa-info-circle text-blue-500 mr-2"></i>Medication Info
+            </h3>
+            
+            <div id="medication-info">
+                <div class="text-center py-8">
+                    <i class="fas fa-pills text-gray-300 text-4xl mb-4"></i>
+                    <p class="text-gray-500">Select a medication to view information</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results Section -->
+<div id="results-section" class="hidden mt-8">
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-6">
+            <i class="fas fa-prescription-bottle text-green-600 mr-2"></i>Dosage Calculation Results
+        </h3>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Dosage Information -->
+            <div>
+                <div class="bg-green-50 rounded-lg p-4 mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Recommended Dose</span>
+                        <span id="dose-amount" class="text-2xl font-bold text-green-600"></span>
+                    </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Frequency</span>
+                        <span id="frequency" class="font-medium text-gray-800"></span>
+                    </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Dose Type</span>
+                        <span id="dose-type" class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium"></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-gray-600">Max Daily Dose</span>
+                        <span id="max-daily" class="font-medium text-red-600"></span>
+                    </div>
+                </div>
+
+                <!-- Contraindications -->
+                <div id="contraindications-section">
+                    <h4 class="font-semibold text-red-600 mb-2">
+                        <i class="fas fa-ban mr-1"></i>Contraindications
+                    </h4>
+                    <ul id="contraindications-list" class="space-y-1 mb-4"></ul>
+                </div>
+            </div>
+
+            <!-- Warnings & Instructions -->
+            <div>
+                <h4 class="font-semibold text-gray-800 mb-3">
+                    <i class="fas fa-exclamation-circle text-yellow-600 mr-1"></i>Important Warnings
+                </h4>
+                <ul id="warnings-list" class="space-y-2 mb-4"></ul>
+
+                <!-- Administration Instructions -->
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <h5 class="font-semibold text-blue-800 mb-2">Administration Instructions</h5>
+                    <ul class="text-blue-700 text-sm space-y-1">
+                        <li>• Always verify dosage before administration</li>
+                        <li>• Monitor patient response closely</li>
+                        <li>• Consult healthcare provider if symptoms persist</li>
+                        <li>• Keep medication out of reach of children</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Processing Info -->
+        <div class="mt-6 pt-6 border-t border-gray-200">
+            <div class="flex items-center justify-between text-sm text-gray-500">
+                <div class="flex items-center">
+                    <i class="fas fa-robot mr-1"></i>
+                    <span id="ai-used-text">Calculated with AI</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="processing-time"></span>
+                    <span id="timestamp"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('dosage-form');
+    const calculateBtn = document.getElementById('calculate-btn');
+    const aiIndicator = document.getElementById('ai-indicator');
+    const resultsSection = document.getElementById('results-section');
+
+    form.addEventListener('submit', handleDosageCalculation);
+    
+    // Update medication info when selection changes
+    document.getElementById('medication').addEventListener('change', updateMedicationInfo);
+    document.getElementById('age_years').addEventListener('input', updateSafetyWarnings);
+    document.getElementById('weight_kg').addEventListener('input', updateSafetyWarnings);
+
+    async function handleDosageCalculation(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const data = {
+            medication: formData.get('medication'),
+            age_years: parseInt(formData.get('age_years')),
+            weight_kg: parseFloat(formData.get('weight_kg'))
+        };
+        
+        console.log('Submitting dosage calculation:', data);
+        
+        // Validate required fields
+        if (!data.medication || !data.age_years || !data.weight_kg) {
+            MedicalAI.showNotification('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        // Show loading state
+        MedicalAI.showLoading(calculateBtn);
+        aiIndicator.classList.remove('hidden');
+        resultsSection.classList.add('hidden');
+        
+        const startTime = Date.now();
+        
+        try {
+            console.log('Making API request to /api/v2/cases/dosage');
+            const response = await fetch('/api/v2/cases/dosage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('API Error:', errorText);
+                throw new Error(`Dosage calculation failed: ${response.status} ${errorText}`);
+            }
+            
+            const result = await response.json();
+            console.log('Dosage result:', result);
+            const processingTime = Date.now() - startTime;
+            
+            displayResults(result, processingTime);
+            MedicalAI.showNotification('Dosage calculated successfully', 'success');
+            
+        } catch (error) {
+            console.error('Dosage calculation error:', error);
+            MedicalAI.showNotification(`Dosage calculation failed: ${error.message}`, 'error');
+        } finally {
+            MedicalAI.hideLoading(calculateBtn, '<i class="fas fa-calculator mr-2"></i>Calculate Dosage');
+            aiIndicator.classList.add('hidden');
+        }
+    }
+
+    function displayResults(result, processingTime) {
+        if (result.error) {
+            MedicalAI.showNotification(result.error, 'error');
+            return;
+        }
+        
+        const dosage = result.dosage;
+        
+        // Update dosage information
+        document.getElementById('dose-amount').textContent = `${dosage.dose_mg} mg`;
+        document.getElementById('frequency').textContent = dosage.frequency;
+        document.getElementById('dose-type').textContent = dosage.dose_type.toUpperCase();
+        document.getElementById('max-daily').textContent = `${dosage.max_daily_mg} mg`;
+        
+        // Update warnings
+        const warningsList = document.getElementById('warnings-list');
+        warningsList.innerHTML = dosage.warnings.map(warning => `
+            <li class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2 mt-1"></i>
+                <span class="text-gray-700">${warning}</span>
+            </li>
+        `).join('');
+        
+        // Update contraindications
+        const contraindicationsList = document.getElementById('contraindications-list');
+        if (dosage.contraindications) {
+            contraindicationsList.innerHTML = dosage.contraindications.map(contraindication => `
+                <li class="flex items-start">
+                    <i class="fas fa-ban text-red-500 mr-2 mt-1"></i>
+                    <span class="text-red-700">${contraindication}</span>
+                </li>
+            `).join('');
+        }
+        
+        // Update processing info
+        document.getElementById('ai-used-text').textContent = result.ai_used ? 'Calculated with AI' : 'Local Calculation';
+        document.getElementById('processing-time').textContent = `${processingTime}ms`;
+        document.getElementById('timestamp').textContent = new Date(result.timestamp).toLocaleTimeString();
+        
+        // Show results
+        resultsSection.classList.remove('hidden');
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+});
+
+function updateMedicationInfo() {
+    const medication = document.getElementById('medication').value;
+    const infoPanel = document.getElementById('medication-info');
+    
+    const medicationData = {
+        acetaminophen: {
+            name: 'Acetaminophen (Paracetamol)',
+            uses: 'Pain relief and fever reduction',
+            icon: 'fa-thermometer-half',
+            color: 'text-orange-600',
+            info: [
+                'Safe for most ages when dosed correctly',
+                'Effective for mild to moderate pain',
+                'Reduces fever effectively',
+                'Can be used with other medications'
+            ],
+            warnings: [
+                'Do not exceed maximum daily dose',
+                'Avoid with liver disease',
+                'Check other medications for acetaminophen'
+            ]
+        },
+        ibuprofen: {
+            name: 'Ibuprofen',
+            uses: 'Pain, inflammation, and fever reduction',
+            icon: 'fa-fire',
+            color: 'text-red-600',
+            info: [
+                'Anti-inflammatory properties',
+                'Effective for pain and swelling',
+                'Longer duration than acetaminophen',
+                'Not recommended under 6 months'
+            ],
+            warnings: [
+                'Take with food to reduce stomach upset',
+                'Avoid with kidney problems',
+                'Monitor for allergic reactions'
+            ]
+        },
+        paracetamol: {
+            name: 'Paracetamol',
+            uses: 'Pain relief and fever reduction',
+            icon: 'fa-thermometer-half',
+            color: 'text-orange-600',
+            info: [
+                'Same as acetaminophen',
+                'Widely used and well-tolerated',
+                'First-line treatment for fever',
+                'Safe during pregnancy when needed'
+            ],
+            warnings: [
+                'Monitor total daily intake',
+                'Avoid with severe liver disease',
+                'Be aware of combination medications'
+            ]
+        }
+    };
+    
+    if (!medication || !medicationData[medication]) {
+        infoPanel.innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-pills text-gray-300 text-4xl mb-4"></i>
+                <p class="text-gray-500">Select a medication to view information</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const med = medicationData[medication];
+    infoPanel.innerHTML = `
+        <div class="mb-4">
+            <div class="flex items-center mb-2">
+                <i class="fas ${med.icon} ${med.color} text-2xl mr-3"></i>
+                <h4 class="font-semibold text-gray-800">${med.name}</h4>
+            </div>
+            <p class="text-gray-600 text-sm">${med.uses}</p>
+        </div>
+        
+        <div class="mb-4">
+            <h5 class="font-medium text-gray-800 mb-2">Key Information</h5>
+            <ul class="space-y-1">
+                ${med.info.map(item => `
+                    <li class="flex items-start text-sm text-gray-600">
+                        <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                        ${item}
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
+        
+        <div>
+            <h5 class="font-medium text-gray-800 mb-2">Warnings</h5>
+            <ul class="space-y-1">
+                ${med.warnings.map(warning => `
+                    <li class="flex items-start text-sm text-yellow-700">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 mr-2 mt-1"></i>
+                        ${warning}
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
+    `;
+}
+
+function updateSafetyWarnings() {
+    const age = parseInt(document.getElementById('age_years').value);
+    const weight = parseFloat(document.getElementById('weight_kg').value);
+    const medication = document.getElementById('medication').value;
+    
+    const warnings = [];
+    
+    if (age && age < 2) {
+        warnings.push('Infant dosing requires extra caution - consult healthcare provider');
+    }
+    
+    if (age && age > 65) {
+        warnings.push('Elderly patients may require adjusted dosing');
+    }
+    
+    if (weight && weight < 10) {
+        warnings.push('Low weight patient - verify dosing calculations');
+    }
+    
+    if (medication === 'ibuprofen' && age && age < 1) {
+        warnings.push('Ibuprofen not recommended for infants under 6 months');
+    }
+    
+    const warningsSection = document.getElementById('safety-warnings');
+    const warningsList = document.getElementById('safety-list');
+    
+    if (warnings.length > 0) {
+        warningsList.innerHTML = warnings.map(warning => `<li>• ${warning}</li>`).join('');
+        warningsSection.classList.remove('hidden');
+    } else {
+        warningsSection.classList.add('hidden');
+    }
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,481 @@
+{% extends "base.html" %}
+
+{% block title %}Photo Analysis - Medical AI Assistant{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">
+        <i class="fas fa-camera text-purple-600 mr-3"></i>Medical Photo Analysis
+    </h1>
+    <p class="text-gray-600">Upload photos for AI-powered visual symptom analysis</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Upload Form -->
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Upload Medical Photo</h3>
+        
+        <form id="photo-upload-form" class="space-y-6" enctype="multipart/form-data">
+            <!-- File Upload -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Select Photo</label>
+                <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition-colors cursor-pointer">
+                    <input type="file" id="photo-file" name="file" accept="image/*" class="hidden" required>
+                    <div id="drop-content">
+                        <i class="fas fa-cloud-upload-alt text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-600 mb-2">Click to select or drag and drop</p>
+                        <p class="text-sm text-gray-500">Supports: JPG, PNG, GIF, WebP (max 10MB)</p>
+                    </div>
+                    <div id="preview-container" class="hidden">
+                        <img id="image-preview" class="max-w-full max-h-64 mx-auto rounded-lg shadow-md">
+                        <p id="file-info" class="text-sm text-gray-600 mt-2"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Photo Details -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Body Part</label>
+                    <select id="body-part" name="body_part" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option value="">Select body part...</option>
+                        <option value="skin">Skin/Lesion</option>
+                        <option value="wound">Wound/Injury</option>
+                        <option value="rash">Rash/Eruption</option>
+                        <option value="eye">Eye</option>
+                        <option value="mouth">Mouth/Throat</option>
+                        <option value="hand">Hand/Fingers</option>
+                        <option value="foot">Foot/Toes</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Case ID (Optional)</label>
+                    <input type="text" id="case-id" name="case_id" placeholder="Link to existing case..."
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <textarea id="description" name="description" rows="3" 
+                          placeholder="Describe what you see, when it started, any changes..."
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"></textarea>
+            </div>
+
+            <!-- Upload Progress -->
+            <div id="upload-progress" class="hidden">
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-purple-600 mr-3"></div>
+                        <div>
+                            <p class="text-purple-800 font-medium">Uploading and Analyzing...</p>
+                            <p class="text-purple-600 text-sm">AI is processing your image</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="upload-btn" 
+                    class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fas fa-upload mr-2"></i>Upload & Analyze
+            </button>
+        </form>
+    </div>
+
+    <!-- Analysis Results -->
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            <i class="fas fa-search text-blue-600 mr-2"></i>AI Analysis Results
+        </h3>
+        
+        <div id="analysis-results" class="hidden">
+            <!-- Photo Info -->
+            <div class="mb-6">
+                <h4 class="font-semibold text-gray-800 mb-2">Photo Information</h4>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                            <span class="text-gray-600">File:</span>
+                            <span id="result-filename" class="font-medium"></span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Size:</span>
+                            <span id="result-filesize" class="font-medium"></span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Dimensions:</span>
+                            <span id="result-dimensions" class="font-medium"></span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Uploaded:</span>
+                            <span id="result-timestamp" class="font-medium"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Observations -->
+            <div class="mb-6">
+                <h4 class="font-semibold text-gray-800 mb-2">Visual Observations</h4>
+                <ul id="visual-observations" class="space-y-1"></ul>
+            </div>
+
+            <!-- Possible Conditions -->
+            <div class="mb-6">
+                <h4 class="font-semibold text-gray-800 mb-2">Possible Conditions</h4>
+                <ul id="possible-conditions" class="space-y-1"></ul>
+            </div>
+
+            <!-- Urgency Assessment -->
+            <div class="mb-6">
+                <h4 class="font-semibold text-gray-800 mb-2">Urgency Assessment</h4>
+                <div class="flex items-center">
+                    <span id="urgency-badge" class="px-3 py-1 rounded-full text-sm font-medium"></span>
+                    <span id="confidence-score" class="ml-3 text-sm text-gray-600"></span>
+                </div>
+            </div>
+
+            <!-- Recommended Actions -->
+            <div class="mb-6">
+                <h4 class="font-semibold text-gray-800 mb-2">Recommended Actions</h4>
+                <ul id="recommended-actions" class="space-y-1"></ul>
+            </div>
+
+            <!-- Body Part Specific Insights -->
+            <div id="body-part-insights" class="hidden mb-6">
+                <h4 class="font-semibold text-gray-800 mb-2">Body Part Specific Insights</h4>
+                <ul id="body-part-insights-list" class="space-y-1"></ul>
+            </div>
+
+            <!-- Red Flags -->
+            <div id="red-flags-section" class="hidden mb-6">
+                <h4 class="font-semibold text-red-600 mb-2">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>Warning Signs
+                </h4>
+                <ul id="red-flags-list" class="space-y-1"></ul>
+            </div>
+        </div>
+
+        <div id="no-analysis" class="text-center py-8">
+            <i class="fas fa-image text-gray-300 text-4xl mb-4"></i>
+            <p class="text-gray-500">Upload a photo to see AI analysis results</p>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Photos -->
+<div class="mt-8 bg-white rounded-xl card-shadow p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-gray-800">Recent Photos</h3>
+        <button onclick="loadRecentPhotos()" class="text-purple-600 hover:text-purple-800 text-sm">
+            <i class="fas fa-sync-alt mr-1"></i>Refresh
+        </button>
+    </div>
+    
+    <div id="recent-photos" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div class="text-center py-8 col-span-full">
+            <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mb-4"></i>
+            <p class="text-gray-500">Loading recent photos...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('photo-upload-form');
+    const fileInput = document.getElementById('photo-file');
+    const dropZone = document.getElementById('drop-zone');
+    const uploadBtn = document.getElementById('upload-btn');
+    const uploadProgress = document.getElementById('upload-progress');
+    const analysisResults = document.getElementById('analysis-results');
+    const noAnalysis = document.getElementById('no-analysis');
+
+    // File input and drag & drop handling
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', handleFileSelect);
+    
+    // Drag and drop events
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-purple-400', 'bg-purple-50');
+    });
+    
+    dropZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-purple-400', 'bg-purple-50');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-purple-400', 'bg-purple-50');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect();
+        }
+    });
+
+    // Form submission
+    form.addEventListener('submit', handlePhotoUpload);
+    
+    // Load recent photos on page load
+    loadRecentPhotos();
+});
+
+function handleFileSelect() {
+    const fileInput = document.getElementById('photo-file');
+    const file = fileInput.files[0];
+    
+    if (!file) return;
+    
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+        MedicalAI.showNotification('Please select an image file', 'error');
+        return;
+    }
+    
+    if (file.size > 10 * 1024 * 1024) {
+        MedicalAI.showNotification('File size must be less than 10MB', 'error');
+        return;
+    }
+    
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById('image-preview');
+        const previewContainer = document.getElementById('preview-container');
+        const dropContent = document.getElementById('drop-content');
+        const fileInfo = document.getElementById('file-info');
+        
+        preview.src = e.target.result;
+        fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
+        
+        dropContent.classList.add('hidden');
+        previewContainer.classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+}
+
+async function handlePhotoUpload(e) {
+    e.preventDefault();
+    
+    const fileInput = document.getElementById('photo-file');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        MedicalAI.showNotification('Please select a photo to upload', 'error');
+        return;
+    }
+    
+    // Show loading state
+    const uploadBtn = document.getElementById('upload-btn');
+    const uploadProgress = document.getElementById('upload-progress');
+    
+    uploadBtn.disabled = true;
+    uploadProgress.classList.remove('hidden');
+    
+    try {
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const bodyPart = document.getElementById('body-part').value;
+        const caseId = document.getElementById('case-id').value;
+        const description = document.getElementById('description').value;
+        
+        if (bodyPart) formData.append('body_part', bodyPart);
+        if (caseId) formData.append('case_id', caseId);
+        if (description) formData.append('description', description);
+        
+        console.log('Uploading photo...');
+        const response = await fetch('/api/photos/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Upload failed: ${response.status} ${errorText}`);
+        }
+        
+        const result = await response.json();
+        console.log('Upload result:', result);
+        
+        displayAnalysisResults(result);
+        MedicalAI.showNotification('Photo uploaded and analyzed successfully!', 'success');
+        
+        // Refresh recent photos
+        loadRecentPhotos();
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        MedicalAI.showNotification(`Upload failed: ${error.message}`, 'error');
+    } finally {
+        uploadBtn.disabled = false;
+        uploadProgress.classList.add('hidden');
+    }
+}
+
+function displayAnalysisResults(result) {
+    const analysisResults = document.getElementById('analysis-results');
+    const noAnalysis = document.getElementById('no-analysis');
+    
+    // Show results section
+    noAnalysis.classList.add('hidden');
+    analysisResults.classList.remove('hidden');
+    
+    // Photo information
+    document.getElementById('result-filename').textContent = result.filename;
+    document.getElementById('result-filesize').textContent = formatFileSize(result.file_size);
+    document.getElementById('result-dimensions').textContent = `${result.dimensions.width}×${result.dimensions.height}`;
+    document.getElementById('result-timestamp').textContent = new Date(result.uploaded_at).toLocaleString();
+    
+    const analysis = result.analysis;
+    
+    // Visual observations
+    const visualObservations = document.getElementById('visual-observations');
+    visualObservations.innerHTML = analysis.visual_observations.map(obs => `
+        <li class="flex items-start">
+            <i class="fas fa-eye text-blue-500 mr-2 mt-1"></i>
+            <span class="text-gray-700">${obs}</span>
+        </li>
+    `).join('');
+    
+    // Possible conditions
+    const possibleConditions = document.getElementById('possible-conditions');
+    possibleConditions.innerHTML = analysis.possible_conditions.map(condition => `
+        <li class="flex items-start">
+            <i class="fas fa-stethoscope text-green-500 mr-2 mt-1"></i>
+            <span class="text-gray-700">${condition}</span>
+        </li>
+    `).join('');
+    
+    // Urgency assessment
+    const urgencyBadge = document.getElementById('urgency-badge');
+    const urgencyColors = {
+        low: 'bg-green-100 text-green-800',
+        medium: 'bg-yellow-100 text-yellow-800',
+        high: 'bg-orange-100 text-orange-800',
+        emergency: 'bg-red-100 text-red-800'
+    };
+    urgencyBadge.className = `px-3 py-1 rounded-full text-sm font-medium ${urgencyColors[analysis.urgency]}`;
+    urgencyBadge.textContent = analysis.urgency.toUpperCase();
+    
+    document.getElementById('confidence-score').textContent = `Confidence: ${Math.round(analysis.confidence * 100)}%`;
+    
+    // Recommended actions
+    const recommendedActions = document.getElementById('recommended-actions');
+    recommendedActions.innerHTML = analysis.recommended_actions.map(action => `
+        <li class="flex items-start">
+            <i class="fas fa-tasks text-purple-500 mr-2 mt-1"></i>
+            <span class="text-gray-700">${action}</span>
+        </li>
+    `).join('');
+    
+    // Body part specific insights
+    if (analysis.body_part_specific && analysis.body_part_specific.length > 0) {
+        const bodyPartInsights = document.getElementById('body-part-insights');
+        const bodyPartInsightsList = document.getElementById('body-part-insights-list');
+        
+        bodyPartInsightsList.innerHTML = analysis.body_part_specific.map(insight => `
+            <li class="flex items-start">
+                <i class="fas fa-lightbulb text-yellow-500 mr-2 mt-1"></i>
+                <span class="text-gray-700">${insight}</span>
+            </li>
+        `).join('');
+        
+        bodyPartInsights.classList.remove('hidden');
+    }
+    
+    // Red flags
+    if (analysis.red_flags && analysis.red_flags.length > 0) {
+        const redFlagsSection = document.getElementById('red-flags-section');
+        const redFlagsList = document.getElementById('red-flags-list');
+        
+        redFlagsList.innerHTML = analysis.red_flags.map(flag => `
+            <li class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-red-500 mr-2 mt-1"></i>
+                <span class="text-red-700">${flag}</span>
+            </li>
+        `).join('');
+        
+        redFlagsSection.classList.remove('hidden');
+    }
+    
+    // Scroll to results
+    analysisResults.scrollIntoView({ behavior: 'smooth' });
+}
+
+async function loadRecentPhotos() {
+    const container = document.getElementById('recent-photos');
+    
+    try {
+        const response = await fetch('/api/photos/?limit=12');
+        if (!response.ok) {
+            throw new Error('Failed to load photos');
+        }
+        
+        const data = await response.json();
+        const photos = data.photos || [];
+        
+        if (photos.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-8 col-span-full">
+                    <i class="fas fa-images text-gray-300 text-4xl mb-4"></i>
+                    <p class="text-gray-500">No photos uploaded yet</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = photos.map(photo => `
+            <div class="bg-gray-100 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                 onclick="viewPhoto('${photo.photo_id}')">
+                <div class="aspect-square bg-gray-200 flex items-center justify-center">
+                    <img src="/api/photos/${photo.photo_id}" 
+                         alt="Medical photo" 
+                         class="w-full h-full object-cover"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="hidden w-full h-full flex items-center justify-center">
+                        <i class="fas fa-image text-gray-400 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="p-2">
+                    <p class="text-xs text-gray-600 truncate">${photo.filename}</p>
+                    <p class="text-xs text-gray-500">${formatFileSize(photo.file_size)}</p>
+                </div>
+            </div>
+        `).join('');
+        
+    } catch (error) {
+        console.error('Failed to load recent photos:', error);
+        container.innerHTML = `
+            <div class="text-center py-8 col-span-full">
+                <i class="fas fa-exclamation-triangle text-red-400 text-2xl mb-4"></i>
+                <p class="text-red-600">Failed to load photos</p>
+            </div>
+        `;
+    }
+}
+
+function viewPhoto(photoId) {
+    // Open photo in new tab
+    window.open(`/api/photos/${photoId}`, '_blank');
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+</script>
+{% endblock %} 

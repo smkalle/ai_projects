@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}Cases - Medical AI Assistant{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">
+        <i class="fas fa-folder-open text-purple-600 mr-3"></i>Case Management
+    </h1>
+    <p class="text-gray-600">View and manage patient cases with AI assessments</p>
+</div>
+
+<!-- Cases List -->
+<div class="bg-white rounded-xl card-shadow">
+    <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-800">Recent Cases</h3>
+            <div class="flex items-center space-x-4">
+                <select id="status-filter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <option value="">All Status</option>
+                    <option value="new">New</option>
+                    <option value="reviewed">Reviewed</option>
+                    <option value="closed">Closed</option>
+                </select>
+                <button onclick="loadCases()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700 transition-colors">
+                    <i class="fas fa-sync-alt mr-1"></i>Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cases-container" class="p-6">
+        <div class="text-center py-8">
+            <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mb-4"></i>
+            <p class="text-gray-500">Loading cases...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Case Details Modal -->
+<div id="case-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-4xl w-full max-h-screen overflow-y-auto">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-gray-800">Case Details</h3>
+                <button onclick="closeCaseModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <div id="case-details-content" class="p-6">
+            <!-- Case details will be loaded here -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCases();
+    
+    // Filter cases when status changes
+    document.getElementById('status-filter').addEventListener('change', loadCases);
+});
+
+async function loadCases() {
+    const container = document.getElementById('cases-container');
+    const statusFilter = document.getElementById('status-filter').value;
+    
+    console.log('Loading cases with status filter:', statusFilter);
+    
+    container.innerHTML = `
+        <div class="text-center py-8">
+            <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mb-4"></i>
+            <p class="text-gray-500">Loading cases...</p>
+        </div>
+    `;
+    
+    try {
+        let url = '/api/cases';
+        if (statusFilter) {
+            url += `?status=${statusFilter}`;
+        }
+        
+        console.log('Making request to:', url);
+        const response = await fetch(url);
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('API Error:', errorText);
+            throw new Error(`Failed to load cases: ${response.status} ${errorText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Cases response:', data);
+        
+        // Handle the wrapped response format
+        const cases = data.cases || data;
+        console.log('Processed cases:', cases);
+        
+        displayCases(cases);
+        
+    } catch (error) {
+        console.error('Error loading cases:', error);
+        container.innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-exclamation-triangle text-red-400 text-2xl mb-4"></i>
+                <p class="text-red-600">Failed to load cases: ${error.message}</p>
+                <button onclick="loadCases()" class="mt-2 text-blue-600 hover:text-blue-800">Try again</button>
+            </div>
+        `;
+    }
+}
+
+function displayCases(cases) {
+    const container = document.getElementById('cases-container');
+    
+    if (cases.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-folder-open text-gray-300 text-4xl mb-4"></i>
+                <p class="text-gray-500">No cases found</p>
+                <p class="text-gray-400 text-sm">Cases will appear here when created</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const casesHtml = cases.map(caseItem => {
+        const statusColors = {
+            new: 'bg-blue-100 text-blue-800',
+            reviewed: 'bg-green-100 text-green-800',
+            closed: 'bg-gray-100 text-gray-800'
+        };
+        
+        const urgencyColors = {
+            low: 'text-green-600',
+            medium: 'text-yellow-600',
+            high: 'text-orange-600',
+            emergency: 'text-red-600'
+        };
+        
+        const urgency = caseItem.ai_assessment?.urgency || 'unknown';
+        const escalate = caseItem.ai_assessment?.escalate || false;
+        const patientData = caseItem.patient_data || {};
+        const patientName = patientData.name || 'Unknown Patient';
+        
+        return `
+            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" 
+                 onclick="viewCaseDetails('${caseItem.id}')">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="font-medium text-gray-800">Case #${caseItem.id.slice(-8)}</span>
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${statusColors[caseItem.status]}">
+                            ${caseItem.status.toUpperCase()}
+                        </span>
+                        ${escalate ? '<span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">ESCALATED</span>' : ''}
+                    </div>
+                    <span class="text-sm text-gray-500">${new Date(caseItem.created_at).toLocaleDateString()}</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                    <div>
+                        <p class="text-sm text-gray-600">Patient</p>
+                        <p class="font-medium">${patientName}, ${patientData.age_years || 'N/A'}y</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Symptoms</p>
+                        <p class="font-medium truncate">${caseItem.symptoms}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Urgency</p>
+                        <p class="font-medium ${urgencyColors[urgency]}">
+                            <i class="fas fa-circle mr-1"></i>${urgency.toUpperCase()}
+                        </p>
+                    </div>
+                </div>
+                
+                ${caseItem.ai_assessment ? `
+                    <div class="bg-gray-50 rounded p-3">
+                        <p class="text-sm text-gray-600 mb-1">AI Assessment</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm">
+                                ${caseItem.ai_assessment.actions?.slice(0, 2).join(', ') || 'Assessment available'}
+                            </span>
+                            <span class="text-xs text-gray-500">
+                                Confidence: ${Math.round((caseItem.ai_assessment.confidence || 0) * 100)}%
+                            </span>
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
+    
+    container.innerHTML = casesHtml;
+}
+
+async function viewCaseDetails(caseId) {
+    const modal = document.getElementById('case-modal');
+    const content = document.getElementById('case-details-content');
+    
+    // Show modal with loading state
+    modal.classList.remove('hidden');
+    content.innerHTML = `
+        <div class="text-center py-8">
+            <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mb-4"></i>
+            <p class="text-gray-500">Loading case details...</p>
+        </div>
+    `;
+    
+    try {
+        const response = await fetch(`/api/cases/${caseId}`);
+        if (!response.ok) {
+            throw new Error('Failed to load case details');
+        }
+        
+        const caseData = await response.json();
+        displayCaseDetails(caseData);
+        
+    } catch (error) {
+        console.error('Error loading case details:', error);
+        content.innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-exclamation-triangle text-red-400 text-2xl mb-4"></i>
+                <p class="text-red-600">Failed to load case details</p>
+            </div>
+        `;
+    }
+}
+
+function displayCaseDetails(caseData) {
+    const content = document.getElementById('case-details-content');
+    
+    const statusColors = {
+        new: 'bg-blue-100 text-blue-800',
+        reviewed: 'bg-green-100 text-green-800',
+        closed: 'bg-gray-100 text-gray-800'
+    };
+    
+    const urgencyColors = {
+        low: 'bg-green-100 text-green-800',
+        medium: 'bg-yellow-100 text-yellow-800',
+        high: 'bg-orange-100 text-orange-800',
+        emergency: 'bg-red-100 text-red-800'
+    };
+    
+    const assessment = caseData.ai_assessment || {};
+    
+    content.innerHTML = `
+        <div class="space-y-6">
+            <!-- Case Header -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-xl font-semibold text-gray-800">Case #${caseData.id.slice(-8)}</h4>
+                    <p class="text-gray-600">Created ${new Date(caseData.created_at).toLocaleString()}</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="px-3 py-1 rounded-full text-sm font-medium ${statusColors[caseData.status]}">
+                        ${caseData.status.toUpperCase()}
+                    </span>
+                    ${assessment.escalate ? '<span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">ESCALATED</span>' : ''}
+                </div>
+            </div>
+            
+            <!-- Patient Information -->
+            <div class="bg-gray-50 rounded-lg p-4">
+                <h5 class="font-semibold text-gray-800 mb-3">Patient Information</h5>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Name</p>
+                        <p class="font-medium">${caseData.patient_data.name}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Age</p>
+                        <p class="font-medium">${caseData.patient_data.age_years} years</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Gender</p>
+                        <p class="font-medium">${caseData.patient_data.gender}</p>
+                    </div>
+                    ${caseData.patient_data.weight_kg ? `
+                        <div>
+                            <p class="text-sm text-gray-600">Weight</p>
+                            <p class="font-medium">${caseData.patient_data.weight_kg} kg</p>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+            
+            <!-- Symptoms -->
+            <div>
+                <h5 class="font-semibold text-gray-800 mb-2">Reported Symptoms</h5>
+                <p class="text-gray-700 bg-gray-50 rounded-lg p-4">${caseData.symptoms}</p>
+                <p class="text-sm text-gray-500 mt-1">Severity: ${caseData.severity}</p>
+            </div>
+            
+            <!-- AI Assessment -->
+            ${assessment.urgency ? `
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <h5 class="font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-robot text-blue-600 mr-2"></i>AI Assessment
+                    </h5>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <p class="text-sm text-gray-600">Urgency Level</p>
+                            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium ${urgencyColors[assessment.urgency]}">
+                                ${assessment.urgency.toUpperCase()}
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Doctor Escalation</p>
+                            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium ${assessment.escalate ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                                ${assessment.escalate ? 'YES' : 'NO'}
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">AI Confidence</p>
+                            <p class="font-medium">${Math.round((assessment.confidence || 0) * 100)}%</p>
+                        </div>
+                    </div>
+                    
+                    ${assessment.actions && assessment.actions.length > 0 ? `
+                        <div class="mb-4">
+                            <p class="font-medium text-gray-800 mb-2">Recommended Actions</p>
+                            <ul class="space-y-1">
+                                ${assessment.actions.map(action => `
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span class="text-gray-700">${action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${assessment.red_flags && assessment.red_flags.length > 0 ? `
+                        <div>
+                            <p class="font-medium text-red-600 mb-2">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>Warning Signs
+                            </p>
+                            <ul class="space-y-1">
+                                ${assessment.red_flags.map(flag => `
+                                    <li class="flex items-start">
+                                        <i class="fas fa-exclamation-triangle text-red-500 mr-2 mt-1"></i>
+                                        <span class="text-red-700">${flag.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+</script>
+{% endblock %}
