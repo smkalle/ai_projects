@@ -1,0 +1,955 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Management V2.0 - Medical AI Assistant{% endblock %}
+
+{% block content %}
+<!-- Patient Management Header -->
+<div class="mb-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-users text-blue-600 mr-3"></i>Patient Management
+                <span class="ml-2 text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full">V2.0</span>
+            </h1>
+            <p class="text-gray-600">Comprehensive patient registration, search, and case management</p>
+        </div>
+        <button onclick="openRegistrationModal()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors ai-glow">
+            <i class="fas fa-plus mr-2"></i>Register New Patient
+        </button>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 bg-blue-100 rounded-lg">
+                <i class="fas fa-user-plus text-blue-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-600">Total Patients</p>
+                <p id="total-patients" class="text-2xl font-bold text-gray-800">-</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 bg-green-100 rounded-lg">
+                <i class="fas fa-history text-green-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-600">Total Cases</p>
+                <p id="total-cases" class="text-2xl font-bold text-gray-800">-</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 bg-yellow-100 rounded-lg">
+                <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-600">Active Alerts</p>
+                <p id="active-alerts" class="text-2xl font-bold text-gray-800">-</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 bg-purple-100 rounded-lg">
+                <i class="fas fa-redo text-purple-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-600">Repeat Visits</p>
+                <p id="repeat-visits" class="text-2xl font-bold text-gray-800">-</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter Section -->
+<div class="bg-white rounded-xl card-shadow mb-8">
+    <div class="p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Search Patients</h3>
+        <div class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input 
+                        type="text" 
+                        id="searchQuery" 
+                        placeholder="Search by Patient ID, Name, or Mobile Number..." 
+                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        onkeyup="handleSearchKeyup(event)"
+                    >
+                </div>
+            </div>
+            <button onclick="searchPatients()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-search mr-2"></i>Search
+            </button>
+            <button onclick="clearSearch()" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
+                <i class="fas fa-times mr-2"></i>Clear
+            </button>
+        </div>
+    </div>
+    
+    <!-- Search Results -->
+    <div class="p-6">
+        <div id="loadingSpinner" class="hidden text-center py-8">
+            <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mb-4"></i>
+            <p class="text-gray-500">Searching patients...</p>
+        </div>
+        
+        <div id="patientResults" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Patient cards will be populated here -->
+        </div>
+    </div>
+</div>
+
+<!-- Patient Registration Modal -->
+<div id="registrationModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold text-gray-800">
+                        <i class="fas fa-user-plus text-blue-600 mr-2"></i>Register New Patient
+                    </h2>
+                    <button onclick="closeRegistrationModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <form id="registrationForm" onsubmit="registerPatient(event)" novalidate>
+                    <!-- Progress Bar -->
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="flex items-center text-blue-600">
+                                <span class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center mr-2">1</span>
+                                Basic Info
+                            </span>
+                            <span class="flex items-center text-gray-400">
+                                <span class="w-6 h-6 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center mr-2">2</span>
+                                Contact
+                            </span>
+                            <span class="flex items-center text-gray-400">
+                                <span class="w-6 h-6 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center mr-2">3</span>
+                                Location
+                            </span>
+                        </div>
+                        <div class="mt-2 bg-gray-200 rounded-full h-2">
+                            <div id="progressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 33%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 1: Basic Information -->
+                    <div id="step1" class="step">
+                        <h3 class="text-lg font-semibold mb-4">Basic Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                                <input type="text" name="first_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                                <input type="text" name="last_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth *</label>
+                                <input type="date" name="date_of_birth" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" onchange="calculateAge()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Gender *</label>
+                                <select name="gender" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="ageDisplay" class="mt-4 p-3 bg-blue-50 rounded-lg hidden">
+                            <p class="text-blue-800"><i class="fas fa-info-circle mr-2"></i>Calculated age: <span id="calculatedAge"></span> years old</p>
+                        </div>
+                        <div class="flex justify-end mt-6">
+                            <button type="button" onclick="nextStep()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Next</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Contact Information -->
+                    <div id="step2" class="step hidden">
+                        <h3 class="text-lg font-semibold mb-4">Contact Information</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Mobile Number *</label>
+                                <input 
+                                    type="tel" 
+                                    name="mobile_number" 
+                                    id="mobile_number"
+                                    pattern="[0-9]{10}" 
+                                    maxlength="10" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" 
+                                    placeholder="10-digit mobile number"
+                                    oninput="validateMobileNumber(this)"
+                                >
+                                <p class="text-sm text-gray-500 mt-1">Enter 10-digit mobile number without country code</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Contact (Optional)</label>
+                                <input type="tel" name="emergency_contact" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Emergency contact number">
+                            </div>
+                        </div>
+                        <div class="flex justify-between mt-6">
+                            <button type="button" onclick="prevStep()" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600">Previous</button>
+                            <button type="button" onclick="nextStep()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Next</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Location Information -->
+                    <div id="step3" class="step hidden">
+                        <h3 class="text-lg font-semibold mb-4">Location Information</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Village *</label>
+                                <input type="text" name="village" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">District *</label>
+                                <input type="text" name="district" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                                <input type="text" name="city" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <div class="flex justify-between mt-6">
+                            <button type="button" onclick="prevStep()" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600">Previous</button>
+                            <button type="submit" id="submitBtn" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+                                <i class="fas fa-save mr-2"></i>Register Patient
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patient Details Modal -->
+<div id="patientModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h2 id="patientModalTitle" class="text-xl font-bold text-gray-800">Patient Details</h2>
+                    <button onclick="closePatientModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="patientModalBody" class="p-6">
+                <!-- Patient details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="bg-white rounded-xl max-w-md w-full transform transition-all duration-300 scale-95" id="successModalContent">
+            <div class="p-6 text-center">
+                <!-- Success Icon -->
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                    <i class="fas fa-check text-green-600 text-2xl"></i>
+                </div>
+                
+                <!-- Success Message -->
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Patient Registered Successfully!</h3>
+                <div id="successPatientInfo" class="space-y-3 mb-6">
+                    <!-- Patient info will be populated here -->
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="viewNewPatient()" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-eye mr-2"></i>View Patient
+                    </button>
+                    <button onclick="startAssessmentFromSuccess()" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-stethoscope mr-2"></i>Start Assessment
+                    </button>
+                </div>
+                
+                <button onclick="closeSuccessModal()" class="mt-4 text-gray-500 hover:text-gray-700 text-sm">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentStep = 1;
+let currentPatients = [];
+let lastRegisteredPatient = null;
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    loadStatistics();
+    searchPatients(); // Load initial patient list
+});
+
+// Statistics loading
+async function loadStatistics() {
+    try {
+        const response = await fetch('/api/v2/patients/stats/summary');
+        if (response.ok) {
+            const stats = await response.json();
+            document.getElementById('total-patients').textContent = stats.total_patients || '0';
+            document.getElementById('total-cases').textContent = stats.total_cases || '0';
+            document.getElementById('active-alerts').textContent = stats.active_alerts || '0';
+            document.getElementById('repeat-visits').textContent = stats.repeat_visits || '0';
+        }
+    } catch (error) {
+        console.error('Error loading statistics:', error);
+    }
+}
+
+// Search functionality
+function handleSearchKeyup(event) {
+    if (event.key === 'Enter') {
+        searchPatients();
+    }
+}
+
+async function searchPatients() {
+    const query = document.getElementById('searchQuery').value.trim();
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const resultsContainer = document.getElementById('patientResults');
+
+    loadingSpinner.classList.remove('hidden');
+    resultsContainer.innerHTML = '';
+
+    try {
+        const params = new URLSearchParams();
+        if (query) params.append('query', query);
+        params.append('limit', '20');
+
+        const response = await fetch(`/api/v2/patients/search?${params}`);
+        const data = await response.json();
+
+        if (response.ok) {
+            currentPatients = data.patients;
+            displayPatients(data.patients);
+        } else {
+            throw new Error(data.detail || 'Search failed');
+        }
+    } catch (error) {
+        console.error('Search error:', error);
+        resultsContainer.innerHTML = `
+            <div class="col-span-full text-center py-8">
+                <i class="fas fa-exclamation-triangle text-red-400 text-2xl mb-4"></i>
+                <p class="text-red-600">Error searching patients: ${error.message}</p>
+            </div>
+        `;
+    } finally {
+        loadingSpinner.classList.add('d-none');
+    }
+}
+
+function displayPatients(patients) {
+    const container = document.getElementById('patientResults');
+    
+    if (patients.length === 0) {
+        container.innerHTML = `
+            <div class="col-span-full text-center py-8">
+                <i class="fas fa-users text-gray-300 text-4xl mb-4"></i>
+                <p class="text-gray-500">No patients found</p>
+                <p class="text-gray-400 text-sm">Try a different search term or register a new patient</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = patients.map(patient => {
+        const alertColors = {
+            'normal': 'bg-green-100 text-green-800',
+            'repeat': 'bg-yellow-100 text-yellow-800',
+            'frequent': 'bg-orange-100 text-orange-800',
+            'critical': 'bg-red-100 text-red-800'
+        };
+        
+        const alertColor = alertColors[patient.alert_status] || 'bg-gray-100 text-gray-800';
+        
+        return `
+            <div class="bg-white rounded-xl card-shadow p-6 cursor-pointer hover:shadow-lg transition-shadow" onclick="viewPatientDetails('${patient.patient_id}')">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">${patient.name}</h3>
+                        <p class="text-sm text-gray-600">${patient.patient_id}</p>
+                    </div>
+                    <span class="px-2 py-1 rounded-full text-xs font-medium ${alertColor}">
+                        ${(patient.alert_status || 'normal').toUpperCase()}
+                    </span>
+                </div>
+                
+                <div class="space-y-2 text-sm text-gray-600">
+                    <div class="flex items-center">
+                        <i class="fas fa-phone w-4 mr-2"></i>
+                        ${patient.mobile}
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-birthday-cake w-4 mr-2"></i>
+                        ${patient.age} years old
+                    </div>
+                    ${patient.last_visit ? `
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar w-4 mr-2"></i>
+                            Last visit: ${new Date(patient.last_visit).toLocaleDateString()}
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
+                    <span class="text-sm text-gray-500">${patient.total_visits || 0} total visits</span>
+                    <div class="flex space-x-2">
+                        <button onclick="event.stopPropagation(); startAssessment('${patient.patient_id}')" class="text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-stethoscope"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); viewHistory('${patient.patient_id}')" class="text-green-600 hover:text-green-800">
+                            <i class="fas fa-history"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function clearSearch() {
+    document.getElementById('searchQuery').value = '';
+    searchPatients();
+}
+
+// Patient registration
+function openRegistrationModal() {
+    document.getElementById('registrationModal').classList.remove('hidden');
+    resetRegistrationForm();
+}
+
+function closeRegistrationModal() {
+    document.getElementById('registrationModal').classList.add('hidden');
+}
+
+function resetRegistrationForm() {
+    currentStep = 1;
+    document.getElementById('registrationForm').reset();
+    showStep(1);
+    updateProgress();
+}
+
+function showStep(step) {
+    // Hide all steps
+    document.querySelectorAll('.step').forEach(s => s.classList.add('hidden'));
+    // Show current step
+    document.getElementById(`step${step}`).classList.remove('hidden');
+    
+    // Update required attributes based on current step
+    updateRequiredFields(step);
+}
+
+function updateRequiredFields(currentStep) {
+    // Remove required from all fields first
+    document.querySelectorAll('input[required], select[required]').forEach(field => {
+        field.removeAttribute('required');
+    });
+    
+    // Add required only to current step fields
+    const currentStepElement = document.getElementById(`step${currentStep}`);
+    if (currentStepElement) {
+        // Step 1 required fields
+        if (currentStep === 1) {
+            currentStepElement.querySelectorAll('input[name="first_name"], input[name="last_name"], input[name="date_of_birth"], select[name="gender"]').forEach(field => {
+                field.setAttribute('required', 'required');
+            });
+        }
+        // Step 2 required fields
+        else if (currentStep === 2) {
+            currentStepElement.querySelectorAll('input[name="mobile_number"]').forEach(field => {
+                field.setAttribute('required', 'required');
+            });
+        }
+        // Step 3 required fields
+        else if (currentStep === 3) {
+            currentStepElement.querySelectorAll('input[name="village"], input[name="district"], input[name="city"]').forEach(field => {
+                field.setAttribute('required', 'required');
+            });
+        }
+    }
+}
+
+function updateProgress() {
+    const progressBar = document.getElementById('progressBar');
+    const width = (currentStep / 3) * 100;
+    progressBar.style.width = `${width}%`;
+    
+    // Update step indicators
+    for (let i = 1; i <= 3; i++) {
+        const stepIndicator = document.querySelector(`.step-indicator-${i}`);
+        if (stepIndicator) {
+            if (i <= currentStep) {
+                stepIndicator.classList.add('active');
+            } else {
+                stepIndicator.classList.remove('active');
+            }
+        }
+    }
+}
+
+function nextStep() {
+    // Validate current step before proceeding
+    if (validateCurrentStep()) {
+        if (currentStep < 3) {
+            currentStep++;
+            showStep(currentStep);
+            updateProgress();
+        }
+    }
+}
+
+function validateCurrentStep() {
+    const currentStepElement = document.getElementById(`step${currentStep}`);
+    let isValid = true;
+    
+    if (currentStep === 1) {
+        // Validate step 1 fields
+        const firstName = currentStepElement.querySelector('input[name="first_name"]');
+        const lastName = currentStepElement.querySelector('input[name="last_name"]');
+        const dob = currentStepElement.querySelector('input[name="date_of_birth"]');
+        const gender = currentStepElement.querySelector('select[name="gender"]');
+        
+        if (!firstName.value.trim()) {
+            showFieldError(firstName, 'First name is required');
+            isValid = false;
+        }
+        if (!lastName.value.trim()) {
+            showFieldError(lastName, 'Last name is required');
+            isValid = false;
+        }
+        if (!dob.value) {
+            showFieldError(dob, 'Date of birth is required');
+            isValid = false;
+        }
+        if (!gender.value) {
+            showFieldError(gender, 'Gender is required');
+            isValid = false;
+        }
+    }
+    else if (currentStep === 2) {
+        // Validate step 2 fields
+        const mobileNumber = currentStepElement.querySelector('input[name="mobile_number"]');
+        const value = mobileNumber.value.trim();
+        
+        if (!value) {
+            showFieldError(mobileNumber, 'Mobile number is required');
+            isValid = false;
+        } else if (!/^[0-9]{10}$/.test(value)) {
+            showFieldError(mobileNumber, 'Please enter a valid 10-digit mobile number');
+            isValid = false;
+        } else {
+            clearFieldError(mobileNumber);
+        }
+    }
+    else if (currentStep === 3) {
+        // Validate step 3 fields
+        const village = currentStepElement.querySelector('input[name="village"]');
+        const district = currentStepElement.querySelector('input[name="district"]');
+        const city = currentStepElement.querySelector('input[name="city"]');
+        
+        if (!village.value.trim()) {
+            showFieldError(village, 'Village is required');
+            isValid = false;
+        }
+        if (!district.value.trim()) {
+            showFieldError(district, 'District is required');
+            isValid = false;
+        }
+        if (!city.value.trim()) {
+            showFieldError(city, 'City is required');
+            isValid = false;
+        }
+    }
+    
+    return isValid;
+}
+
+function showFieldError(field, message) {
+    // Add error styling
+    field.classList.add('border-red-500');
+    
+    // Show error message
+    let errorElement = field.parentNode.querySelector('.field-error');
+    if (!errorElement) {
+        errorElement = document.createElement('div');
+        errorElement.className = 'field-error text-red-600 text-sm mt-1';
+        field.parentNode.appendChild(errorElement);
+    }
+    errorElement.textContent = message;
+    
+    // Focus on first invalid field
+    if (!document.querySelector('.border-red-500')) {
+        field.focus();
+    }
+}
+
+function clearFieldError(field) {
+    field.classList.remove('border-red-500');
+    const errorElement = field.parentNode.querySelector('.field-error');
+    if (errorElement) {
+        errorElement.remove();
+    }
+}
+
+function validateMobileNumber(input) {
+    const value = input.value.trim();
+    
+    if (value && !/^[0-9]{10}$/.test(value)) {
+        showFieldError(input, 'Please enter a valid 10-digit mobile number');
+    } else {
+        clearFieldError(input);
+    }
+}
+
+function prevStep() {
+    if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+        updateProgress();
+    }
+}
+
+function calculateAge() {
+    const dobInput = document.querySelector('input[name="date_of_birth"]');
+    const ageDisplay = document.getElementById('ageDisplay');
+    const calculatedAge = document.getElementById('calculatedAge');
+    
+    if (dobInput.value) {
+        const dob = new Date(dobInput.value);
+        const today = new Date();
+        const age = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
+        
+        calculatedAge.textContent = age;
+        ageDisplay.classList.remove('hidden');
+    } else {
+        ageDisplay.classList.add('hidden');
+    }
+}
+
+async function registerPatient(event) {
+    event.preventDefault();
+    
+    // Final validation before submission
+    if (!validateCurrentStep()) {
+        return;
+    }
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Registering...';
+    submitBtn.disabled = true;
+    
+    try {
+        const formData = new FormData(event.target);
+        const patientData = Object.fromEntries(formData.entries());
+        
+        // Additional validation for mobile number format
+        if (!/^[0-9]{10}$/.test(patientData.mobile_number)) {
+            throw new Error('Please enter a valid 10-digit mobile number');
+        }
+        
+        console.log('Sending patient data:', patientData); // Debug log
+        
+        const response = await fetch('/api/v2/patients/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(patientData)
+        });
+        
+        const result = await response.json();
+        console.log('Server response:', response.status, result); // Debug log
+        
+        if (response.ok) {
+            MedicalAI.showNotification('Patient registered successfully!', 'success');
+            closeRegistrationModal();
+            searchPatients(); // Refresh patient list
+            loadStatistics(); // Refresh statistics
+            
+            // Show success with patient ID in a beautiful modal
+            showRegistrationSuccess(result);
+        } else {
+            // Handle different error response formats
+            let errorMessage = 'Registration failed';
+            let isUserFriendly = false;
+            
+            if (response.status === 422) {
+                // Validation error - extract details
+                if (result.detail) {
+                    if (Array.isArray(result.detail)) {
+                        // FastAPI validation errors
+                        errorMessage = result.detail.map(err => `${err.loc?.join(' -> ') || 'Field'}: ${err.msg}`).join('\n');
+                    } else if (typeof result.detail === 'string') {
+                        errorMessage = result.detail;
+                    } else {
+                        errorMessage = JSON.stringify(result.detail);
+                    }
+                }
+            } else if (response.status === 500 && result.detail) {
+                // Handle specific database errors
+                if (result.detail.includes('UNIQUE constraint failed: patients.mobile_number')) {
+                    errorMessage = `A patient with mobile number ${patientData.mobile_number} is already registered.\n\nPlease:\n• Search for the existing patient using the mobile number\n• Use a different mobile number if this is a new patient\n• Contact support if you believe this is an error`;
+                    isUserFriendly = true;
+                } else if (result.detail.includes('UNIQUE constraint failed')) {
+                    errorMessage = 'This patient information already exists in the system. Please check the details and try again.';
+                    isUserFriendly = true;
+                } else {
+                    errorMessage = result.detail;
+                }
+            } else if (result.detail) {
+                errorMessage = result.detail;
+            } else if (result.message) {
+                errorMessage = result.message;
+            }
+            
+            // If it's a duplicate mobile number, also auto-search for the patient
+            if (result.detail && result.detail.includes('UNIQUE constraint failed: patients.mobile_number')) {
+                // Close registration modal and search for the existing patient
+                setTimeout(() => {
+                    closeRegistrationModal();
+                    document.getElementById('searchQuery').value = patientData.mobile_number;
+                    searchPatients();
+                }, 2000);
+            }
+            
+            throw new Error(errorMessage);
+        }
+    } catch (error) {
+        console.error('Registration error:', error);
+        
+        // Show user-friendly error message
+        let displayMessage = error.message;
+        if (displayMessage.includes('422') || displayMessage.includes('Unprocessable Entity')) {
+            displayMessage = 'Please check all required fields and try again.';
+        }
+        
+        MedicalAI.showNotification('Error registering patient: ' + displayMessage, 'error');
+    } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+// Patient details and actions
+async function viewPatientDetails(patientId) {
+    const modal = document.getElementById('patientModal');
+    const modalTitle = document.getElementById('patientModalTitle');
+    const modalBody = document.getElementById('patientModalBody');
+
+    modalTitle.textContent = 'Loading...';
+    modalBody.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-gray-400 text-2xl"></i></div>';
+    modal.classList.remove('hidden');
+
+    try {
+        // Fetch patient details, history, and alerts
+        const [patientResponse, historyResponse, alertsResponse] = await Promise.all([
+            fetch(`/api/v2/patients/${patientId}`),
+            fetch(`/api/v2/patients/${patientId}/history`),
+            fetch(`/api/v2/patients/${patientId}/alerts`)
+        ]);
+
+        const patient = await patientResponse.json();
+        const history = await historyResponse.json();
+        const alerts = await alertsResponse.json();
+
+        modalTitle.textContent = `${patient.first_name} ${patient.last_name} (${patient.patient_id})`;
+        
+        // Display patient details
+        modalBody.innerHTML = `
+            <div class="space-y-6">
+                <!-- Alert Banner -->
+                ${alerts.has_alerts ? `
+                    <div class="bg-${alerts.alert_level === 'red' ? 'red' : alerts.alert_level === 'yellow' ? 'yellow' : 'blue'}-100 border border-${alerts.alert_level === 'red' ? 'red' : alerts.alert_level === 'yellow' ? 'yellow' : 'blue'}-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-${alerts.alert_level === 'red' ? 'red' : alerts.alert_level === 'yellow' ? 'yellow' : 'blue'}-600 mr-2"></i>
+                            <span class="font-medium text-${alerts.alert_level === 'red' ? 'red' : alerts.alert_level === 'yellow' ? 'yellow' : 'blue'}-800">
+                                ${alerts.alert_type}: ${alerts.pattern_analysis.summary}
+                            </span>
+                        </div>
+                        <p class="text-sm text-${alerts.alert_level === 'red' ? 'red' : alerts.alert_level === 'yellow' ? 'yellow' : 'blue'}-700 mt-2">
+                            ${alerts.recommendations.join(' ')}
+                        </p>
+                    </div>
+                ` : ''}
+                
+                <!-- Patient Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">Personal Information</h4>
+                        <div class="space-y-2 text-sm">
+                            <div><span class="font-medium">Name:</span> ${patient.first_name} ${patient.last_name}</div>
+                            <div><span class="font-medium">Age:</span> ${patient.age} years old</div>
+                            <div><span class="font-medium">Gender:</span> ${patient.gender}</div>
+                            <div><span class="font-medium">DOB:</span> ${patient.date_of_birth}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">Contact & Location</h4>
+                        <div class="space-y-2 text-sm">
+                            <div><span class="font-medium">Mobile:</span> ${patient.mobile_number}</div>
+                            <div><span class="font-medium">Village:</span> ${patient.village}</div>
+                            <div><span class="font-medium">District:</span> ${patient.district}</div>
+                            <div><span class="font-medium">City:</span> ${patient.city}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="startAssessment('${patient.patient_id}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-stethoscope mr-2"></i>New Assessment
+                    </button>
+                    <button onclick="createCase('${patient.patient_id}')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Create Case
+                    </button>
+                    <button onclick="viewFullHistory('${patient.patient_id}')" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                        <i class="fas fa-history mr-2"></i>Full History
+                    </button>
+                </div>
+                
+                <!-- Recent Cases -->
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">Recent Cases (${history.cases.length})</h4>
+                    ${history.cases.length > 0 ? `
+                        <div class="space-y-3 max-h-64 overflow-y-auto">
+                            ${history.cases.slice(0, 5).map(case_ => `
+                                <div class="border border-gray-200 rounded-lg p-3">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <span class="font-medium">${case_.case_type}</span>
+                                        <span class="text-sm text-gray-500">${new Date(case_.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">${case_.chief_complaint}</p>
+                                    <div class="flex justify-between items-center mt-2">
+                                        <span class="text-xs px-2 py-1 bg-${case_.urgency_level === 'High' ? 'red' : case_.urgency_level === 'Medium' ? 'yellow' : 'green'}-100 text-${case_.urgency_level === 'High' ? 'red' : case_.urgency_level === 'Medium' ? 'yellow' : 'green'}-800 rounded">
+                                            ${case_.urgency_level}
+                                        </span>
+                                        <span class="text-xs text-gray-500">by ${case_.healthcare_worker_id}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : `
+                        <p class="text-gray-500 text-center py-4">No cases found for this patient</p>
+                    `}
+                </div>
+            </div>
+        `;
+
+    } catch (error) {
+        console.error('Error loading patient details:', error);
+        modalBody.innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-exclamation-triangle text-red-400 text-2xl mb-4"></i>
+                <p class="text-red-600">Failed to load patient details</p>
+            </div>
+        `;
+    }
+}
+
+function closePatientModal() {
+    document.getElementById('patientModal').classList.add('hidden');
+}
+
+// Quick actions
+function startAssessment(patientId) {
+    window.location.href = `/assess?patient_id=${patientId}`;
+}
+
+function createCase(patientId) {
+    // Open case creation modal or redirect
+    window.location.href = `/cases?patient_id=${patientId}&action=create`;
+}
+
+function viewHistory(patientId) {
+    window.location.href = `/cases?patient_id=${patientId}&view=history`;
+}
+
+function viewFullHistory(patientId) {
+    closePatientModal();
+    viewHistory(patientId);
+}
+
+function showRegistrationSuccess(result) {
+    // Store the patient data for action buttons
+    lastRegisteredPatient = result.patient_data;
+    
+    // Populate success modal with patient information
+    const successModalContent = document.getElementById('successModalContent');
+    const successPatientInfo = document.getElementById('successPatientInfo');
+    
+    successPatientInfo.innerHTML = `
+        <div class="bg-gray-50 rounded-lg p-4 text-left space-y-2">
+            <div><strong>Patient ID:</strong> <span class="text-blue-600 font-mono">${result.patient_id}</span></div>
+            <div><strong>Name:</strong> ${lastRegisteredPatient.first_name} ${lastRegisteredPatient.last_name}</div>
+            <div><strong>Mobile:</strong> ${lastRegisteredPatient.mobile_number}</div>
+            <div><strong>Location:</strong> ${lastRegisteredPatient.village}, ${lastRegisteredPatient.district}</div>
+        </div>
+        <p class="text-sm text-gray-600">This Patient ID has been generated and can be used for future visits.</p>
+    `;
+
+    // Show success modal with animation
+    const modal = document.getElementById('successModal');
+    const content = document.getElementById('successModalContent');
+    modal.classList.remove('hidden');
+    
+    // Animate in
+    setTimeout(() => {
+        content.classList.remove('scale-95');
+        content.classList.add('scale-100');
+    }, 50);
+}
+
+function viewNewPatient() {
+    closeSuccessModal();
+    if (lastRegisteredPatient) {
+        viewPatientDetails(lastRegisteredPatient.patient_id);
+    }
+}
+
+function startAssessmentFromSuccess() {
+    closeSuccessModal();
+    if (lastRegisteredPatient) {
+        startAssessment(lastRegisteredPatient.patient_id);
+    }
+}
+
+function closeSuccessModal() {
+    const modal = document.getElementById('successModal');
+    const content = document.getElementById('successModalContent');
+    
+    // Animate out
+    content.classList.remove('scale-100');
+    content.classList.add('scale-95');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+</script>
+{% endblock %} 

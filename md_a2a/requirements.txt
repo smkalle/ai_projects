@@ -51,4 +51,7 @@ ipython==8.17.2
 rich==13.7.0
 
 # Image processing
-Pillow==10.1.0 
+Pillow==10.1.0
+
+# QR Code generation (V2.0)
+qrcode[pil]==7.4.2 

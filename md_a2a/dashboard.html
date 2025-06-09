@@ -1,0 +1,408 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Medical AI Assistant V2.0{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<div class="mb-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-tachometer-alt text-blue-600 mr-3"></i>Dashboard
+                <span class="ml-2 text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full">V2.0 Patient Management</span>
+            </h1>
+            <p class="text-gray-600">Welcome to the enhanced Medical AI Assistant with comprehensive patient management</p>
+        </div>
+        <div class="flex space-x-3">
+            <a href="/patients" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors ai-glow">
+                <i class="fas fa-users mr-2"></i>Manage Patients
+            </a>
+            <button onclick="emergencyAssessment()" class="bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors">
+                <i class="fas fa-exclamation-triangle mr-2"></i>Emergency
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- System Status Banner -->
+<div class="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-6 mb-8">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center">
+            <div class="w-4 h-4 bg-green-400 rounded-full mr-3 pulse-slow"></div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800">System Status: All Systems Operational</h3>
+                <p class="text-gray-600">Patient Management V2.0 • AI Assessment Engine • Real-time Alerts</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <div class="text-sm text-gray-500">Last Updated</div>
+            <div class="font-medium text-gray-800" id="last-updated">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Metrics -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 bg-blue-100 rounded-lg">
+                <i class="fas fa-users text-blue-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-600">Total Patients</p>
+                <p id="total-patients" class="text-2xl font-bold text-gray-800">-</p>
+                <p class="text-xs text-green-600">+<span id="new-patients-today">0</span> today</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 bg-green-100 rounded-lg">
+                <i class="fas fa-stethoscope text-green-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-600">AI Assessments</p>
+                <p id="total-assessments" class="text-2xl font-bold text-gray-800">-</p>
+                <p class="text-xs text-blue-600"><span id="ai-success-rate">-</span>% success rate</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 bg-yellow-100 rounded-lg">
+                <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-600">Active Alerts</p>
+                <p id="active-alerts" class="text-2xl font-bold text-gray-800">-</p>
+                <p class="text-xs text-orange-600"><span id="repeat-visits">-</span> repeat visits</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 bg-purple-100 rounded-lg">
+                <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-600">Cases Today</p>
+                <p id="cases-today" class="text-2xl font-bold text-gray-800">-</p>
+                <p class="text-xs text-gray-500">vs. <span id="cases-yesterday">-</span> yesterday</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Patient Management -->
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <div class="flex items-center mb-4">
+            <div class="p-3 bg-blue-100 rounded-lg">
+                <i class="fas fa-users text-blue-600 text-2xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-800">Patient Management</h3>
+                <p class="text-sm text-gray-600">Complete patient care lifecycle</p>
+            </div>
+        </div>
+        <div class="space-y-3">
+            <a href="/patients" class="block w-full bg-blue-600 text-white text-center py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-search mr-2"></i>Search Patients
+            </a>
+            <button onclick="registerNewPatient()" class="block w-full bg-green-600 text-white text-center py-3 rounded-lg hover:bg-green-700 transition-colors">
+                <i class="fas fa-user-plus mr-2"></i>Register New Patient
+            </button>
+            <a href="/patients?view=alerts" class="block w-full bg-yellow-600 text-white text-center py-3 rounded-lg hover:bg-yellow-700 transition-colors">
+                <i class="fas fa-bell mr-2"></i>View Alerts
+            </a>
+        </div>
+    </div>
+    
+    <!-- AI Assessment -->
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <div class="flex items-center mb-4">
+            <div class="p-3 bg-green-100 rounded-lg">
+                <i class="fas fa-robot text-green-600 text-2xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-800">AI Assessment</h3>
+                <p class="text-sm text-gray-600">Smart symptom analysis</p>
+            </div>
+        </div>
+        <div class="space-y-3">
+            <a href="/assess" class="block w-full bg-green-600 text-white text-center py-3 rounded-lg hover:bg-green-700 transition-colors">
+                <i class="fas fa-stethoscope mr-2"></i>New Assessment
+            </a>
+            <a href="/assess?mode=quick" class="block w-full bg-blue-600 text-white text-center py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-bolt mr-2"></i>Quick Assessment
+            </a>
+            <button onclick="emergencyAssessment()" class="block w-full bg-red-600 text-white text-center py-3 rounded-lg hover:bg-red-700 transition-colors">
+                <i class="fas fa-exclamation-triangle mr-2"></i>Emergency Mode
+            </button>
+        </div>
+    </div>
+    
+    <!-- Tools & Analytics -->
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <div class="flex items-center mb-4">
+            <div class="p-3 bg-purple-100 rounded-lg">
+                <i class="fas fa-tools text-purple-600 text-2xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-800">Tools & Reports</h3>
+                <p class="text-sm text-gray-600">Clinical tools and insights</p>
+            </div>
+        </div>
+        <div class="space-y-3">
+            <a href="/dosage" class="block w-full bg-purple-600 text-white text-center py-3 rounded-lg hover:bg-purple-700 transition-colors">
+                <i class="fas fa-pills mr-2"></i>Dosage Calculator
+            </a>
+            <a href="/photos" class="block w-full bg-indigo-600 text-white text-center py-3 rounded-lg hover:bg-indigo-700 transition-colors">
+                <i class="fas fa-camera mr-2"></i>Photo Analysis
+            </a>
+            <a href="/analytics" class="block w-full bg-pink-600 text-white text-center py-3 rounded-lg hover:bg-pink-700 transition-colors">
+                <i class="fas fa-chart-bar mr-2"></i>Analytics
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Patients -->
+    <div class="bg-white rounded-xl card-shadow">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-800">Recent Patients</h3>
+                <a href="/patients" class="text-blue-600 hover:text-blue-800 text-sm">View All</a>
+            </div>
+        </div>
+        <div id="recent-patients" class="p-6">
+            <div class="text-center py-8">
+                <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mb-4"></i>
+                <p class="text-gray-500">Loading recent patients...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Cases -->
+    <div class="bg-white rounded-xl card-shadow">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-800">Recent Cases</h3>
+                <a href="/cases" class="text-blue-600 hover:text-blue-800 text-sm">View All</a>
+            </div>
+        </div>
+        <div id="recent-cases" class="p-6">
+            <div class="text-center py-8">
+                <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mb-4"></i>
+                <p class="text-gray-500">Loading recent cases...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Alerts Section -->
+<div id="alerts-section" class="mt-8 hidden">
+    <div class="bg-white rounded-xl card-shadow">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>Active Patient Alerts
+            </h3>
+        </div>
+        <div id="active-alerts-list" class="p-6">
+            <!-- Alerts will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboardData();
+    updateLastUpdated();
+    
+    // Refresh data every 5 minutes
+    setInterval(loadDashboardData, 300000);
+    setInterval(updateLastUpdated, 60000);
+});
+
+async function loadDashboardData() {
+    try {
+        // Load statistics
+        await loadStatistics();
+        
+        // Load recent data
+        await Promise.all([
+            loadRecentPatients(),
+            loadRecentCases(),
+            loadActiveAlerts()
+        ]);
+        
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+    }
+}
+
+async function loadStatistics() {
+    try {
+        const response = await fetch('/api/v2/patients/stats/summary');
+        if (response.ok) {
+            const stats = await response.json();
+            
+            document.getElementById('total-patients').textContent = stats.total_patients || '0';
+            document.getElementById('total-assessments').textContent = stats.total_cases || '0';
+            document.getElementById('active-alerts').textContent = stats.active_alerts || '0';
+            document.getElementById('repeat-visits').textContent = stats.repeat_visits || '0';
+            document.getElementById('cases-today').textContent = stats.cases_today || '0';
+            document.getElementById('cases-yesterday').textContent = stats.cases_yesterday || '0';
+            document.getElementById('new-patients-today').textContent = stats.new_patients_today || '0';
+            document.getElementById('ai-success-rate').textContent = stats.ai_success_rate || '95';
+        }
+    } catch (error) {
+        console.error('Error loading statistics:', error);
+    }
+}
+
+async function loadRecentPatients() {
+    try {
+        const response = await fetch('/api/v2/patients/search?limit=5');
+        const data = await response.json();
+        
+        const container = document.getElementById('recent-patients');
+        
+        if (data.patients && data.patients.length > 0) {
+            container.innerHTML = data.patients.map(patient => `
+                <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-user text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-800">${patient.first_name} ${patient.last_name}</p>
+                            <p class="text-sm text-gray-500">${patient.patient_id} • ${patient.age} years</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <button onclick="viewPatient('${patient.patient_id}')" class="text-blue-600 hover:text-blue-800 text-sm">
+                            View
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-users text-gray-300 text-2xl mb-2"></i>
+                    <p class="text-gray-500">No patients registered yet</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading recent patients:', error);
+        document.getElementById('recent-patients').innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-exclamation-triangle text-red-400 text-2xl mb-2"></i>
+                <p class="text-red-500">Failed to load patients</p>
+            </div>
+        `;
+    }
+}
+
+async function loadRecentCases() {
+    try {
+        const response = await fetch('/api/cases?limit=5');
+        const data = await response.json();
+        
+        const container = document.getElementById('recent-cases');
+        const cases = data.cases || data;
+        
+        if (cases && cases.length > 0) {
+            container.innerHTML = cases.map(case_ => {
+                const urgencyColors = {
+                    'Low': 'text-green-600',
+                    'Medium': 'text-yellow-600',
+                    'High': 'text-orange-600',
+                    'Emergency': 'text-red-600'
+                };
+                
+                const urgency = case_.ai_assessment?.urgency || case_.urgency_level || 'Unknown';
+                const urgencyColor = urgencyColors[urgency] || 'text-gray-600';
+                
+                return `
+                    <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-stethoscope text-green-600"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">${case_.symptoms?.substring(0, 30) || 'Assessment'}...</p>
+                                <p class="text-sm text-gray-500">
+                                    ${new Date(case_.created_at).toLocaleDateString()} • 
+                                    <span class="${urgencyColor}">${urgency}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <button onclick="viewCase('${case_.id}')" class="text-green-600 hover:text-green-800 text-sm">
+                                View
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-folder-open text-gray-300 text-2xl mb-2"></i>
+                    <p class="text-gray-500">No cases found</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading recent cases:', error);
+        document.getElementById('recent-cases').innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-exclamation-triangle text-red-400 text-2xl mb-2"></i>
+                <p class="text-red-500">Failed to load cases</p>
+            </div>
+        `;
+    }
+}
+
+async function loadActiveAlerts() {
+    try {
+        // This would need to be implemented in the backend
+        // For now, we'll hide the alerts section
+        document.getElementById('alerts-section').classList.add('hidden');
+    } catch (error) {
+        console.error('Error loading active alerts:', error);
+    }
+}
+
+function updateLastUpdated() {
+    document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+}
+
+// Quick actions
+function registerNewPatient() {
+    window.location.href = '/patients?action=register';
+}
+
+function emergencyAssessment() {
+    window.location.href = '/assess?mode=emergency';
+}
+
+function viewPatient(patientId) {
+    window.location.href = `/patients?patient_id=${patientId}`;
+}
+
+function viewCase(caseId) {
+    window.location.href = `/cases?case_id=${caseId}`;
+}
+</script>
+{% endblock %} 
