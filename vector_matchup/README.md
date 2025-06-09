@@ -360,11 +360,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Discussions**: Questions and community support
 - **Contributing**: Development guidelines and contribution process
 
-### Commercial Support
-For enterprise support, custom development, or consulting services, please contact the development team.
-
----
-
-**Built with ❤️ for the AI/ML community**
-
 *Vector Matchup Pro - Making vector database decisions data-driven* 
