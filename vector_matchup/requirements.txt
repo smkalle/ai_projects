@@ -1,0 +1,31 @@
+# Vector Matchup Pro - Core Dependencies
+streamlit>=1.32.0
+plotly>=6.1.0
+pandas>=2.2.0
+numpy>=1.26.0
+
+# Environment Configuration
+python-dotenv>=1.0.0
+
+# Vector Databases & Search
+faiss-cpu>=1.8.0
+lancedb>=0.4.1
+sentence-transformers>=2.5.1
+
+# Data Processing
+pyarrow>=15.0.0
+loguru>=0.7.2
+psutil>=5.9.8
+scikit-learn>=1.4.0
+
+# Document Processing
+PyPDF2>=3.0.1
+pymupdf>=1.23.0
+
+# JSON Processing (for compatibility)
+orjson>=3.10.0
+
+# Development & Testing (optional)
+pytest>=8.0.0
+pytest-cov>=4.1.0
+black>=24.2.0

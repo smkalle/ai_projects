@@ -1,0 +1,25 @@
+{
+  "name": "Vector Matchup Pro",
+  "version": "1.0.0",
+  "created": "2025-06-09T16:48:32.188145",
+  "description": "Enterprise-grade vector database benchmarking platform",
+  "features": [
+    "Vector database comparison (LanceDB vs Parquet+FAISS)",
+    "9 pre-configured embedding models",
+    "Multilingual support (100+ languages)",
+    "Dynamic model switching",
+    "Performance benchmarking",
+    "Quality metrics analysis",
+    "Professional reporting"
+  ],
+  "requirements": [
+    "Python 3.8+",
+    "4GB+ RAM (8GB recommended)",
+    "pip package manager"
+  ],
+  "quick_start": [
+    "pip install -r requirements.txt",
+    "cp env.sample .env",
+    "streamlit run vector_matchup_app.py"
+  ]
+}
