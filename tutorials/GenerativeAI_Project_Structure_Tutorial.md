@@ -1,4 +1,4 @@
-# 🧠 Structuring Generative AI: projects A Practical Project Structure for Scalability and Collaboration
+# 🧠 Structuring Generative AI : Practical Project Structure for Scalability and Collaboration
 
 In the fast-paced world of artificial intelligence, a well-organized project structure is not just a matter of preference but a cornerstone of success. This tutorial presents a comprehensive, step-by-step guide for AI engineers to structure their generative AI projects with **scalability**, **modularity**, and **collaboration** in mind.
 
