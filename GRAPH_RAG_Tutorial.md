@@ -1,4 +1,4 @@
-# Agentic GraphRAG MVP – Legal Contract Analysis
+# Agentic GraphRAG – Legal Contract Analysis
 
 > Leverage LLM‑powered structured extraction + Neo4j graph RAG + LangGraph agentic workflow + FastAPI streaming + React chat UI.
 
