@@ -1,5 +1,5 @@
 
-# Giggle AI L1 Support MVP – Notebook‑Style Walk‑Through
+# AI L1 Support
 *Updated: 2025-06-17*
 
 ---
