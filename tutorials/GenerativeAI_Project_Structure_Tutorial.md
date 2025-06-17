@@ -13,8 +13,6 @@ A well-structured project enables:
 
 ---
 
-## 🧱 Anatomy of a Generative AI Project
-
 ```text
 .
 ├── .github/
