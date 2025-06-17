@@ -1,6 +1,5 @@
 # Agentic GraphRAG MVP – Legal Contract Analysis
 
-> **Google SDE3 AI Engineer Build Guide (No‑Docker Local Dev)**  
 > Leverage LLM‑powered structured extraction + Neo4j graph RAG + LangGraph agentic workflow + FastAPI streaming + React chat UI.
 
 ---
