@@ -109,6 +109,3 @@ As shared in AI engineering circles from Google to Bangalore meetups, structured
 
 Let’s build responsibly, scalably, and together. 🌱
 
----
-
-**Made with ❤️ for the Generative AI community**
