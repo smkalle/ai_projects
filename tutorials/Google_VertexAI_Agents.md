@@ -1,5 +1,5 @@
 
-# Google Agents with Vertex AI â€“ Tutorial (June 21, 2025)
+# Google Agents with Vertex AI Tutorial (June 21, 2025)
 
 A step-by-step guide for AI engineers to build, test, and deploy powerful AI agents using **Google Cloud's Agent Development Kit (ADK)** and **Vertex AI Agent Engine**.
 
@@ -135,6 +135,6 @@ gcloud projects add-iam-policy-binding ai-agent-dev   --member="serviceAccount:A
 
 ## Summary
 
-Build scalable AI agents in days with Google Cloudâ€™s ADK + Vertex AI. Start local, grow to global.
+Build scalable AI agents in days with Google Cloud ADK + Vertex AI. Start local, grow to global.
 
 > _Fork this guide, share improvements, and join the community building the future of intelligent agents!_
