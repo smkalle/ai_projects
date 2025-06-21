@@ -1,0 +1,180 @@
+# 🦯 Ariadne for Smart Glasses: AI Assistant for the Visually Impaired
+
+> **Hands-Free Scene Understanding, Sign Reading & Object Awareness for the Blind – Built with AugmentOS**
+
+This open-source tutorial walks AI engineers through the full development of **Ariadne**, a wearable AI assistant that helps visually impaired users gain spatial awareness using smart glasses. This project was prototyped for the **Mentra × Y Combinator Smart Glasses Hackathon (July 2025)**.
+
+## 🚀 Overview
+**Ariadne** enables users to:
+- **Understand their environment** via image captioning.
+- **Read nearby signs** or labels using OCR.
+- **Detect nearby objects** and translate them to clock-face directions.
+- **Use voice commands** to request visual info hands-free.
+
+> Smart glasses act as the user's eyes, ears, and guide — running AI models via AugmentOS SDK and cloud APIs.
+
+---
+
+## 📦 Prerequisites
+
+### Hardware & SDK
+- Mentra Live smart glasses (or any AugmentOS-compatible device)
+- Mobile device with [AugmentOS installed](https://augmentos.org/install)
+- Developer account at [console.augmentos.org](https://console.augmentos.org)
+
+### Software
+- [Node.js](https://nodejs.org) and [bun](https://bun.sh/docs/installation)
+- Ngrok (for tunneling local server)
+- Python ≥3.8 (if using local OCR fallback)
+- OpenAI API or BLIP model (optional for image captioning)
+- Google Cloud Vision API or Tesseract OCR
+
+---
+
+## 🛠️ Project Structure
+```bash
+ariadne-smartglasses/
+├── src/
+│   ├── app.js           # Main session logic and voice command router
+│   ├── scene.js         # Capture + describe current scene
+│   ├── ocr.js           # OCR pipeline for reading signs
+│   ├── spatial.js       # Object detection + spatial audio cues
+│   └── utils.js         # Helpers: clock-face conversion, API wrappers
+├── .env                 # API keys (OpenAI, Google Vision)
+├── package.json
+└── README.md            # This tutorial as live documentation
+```
+
+---
+
+## 🧠 Step-by-Step Tutorial
+
+### 1️⃣ Project Setup
+```bash
+git clone https://github.com/your-username/ariadne-smartglasses.git
+cd ariadne-smartglasses
+bun install
+cp .env.example .env  # Add API keys
+```
+Expose with ngrok:
+```bash
+ngrok http 3000
+```
+
+Register your URL + permissions in AugmentOS Developer Console.
+
+---
+
+### 2️⃣ Capture Environment Snapshot (Scene Description)
+**src/scene.js**
+```js
+const { OpenAICaptionAPI } = require('./utils');
+module.exports.describeScene = async (session) => {
+  const image = await session.camera.capture();
+  const caption = await OpenAICaptionAPI(image);
+  await session.audio.speak(`Scene description: ${caption}`);
+};
+```
+Use any image-to-text model like BLIP or OpenAI Vision API.
+
+---
+
+### 3️⃣ Read Signs or Printed Text (OCR)
+**src/ocr.js**
+```js
+const { performOCR } = require('./utils');
+module.exports.readSign = async (session) => {
+  const image = await session.camera.capture();
+  const text = await performOCR(image);
+  await session.audio.speak(`The sign says: ${text}`);
+};
+```
+Use `Google Vision API`, `Tesseract.js`, or AWS Textract.
+
+---
+
+### 4️⃣ Object Detection + Spatial Audio Alerts
+**src/spatial.js**
+```js
+const { detectObjects, toClockDirection } = require('./utils');
+module.exports.describeObjects = async (session) => {
+  const image = await session.camera.capture();
+  const objects = await detectObjects(image); // e.g. {label, x, y}
+  const messages = objects.map(obj => `There is a ${obj.label} at ${toClockDirection(obj.x)}.`);
+  await session.audio.speak(messages.join(' '));
+};
+```
+Use YOLOv5 or any lightweight model hosted via API.
+
+---
+
+### 5️⃣ Voice Command Handling
+**src/app.js**
+```js
+require('dotenv').config();
+const { AugmentOSClient } = require('@augmentos/sdk');
+const { describeScene } = require('./scene');
+const { readSign } = require('./ocr');
+const { describeObjects } = require('./spatial');
+
+(async () => {
+  const client = new AugmentOSClient({
+    apiKey: process.env.AUGMENTOS_API_KEY,
+    appId: process.env.AUGMENTOS_APP_ID,
+  });
+
+  await client.onSession(async (session) => {
+    await session.audio.speak('Ariadne is ready. Say: "Describe scene" or "Read sign".');
+
+    session.on('transcription', async (evt) => {
+      const text = evt.transcript.toLowerCase();
+      if (text.includes('describe scene')) await describeScene(session);
+      else if (text.includes('read sign')) await readSign(session);
+      else if (text.includes('what's around')) await describeObjects(session);
+    });
+  });
+})();
+```
+
+---
+
+## 🧪 Test & Extend
+
+✅ **Test Flow**
+- Wear glasses
+- Say: "Describe scene" → get AI-generated caption
+- Say: "Read sign" → glasses read text aloud
+- Say: "What's around" → directional object alerts
+
+🔁 **Enhancements**
+- Add vibration feedback (if API supports it)
+- Add fallback speech when API fails
+- Allow chaining: "Describe then read"
+- Offline ML fallback w/ ONNX
+
+---
+
+## 🌐 Resources & APIs
+- [AugmentOS SDK Docs](https://docs.augmentos.org/)
+- [BLIP GitHub](https://github.com/salesforce/BLIP)
+- [Tesseract OCR](https://tesseract.projectnaptha.com/)
+- [Google Vision API](https://cloud.google.com/vision)
+- [OpenAI GPT-V API](https://platform.openai.com/docs/guides/vision)
+
+---
+
+## ❤️ Contributing
+Pull requests, bug fixes, and accessibility suggestions are welcome. Let’s make wearable AI more inclusive.
+
+```bash
+git checkout -b feature/my-feature
+make changes
+open a PR 🙌
+```
+
+---
+
+## 📣 Acknowledgments
+- Inspired by the blind community and the need for accessible spatial intelligence.
+
+> "The world needs to be built for everyone. We just made it a little more audible."
