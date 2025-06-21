@@ -34,7 +34,6 @@
 - **Object detection** with spatial awareness  
 - **Voice-command-based control**
 
-> This project was created during the [Mentra × Y Combinator Smart Glasses Hackathon – July 2025](https://augmentos.org).
 
 ---
 
