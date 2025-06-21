@@ -171,7 +171,6 @@ open a PR 🚀
 ## 🙏 Acknowledgments
 
 - Inspired by the global visually impaired community  
-- Prototyped at the Mentra Smart Glasses Hackathon, July 2025  
 - Thanks to the open-source AI and accessibility ecosystem
 
 > “The world needs to be built for everyone. We just made it a little more audible.”
