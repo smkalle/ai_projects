@@ -1,11 +1,11 @@
 
-# ðŸ§  Google Agents with Vertex AI â€“ Tutorial (June 21, 2025)
+# Google Agents with Vertex AI â€“ Tutorial (June 21, 2025)
 
 A step-by-step guide for AI engineers to build, test, and deploy powerful AI agents using **Google Cloud's Agent Development Kit (ADK)** and **Vertex AI Agent Engine**.
 
 ---
 
-## âš™ï¸ Part 1: Environment Setup
+## Part 1: Environment Setup
 
 ### 1.1 Create a Google Cloud Project
 ```bash
@@ -28,7 +28,7 @@ pip install google-adk
 
 ---
 
-## ðŸŒ± Part 2: Clone Agent Garden Examples
+## Part 2: Clone Agent Garden Examples
 ```bash
 git clone https://github.com/google/adk-samples.git
 cd adk-samples/python
@@ -41,7 +41,7 @@ Explore agents like:
 
 ---
 
-## ðŸ¤– Part 3: Build a Simple Agent Locally
+## Part 3: Build a Simple Agent Locally
 
 ### 3.1 Code Example (`my_agent.py`)
 ```python
@@ -71,7 +71,7 @@ adk web --agent-file=my_agent.py
 
 ---
 
-## ðŸ§© Part 4: Orchestrate Multi-Agent Workflows
+## Part 4: Orchestrate Multi-Agent Workflows
 
 - Use a master agent to coordinate subtasks.
 - Mix Gemini, GPT-4o, Claude via LiteLLM.
@@ -81,7 +81,7 @@ adk web --agent-file=my_agent.py
 
 ---
 
-## ðŸš€ Part 5: Deploy to Vertex AI
+## Part 5: Deploy to Vertex AI
 
 ### 5.1 CLI Deployment
 ```bash
@@ -104,14 +104,14 @@ print(deployed.endpoint)
 
 ---
 
-## ðŸ” Part 6: IAM Permissions
+## Part 6: IAM Permissions
 ```bash
 gcloud projects add-iam-policy-binding ai-agent-dev   --member="serviceAccount:AGENT_SA_EMAIL"   --role="roles/secretmanager.secretAccessor"
 ```
 
 ---
 
-## ðŸ“Š Part 7: Cost & Monitoring
+## Part 7: Cost & Monitoring
 
 | Resource | Rate (USD/hr) |
 |----------|---------------|
@@ -124,7 +124,7 @@ gcloud projects add-iam-policy-binding ai-agent-dev   --member="serviceAccount:A
 
 ---
 
-## âœ… Next Steps
+## Next Steps
 
 - Browse Agent Garden templates
 - Integrate LiteLLM for multi-model
@@ -133,7 +133,7 @@ gcloud projects add-iam-policy-binding ai-agent-dev   --member="serviceAccount:A
 
 ---
 
-## ðŸ Summary
+## Summary
 
 Build scalable AI agents in days with Google Cloudâ€™s ADK + Vertex AI. Start local, grow to global.
 
