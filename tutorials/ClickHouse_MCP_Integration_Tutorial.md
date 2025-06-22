@@ -1,8 +1,5 @@
 # ClickHouse + MCP Integration with Grok Pattern Support 🚀
 
-> **Author:** Google SDE3 AI Engineer  
-> **Status:** Production-ready Open Source Tutorial
-
 This repository demonstrates a complete, production-grade integration between **ClickHouse**, a real-time analytical columnar database, and the **Model Context Protocol (MCP)**—the emerging standard for allowing Large Language Models (LLMs) to connect with third-party tools.
 
 You will:
