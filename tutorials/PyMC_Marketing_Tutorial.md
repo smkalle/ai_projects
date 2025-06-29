@@ -1,6 +1,5 @@
 
 # PyMC Marketing: A Hands‑On Tutorial for AI Engineers 🚀  
-*Author: Google SDE3 AI Engineer (generated)*  
 
 ---
 
