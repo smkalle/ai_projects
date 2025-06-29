@@ -1,6 +1,5 @@
-# 🛠️ Build a Trustworthy Multi-Agent SQL Assistant with LangGraph, LangChain & GPT-4o-mini
+# 🛠️ Multi-Agent SQL Assistant with LangGraph, LangChain & GPT-4o-mini
 
-> **Author**: Google SDE III (AI Engineering) – open-sourced for the community  
 > **Repo purpose**: Demonstrates a production-grade pattern for human-in-the-loop, cost-aware LLM agents that translate natural-language questions into safe, optimized SQL.
 
 ---
@@ -239,4 +238,4 @@ $ docker run -p 8080:8080 -e OPENAI_API_KEY=$OPENAI_API_KEY sql-assistant
 ---
 
 ## License
-MIT © 2025 Google SDE III
+MIT © 2025
