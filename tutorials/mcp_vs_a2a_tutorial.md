@@ -1,6 +1,5 @@
 # MCP vs A2A: Hands‑On Tutorial for AI Engineers
-*Author: Google SDE 3 (AI Platform Engineering)  
-Last updated: 29 June 2025*
+
 
 ---
 ## 1 . Overview
