@@ -21,6 +21,7 @@ This guide shows you how to integrate **Docling** into a medical‑transcription
 8. [Privacy & Compliance](#privacy)
 9. [Troubleshooting](#troubleshooting)
 10. [Roadmap & Contributing](#roadmap)
+11. [Related Resources](#related-resources)
 
 ---
 
@@ -173,7 +174,15 @@ Pull requests are welcome—especially new OCR back‑ends (e.g. EasyOCR) and do
 
 ---
 
-### Related Resources
+## 11  Related Resources <a name="related-resources"></a>
+
+For hands-on practice with the concepts covered in this tutorial, check out the companion Jupyter notebook:
+
+* [Docling Medical Document Processing Demo](docling_medical_transcription_demo.ipynb) – Interactive notebook with code examples and step-by-step exercises to practice medical document processing with Docling.
+
+---
+
+### External Links
 * Docling GitHub – <https://github.com/docling-project/docling>  
 * LangChain integration – <https://python.langchain.com/docs/integrations/document_loaders/docling>  
 * Docling Technical Report (arXiv 2408.09869)  
