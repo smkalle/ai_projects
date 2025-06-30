@@ -1,8 +1,6 @@
 
 # Medical Document Processing with Docling 🩺📄
 
-**Author:** Google SDE3 AI Engineer | **Last updated:** 2025-06-30
-
 Docling is IBM Research’s open‑source toolkit that converts *any* document into structured data, unlocking the 70 % of enterprise information that’s still trapped in PDFs and scans.  
 This guide shows you how to integrate **Docling** into a medical‑transcription workflow—turning already‑transcribed reports, discharge summaries, or lab results into analysis‑ready tables and markdown.
 
