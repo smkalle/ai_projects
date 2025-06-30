@@ -1,6 +1,6 @@
 # Building **AI‑Ready APIs**: A Practical Guide for AI Engineers
 
-> **Status**: Published 30 Jun 2025 • Author: _Google SDE3 (AI)_
+> **Status**: Published 30 Jun 2025 
 
 ---
 
