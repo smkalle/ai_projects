@@ -1,0 +1,1 @@
+Vertex AI Agent Builder, part of Google Cloud, enables AI engineers to build sophisticated multi-agent systems for financial research, as demonstrated by the collaboration with Schroders. This tutorial will guide you through creating a system that slashes company analysis time from days to minutes by integrating diverse data sources and leveraging modular agent architectures.
