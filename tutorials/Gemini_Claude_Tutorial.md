@@ -190,5 +190,3 @@ Claude: plan suite → Gemini: bulk‑generate tests → Claude: verify and trim
 
 ---
 
-**Made with ❤ by a Google SDE 3.**  
-Pull requests welcome!
