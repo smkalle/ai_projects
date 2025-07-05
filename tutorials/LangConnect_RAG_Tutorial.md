@@ -2,9 +2,11 @@
 # LangConnect + Open Agent Platform  
 ### End-to-End RAG Stack — from “docker compose up” to searchable docs & agent workflows  
 
-> **Audience**: LangConnect, introduced by LangChainAI, leverages Retrieval-Augmented Generation (RAG) with a Streamlit dashboard, enabling real-time document processing and vector search using PostgreSQL and pgvector, a tool validated by its open-source adoption on GitHub with over 5,000 stars.
+> **LangConnect**, introduced by LangChainAI, leverages Retrieval-Augmented Generation (RAG) with a Streamlit dashboard, enabling real-time document processing and vector search using PostgreSQL and pgvector, a tool validated by its open-source adoption on GitHub with over 5,000 stars.
 The system’s integration of multi-type search (semantic, keyword, hybrid) and secure authentication via Supabase JWT reflects a response to the growing demand for efficient AI-driven data management, aligning with IBM’s 2025 report showing 70% of enterprises adopting RAG to enhance LLM accuracy.
-Retrieval-Augmented-Generation (RAG) backend **and** a modern web UI—ready to fork and push to GitHub.
+Inspired by the LangConnect GitHub project, this solution addresses a gap in GUI interfaces for vector databases, offering a user-friendly alternative to complex CLI tools, a shift supported by Streamlit’s 2024 blog data indicating a 40% rise in dashboard adoption among data scientists.
+
+
 
 ---
 
