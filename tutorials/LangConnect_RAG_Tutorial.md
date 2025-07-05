@@ -1,42 +1,44 @@
+# 🚀 LangConnect + Open Agent Platform: Your End-to-End RAG Stack
 
-# LangConnect + Open Agent Platform  
-### End-to-End RAG Stack — from “docker compose up” to searchable docs & agent workflows  
+### From `docker compose up` to Searchable Docs & AI-Powered Agent Workflows
+---
 
-> **LangConnect**, introduced by LangChainAI, leverages Retrieval-Augmented Generation (RAG) with a Streamlit dashboard, enabling real-time document processing and vector search using PostgreSQL and pgvector, a tool validated by its open-source adoption on GitHub with over 5,000 stars.
-The system’s integration of multi-type search (semantic, keyword, hybrid) and secure authentication via Supabase JWT reflects a response to the growing demand for efficient AI-driven data management, aligning with IBM’s 2025 report showing 70% of enterprises adopting RAG to enhance LLM accuracy.
-Inspired by the LangConnect GitHub project, this solution addresses a gap in GUI interfaces for vector databases, offering a user-friendly alternative to complex CLI tools, a shift supported by Streamlit’s 2024 blog data indicating a 40% rise in dashboard adoption among data scientists.
+## ✨ Why Choose This Stack?
 
+**Unlock the power of Retrieval-Augmented Generation (RAG) with an intuitive, GUI-driven experience!**
 
+Tired of complicated command-line tools for vector search and document retrieval? **LangConnect**, brought to you by LangChainAI, combines a modern Streamlit dashboard with a blazing-fast FastAPI backend. Process your docs, search with semantic/keyword/hybrid modes, and manage access securely using Supabase JWT—all from your browser.
+
+With real-time document ingestion, flexible vector search powered by PostgreSQL + pgvector, and seamless agent integration, this stack puts the latest RAG techniques at your fingertips. Whether you're a developer, data scientist, or AI tinkerer, you'll be up and running in minutes.
 
 ---
 
-## 0. Why this stack?
+## 🧩 Stack Overview
 
-| Piece | What you get | Tech |
-|-------|--------------|------|
-| **LangConnect** | FastAPI service that chunks, embeds & stores docs in **PostgreSQL + pgvector**; exposes CRUD & multi-mode search APIs | Python 3.11, LangChain, pgvector |
-| **Open Agent Platform (OAP)** | Next.js UI to upload docs, run hybrid/semantic queries, and wire **LangGraph** agents (with optional tools / supervisor graphs) | TypeScript, Next.js, Supabase Auth |
-| **oap-langgraph-tools-agent** | Drop-in LangGraph agent pre-wired with a LangConnect search tool—perfect demo of agent-RAG loop | LangGraph CLI, FastAPI |
-
----
-
-## 1. Prerequisites
-
-* Docker + Docker Compose  
-* **Python 3.11+** (optional, for contributing to LangConnect)  
-* **Node.js ≥ 20** and **Yarn** (OAP web app)  
-* A free **Supabase** project (for JWT auth)  
+| Piece                         | What You Get                                                                                   | Tech Stack                           |
+|-------------------------------|-----------------------------------------------------------------------------------------------|--------------------------------------|
+| **LangConnect**               | Chunk, embed & store docs with CRUD + multi-mode search APIs (FastAPI + pgvector)             | Python 3.11, LangChain, pgvector     |
+| **Open Agent Platform (OAP)** | Next.js GUI for doc upload, hybrid/semantic queries, and LangGraph agent workflows            | TypeScript, Next.js, Supabase Auth   |
+| **oap-langgraph-tools-agent** | Drop-in LangGraph agent pre-wired with LangConnect search—perfect demo of agent-RAG loop      | LangGraph CLI, FastAPI               |
 
 ---
 
-## 2. Clone the repos
+## 1️⃣ Prerequisites
+
+- **Docker + Docker Compose**
+- **Python 3.11+** (optional, for LangConnect contributions)
+- **Node.js ≥ 20** and **Yarn** (for OAP web app)
+- A free **Supabase** project (for JWT authentication)
+
+---
+
+## 2️⃣ Clone the Repos
 
 ```bash
-# pick a workspace folder
+# Pick a workspace folder
 git clone https://github.com/langchain-ai/langconnect.git
 git clone https://github.com/langchain-ai/open-agent-platform.git
 git clone https://github.com/langchain-ai/oap-langgraph-tools-agent.git
-```
 
 ---
 
