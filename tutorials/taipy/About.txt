@@ -1,3 +1,0 @@
-Why Taipy for AI engineers
-
-Taipy couples a declarative GUI layer with a graph-based pipeline engine, so a single Python file can deliver both the ETL logic and the front end without HTML or JS.  Taipy 3.0 added first-class “scenario” objects—named, versioned pipeline runs that end-users can replay to test business hypotheses.  Benchmarks published by the core team show 30-40 % development-time savings on large dashboards compared with pure Flask or Streamlit glue code.  Community comparisons also find lower latency on >1 M-row datasets versus Streamlit thanks to Taipy’s async dataflow model.
