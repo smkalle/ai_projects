@@ -14,9 +14,10 @@ python src/app.py
 ## Notebooks
 | Notebook | Purpose |
 |----------|---------|
-| 01_data_exploration.ipynb | Fast EDA with Polars |
-| 02_dashboard_taipy.ipynb  | Build & test the Taipy UI |
-| 03_what_if_pipeline.ipynb | Scenario pipeline + “what‑if” sliders |
+| [01_data_exploration.ipynb](notebooks/01_data_exploration.ipynb) | Fast EDA with Polars |
+| [02_dashboard_taipy.ipynb](notebooks/02_dashboard_taipy.ipynb)  | Build & test the Taipy UI |
+| [03_what_if_pipeline.ipynb](notebooks/03_what_if_pipeline.ipynb) | Scenario pipeline + “what-if” sliders |
+---
 
 ## Why Taipy?
 * Pure‑Python front end, zero JS.  
