@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini Nano Demo</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      gap: 0;
+    }
+    
+    .main-content {
+      flex: 1;
+      max-width: 70%;
+      background: white;
+      border-radius: 0 20px 20px 0;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .sidebar {
+      width: 350px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+      height: 100vh;
+      scroll-behavior: smooth;
+    }
+    
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .sidebar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.5);
+      border-radius: 3px;
+    }
+    
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.8);
+    }
+    .chat-input-area {
+      padding: 20px 30px;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      flex-shrink: 0;
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+    }
+    
+    .input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+    
+    textarea {
+      width: 100%;
+      min-height: 44px;
+      max-height: 120px;
+      padding: 12px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 22px;
+      font-family: inherit;
+      font-size: 14px;
+      resize: none;
+      outline: none;
+      transition: all 0.2s ease;
+      line-height: 1.4;
+      box-sizing: border-box;
+    }
+    
+    textarea:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .send-button {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 22px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      min-width: 60px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .send-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .send-button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .status {
+      padding: 8px 30px;
+      color: #6b7280;
+      font-size: 13px;
+      background: #f9fafb;
+      border-top: 1px solid #f3f4f6;
+      flex-shrink: 0;
+      position: sticky;
+      bottom: 84px;
+      z-index: 9;
+    }
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 20px 30px;
+      background: #fafbfc;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      min-height: 0;
+      scroll-behavior: smooth;
+      max-height: calc(100vh - 200px);
+    }
+    
+    .chat-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .chat-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .chat-container::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    
+    .chat-container::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .chat-message {
+      margin: 0;
+      padding: 16px 20px;
+      border-radius: 18px;
+      max-width: 75%;
+      position: relative;
+      word-wrap: break-word;
+      line-height: 1.5;
+    }
+    
+    .chat-message pre {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 6px;
+      padding: 12px;
+      margin: 8px 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .chat-message code {
+      background: rgba(0, 0, 0, 0.1);
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+    
+    .chat-message pre code {
+      background: none;
+      padding: 0;
+    }
+    
+    .chat-message h1, .chat-message h2, .chat-message h3, .chat-message h4, .chat-message h5, .chat-message h6 {
+      margin: 12px 0 8px 0;
+      font-weight: bold;
+    }
+    
+    .chat-message h1 { font-size: 20px; }
+    .chat-message h2 { font-size: 18px; }
+    .chat-message h3 { font-size: 16px; }
+    .chat-message h4 { font-size: 14px; }
+    
+    .chat-message ul, .chat-message ol {
+      margin: 8px 0;
+      padding-left: 20px;
+    }
+    
+    .chat-message li {
+      margin: 4px 0;
+    }
+    
+    .chat-message strong {
+      font-weight: bold;
+    }
+    
+    .chat-message em {
+      font-style: italic;
+    }
+    
+    .chat-message blockquote {
+      border-left: 4px solid rgba(0, 0, 0, 0.2);
+      padding-left: 12px;
+      margin: 8px 0;
+      font-style: italic;
+    }
+    
+    .chat-message a {
+      color: #0066cc;
+      text-decoration: underline;
+    }
+    
+    .user-message pre {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .user-message code {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .user-message blockquote {
+      border-left-color: rgba(255, 255, 255, 0.4);
+    }
+    .user-message {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    }
+    .assistant-message {
+      background: #ffffff;
+      color: #374151;
+      margin-right: auto;
+      border: 1px solid #e5e7eb;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    .error-message {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      margin-right: auto;
+    }
+    .timestamp {
+      font-size: 11px;
+      opacity: 0.6;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+    .status {
+      color: #6c757d;
+      font-style: italic;
+    }
+    .setup-steps {
+      margin: 20px 0;
+    }
+    .step {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px 0;
+    }
+    .step h3 {
+      margin-top: 0;
+      color: #495057;
+    }
+    .checklist {
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      padding: 15px;
+      margin: 10px 0;
+    }
+    .checklist-item {
+      margin: 8px 0;
+      font-family: monospace;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .copy-btn {
+      background-color: #28a745;
+    }
+    .copy-btn:hover {
+      background-color: #218838;
+    }
+    
+    /* Settings Panel */
+    .settings-panel {
+      position: relative;
+      display: inline-block;
+      margin-left: 15px;
+      vertical-align: middle;
+    }
+    
+    .settings-button {
+      background: #ffc107;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      width: 40px;
+      height: 40px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+    
+    .settings-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    .settings-button.ready {
+      background: #28a745;
+    }
+    
+    .settings-button.error {
+      background: #dc3545;
+    }
+    
+    .settings-dropdown {
+      position: absolute;
+      top: 45px;
+      right: 0;
+      width: 280px;
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      display: none;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+    }
+    
+    .settings-dropdown.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .settings-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      right: 15px;
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 6px solid white;
+    }
+    
+    .settings-content {
+      padding: 15px;
+    }
+    
+    .title-row {
+      display: flex;
+      align-items: center;
+      padding: 20px 30px;
+      background: linear-gradient(90deg, #4f46e5, #7c3aed);
+      color: white;
+      border-radius: 0 20px 0 0;
+      margin-bottom: 0;
+    }
+    
+    .title-row h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    
+    .status-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f3f4;
+    }
+    
+    .status-item:last-child {
+      border-bottom: none;
+    }
+    
+    .status-icon {
+      margin-right: 10px;
+      font-size: 16px;
+      width: 20px;
+    }
+    
+    .status-text {
+      flex: 1;
+      font-size: 14px;
+    }
+    
+    .toggle-arrow {
+      transition: transform 0.3s ease;
+    }
+    
+    .toggle-arrow.expanded {
+      transform: rotate(180deg);
+    }
+    
+    .quick-action {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    
+    .quick-action:hover {
+      background: #0056b3;
+    }
+    
+    .settings-collapsed {
+      background: #28a745;
+      color: white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .settings-collapsed:hover {
+      background: #218838;
+    }
+    
+    /* TODO List Styles */
+    .todo-list {
+      margin: 10px 0;
+    }
+    
+    .todo-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f3f4;
+    }
+    
+    .todo-item:last-child {
+      border-bottom: none;
+    }
+    
+    .todo-checkbox {
+      font-size: 18px;
+      margin-right: 12px;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    
+    .todo-content {
+      flex: 1;
+    }
+    
+    .todo-title {
+      font-weight: 500;
+      margin-bottom: 2px;
+      color: #333;
+    }
+    
+    .todo-subtitle {
+      font-size: 12px;
+      color: #6c757d;
+      margin-bottom: 5px;
+    }
+    
+    .todo-item.completed .todo-checkbox {
+      color: #28a745;
+    }
+    
+    .todo-item.completed .todo-title {
+      color: #28a745;
+    }
+    
+    .todo-item.in-progress .todo-checkbox {
+      color: #ffc107;
+    }
+    
+    .todo-item.in-progress .todo-title {
+      color: #856404;
+    }
+    
+    .todo-item.error .todo-checkbox {
+      color: #dc3545;
+    }
+    
+    .todo-item.error .todo-title {
+      color: #dc3545;
+    }
+    
+    /* Sample Questions Styles */
+    .sample-questions h3 {
+      margin: 0 0 20px 0;
+      color: #1f2937;
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .capability-section {
+      margin-bottom: 24px;
+    }
+    
+    .capability-title {
+      font-weight: 600;
+      color: #4f46e5;
+      margin-bottom: 12px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .question-item {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 13px;
+      line-height: 1.4;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .question-item:hover {
+      background: #f8fafc;
+      border-color: #667eea;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+    
+    .question-item:active {
+      transform: translateY(0);
+    }
+    
+    .question-emoji {
+      margin-right: 8px;
+      font-size: 14px;
+    }
+    
+    @media (max-width: 1024px) {
+      body {
+        flex-direction: column;
+        background: white;
+      }
+      
+      .main-content {
+        max-width: 100%;
+        border-radius: 0;
+        height: 70vh;
+      }
+      
+      .sidebar {
+        width: 100%;
+        height: 30vh;
+        background: #f8fafc;
+        backdrop-filter: none;
+        border-left: none;
+        border-top: 1px solid #e5e7eb;
+        order: 1;
+        overflow-y: auto;
+      }
+      
+      .title-row {
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-content">
+    <div class="title-row">
+      <h1>💬 Gemini Nano Demo</h1>
+      
+      <!-- Tutorial Link -->
+      <div style="margin-left: 15px; margin-right: 10px;">
+        <a href="https://github.com/smkalle/ai_projects/blob/main/tutorials/gemini-nano-tutorial.md" target="_blank" style="color: white; text-decoration: none; font-size: 14px; opacity: 0.9; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; transition: all 0.2s ease;" onmouseover="this.style.opacity='1'; this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.opacity='0.9'; this.style.backgroundColor='transparent'">
+          📖 Tutorial
+        </a>
+      </div>
+      
+      <!-- Settings Panel -->
+      <div class="settings-panel">
+        <button class="settings-button" id="settingsButton" onclick="toggleSettings()" title="Setup Status">
+          ⚙️
+        </button>
+        
+        <div class="settings-dropdown" id="settingsDropdown">
+          <div class="settings-content">
+            <div style="margin-bottom: 15px;">
+              <h4 style="margin: 0 0 10px 0; color: #495057;">Setup Checklist</h4>
+              <div style="font-size: 12px; color: #6c757d;" id="overallStatus">Checking...</div>
+            </div>
+            
+            <div class="todo-list">
+              <div class="todo-item" id="todoChrome">
+                <div class="todo-checkbox" id="checkChrome">☐</div>
+                <div class="todo-content">
+                  <div class="todo-title">Chrome Browser Compatible</div>
+                  <div class="todo-subtitle" id="chromeStatus">Checking version...</div>
+                </div>
+              </div>
+              
+              <div class="todo-item" id="todoFlag">
+                <div class="todo-checkbox" id="checkFlag">☐</div>
+                <div class="todo-content">
+                  <div class="todo-title">Enable Gemini Nano Flag</div>
+                  <div class="todo-subtitle" id="flagStatus">Checking flag...</div>
+                  <button class="quick-action" onclick="copyFlagLink()">Copy Flag Link</button>
+                </div>
+              </div>
+              
+              <div class="todo-item" id="todoAPI">
+                <div class="todo-checkbox" id="checkAPI">☐</div>
+                <div class="todo-content">
+                  <div class="todo-title">API Available</div>
+                  <div class="todo-subtitle" id="apiStatus">Checking API...</div>
+                </div>
+              </div>
+              
+              <div class="todo-item" id="todoModel">
+                <div class="todo-checkbox" id="checkModel">☐</div>
+                <div class="todo-content">
+                  <div class="todo-title">Download AI Model</div>
+                  <div class="todo-subtitle" id="modelStatus">Waiting...</div>
+                </div>
+              </div>
+              
+              <div class="todo-item" id="todoWarmup">
+                <div class="todo-checkbox" id="checkWarmup">☐</div>
+                <div class="todo-content">
+                  <div class="todo-title">Warm-up AI System</div>
+                  <div class="todo-subtitle" id="warmupStatus">Waiting...</div>
+                </div>
+              </div>
+            </div>
+            
+            <div id="allReadyMessage" style="display: none; margin: 15px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724;">
+              <strong>🎉 All Systems Ready!</strong><br>
+              <small>Gemini Nano is fully operational</small>
+            </div>
+            
+            <hr style="margin: 15px 0;">
+            
+            <button class="quick-action" onclick="location.reload()" style="width: 100%;">
+              🔄 Refresh & Recheck
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  <div id="setupWizard" class="container" style="display: none;">
+    <h2>🚀 Setup Wizard</h2>
+    <p>Let's get Gemini Nano running! Follow these simple steps:</p>
+    
+    <div class="setup-steps">
+      <div class="step">
+        <h3>Step 1: Enable Gemini Nano</h3>
+        <p>1. Copy this link: <strong>chrome://flags/#prompt-api-for-gemini-nano</strong></p>
+        <button onclick="navigator.clipboard.writeText('chrome://flags/#prompt-api-for-gemini-nano')">📋 Copy Link</button>
+        <p>2. Paste it in a new Chrome tab</p>
+        <p>3. Set it to <strong>"Enabled"</strong></p>
+        <p>4. Click <strong>"Relaunch"</strong> to restart Chrome</p>
+      </div>
+      
+      <div class="step">
+        <h3>Step 2: Check Compatibility</h3>
+        <div class="checklist">
+          <div class="checklist-item">⏳ Checking Chrome version...</div>
+          <div class="checklist-item">⏳ Checking API availability...</div>
+          <div class="checklist-item">⏳ Checking API methods...</div>
+        </div>
+        <button id="recheckBtn" onclick="location.reload()">🔄 Recheck</button>
+      </div>
+      
+      <div class="step">
+        <h3>Step 3: First Run Info</h3>
+        <p>📥 First time will download the AI model (~1.5-2.4 GB)</p>
+        <p>⚡ This happens once, then it's cached locally</p>
+        <p>🌐 Works offline after download!</p>
+      </div>
+    </div>
+    
+    <div id="setupStatus" class="status"></div>
+  </div>
+
+  <div id="chatSection" style="display: flex; flex-direction: column; height: calc(100vh - 80px);">
+    <div id="chatLog" class="chat-container"></div>
+    <div id="status" class="status"></div>
+    <div class="chat-input-area">
+      <div class="input-wrapper">
+        <textarea id="prompt" placeholder="Type your message...">Hello, what can you do?</textarea>
+      </div>
+      <button id="submitBtn" class="send-button">Send</button>
+    </div>
+  </div>
+  
+  </div>
+
+  <!-- Sample Questions Sidebar -->
+  <div class="sidebar">
+    <div class="sample-questions">
+      <h3>🚀 Try These Questions!</h3>
+      
+      <div class="capability-section">
+        <div class="capability-title">💭 General Knowledge</div>
+        <div class="question-item" onclick="askQuestion('What is the capital of France?')">
+          <span class="question-emoji">🌍</span>What is the capital of France?
+        </div>
+        <div class="question-item" onclick="askQuestion('Explain quantum computing in simple terms')">
+          <span class="question-emoji">⚛️</span>Explain quantum computing in simple terms
+        </div>
+        <div class="question-item" onclick="askQuestion('What are the benefits of renewable energy?')">
+          <span class="question-emoji">🌱</span>What are the benefits of renewable energy?
+        </div>
+      </div>
+      
+      <div class="capability-section">
+        <div class="capability-title">💻 Programming Help</div>
+        <div class="question-item" onclick="askQuestion('Write a Python function to reverse a string')">
+          <span class="question-emoji">🐍</span>Write a Python function to reverse a string
+        </div>
+        <div class="question-item" onclick="askQuestion('How do I center a div in CSS?')">
+          <span class="question-emoji">🎨</span>How do I center a div in CSS?
+        </div>
+        <div class="question-item" onclick="askQuestion('Explain the difference between let and var in JavaScript')">
+          <span class="question-emoji">📜</span>Explain let vs var in JavaScript
+        </div>
+      </div>
+      
+      <div class="capability-section">
+        <div class="capability-title">✍️ Writing & Language</div>
+        <div class="question-item" onclick="askQuestion('Write a professional email requesting a meeting')">
+          <span class="question-emoji">📧</span>Write a professional email requesting a meeting
+        </div>
+        <div class="question-item" onclick="askQuestion('Improve this sentence: The cat was sitting on the mat')">
+          <span class="question-emoji">✏️</span>Improve: "The cat was sitting on the mat"
+        </div>
+        <div class="question-item" onclick="askQuestion('Write a haiku about artificial intelligence')">
+          <span class="question-emoji">🌸</span>Write a haiku about artificial intelligence
+        </div>
+      </div>
+      
+      <div class="capability-section">
+        <div class="capability-title">🧮 Math & Logic</div>
+        <div class="question-item" onclick="askQuestion('If I have 12 apples and give away 1/4, how many do I have left?')">
+          <span class="question-emoji">🍎</span>If I have 12 apples and give away 1/4, how many are left?
+        </div>
+        <div class="question-item" onclick="askQuestion('Solve this logic puzzle: All cats are mammals. Fluffy is a cat. What can we conclude?')">
+          <span class="question-emoji">🧩</span>Logic puzzle: All cats are mammals. Fluffy is a cat...
+        </div>
+        <div class="question-item" onclick="askQuestion('What is the quadratic formula and when do you use it?')">
+          <span class="question-emoji">📐</span>What is the quadratic formula?
+        </div>
+      </div>
+      
+      <div class="capability-section">
+        <div class="capability-title">🎯 Creative Tasks</div>
+        <div class="question-item" onclick="askQuestion('Create a short story about a robot learning to paint')">
+          <span class="question-emoji">🤖</span>Story: A robot learning to paint
+        </div>
+        <div class="question-item" onclick="askQuestion('Give me 5 creative names for a coffee shop')">
+          <span class="question-emoji">☕</span>5 creative names for a coffee shop
+        </div>
+        <div class="question-item" onclick="askQuestion('Write a limerick about programming')">
+          <span class="question-emoji">🎭</span>Write a limerick about programming
+        </div>
+      </div>
+      
+      <div class="capability-section">
+        <div class="capability-title">🛠️ Problem Solving</div>
+        <div class="question-item" onclick="askQuestion('How can I be more productive while working from home?')">
+          <span class="question-emoji">🏠</span>How to be productive working from home?
+        </div>
+        <div class="question-item" onclick="askQuestion('My plant is dying. What should I do?')">
+          <span class="question-emoji">🌿</span>My plant is dying. What should I do?
+        </div>
+        <div class="question-item" onclick="askQuestion('Plan a 3-day weekend trip to a nearby city')">
+          <span class="question-emoji">🗺️</span>Plan a 3-day weekend trip
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let session = null;
+let settingsExpanded = false;
+
+// Make functions globally available
+window.toggleSettings = function() {
+  settingsExpanded = !settingsExpanded;
+  const dropdown = document.getElementById('settingsDropdown');
+  
+  if (settingsExpanded) {
+    dropdown.classList.add('show');
+  } else {
+    dropdown.classList.remove('show');
+  }
+}
+
+function updateSettingsButton() {
+  const button = document.getElementById('settingsButton');
+  const allItems = ['Chrome', 'Flag', 'API', 'Model', 'Warmup'];
+  
+  const allCompleted = allItems.every(item => {
+    const element = document.getElementById(`todo${item}`);
+    return element && element.classList.contains('completed');
+  });
+  
+  const hasErrors = allItems.some(item => {
+    const element = document.getElementById(`todo${item}`);
+    return element && element.classList.contains('error');
+  });
+  
+  // Update button color
+  button.classList.remove('ready', 'error');
+  if (allCompleted) {
+    button.classList.add('ready');
+    button.title = 'All Systems Ready!';
+  } else if (hasErrors) {
+    button.classList.add('error');
+    button.title = 'Setup Required';
+  } else {
+    button.title = 'Setup In Progress';
+  }
+}
+
+window.copyFlagLink = function() {
+  navigator.clipboard.writeText('chrome://flags/#prompt-api-for-gemini-nano');
+  const btn = event.target;
+  const originalText = btn.textContent;
+  btn.textContent = '✅ Copied!';
+  setTimeout(() => {
+    btn.textContent = originalText;
+  }, 2000);
+}
+
+window.askQuestion = function(question) {
+  const promptEl = document.getElementById('prompt');
+  promptEl.value = question;
+  
+  // Auto-submit the question
+  sendPrompt();
+  
+  // Scroll to chat area
+  document.getElementById('chatLog').scrollIntoView({ behavior: 'smooth' });
+}
+
+function updateTodoItem(itemId, status, message) {
+  const item = document.getElementById(`todo${itemId}`);
+  const checkbox = document.getElementById(`check${itemId}`);
+  const statusEl = document.getElementById(`${itemId.toLowerCase()}Status`);
+  
+  // Remove all status classes
+  item.classList.remove('completed', 'in-progress', 'error');
+  
+  // Update based on status
+  switch(status) {
+    case 'completed':
+      item.classList.add('completed');
+      checkbox.textContent = '☑';
+      break;
+    case 'in-progress':
+      item.classList.add('in-progress');
+      checkbox.textContent = '⏳';
+      break;
+    case 'error':
+      item.classList.add('error');
+      checkbox.textContent = '☒';
+      break;
+    default:
+      checkbox.textContent = '☐';
+  }
+  
+  statusEl.textContent = message;
+}
+
+function updateSettingsPanel() {
+  // Step 1: Chrome version check
+  const userAgent = navigator.userAgent;
+  const chromeVersion = userAgent.match(/Chrome\/(\d+)/);
+  
+  if (chromeVersion && parseInt(chromeVersion[1]) >= 127) {
+    updateTodoItem('Chrome', 'completed', `Chrome ${chromeVersion[1]} (Compatible)`);
+  } else {
+    updateTodoItem('Chrome', 'error', 'Chrome 127+ required');
+  }
+  
+  // Step 2: Flag check
+  if (window.LanguageModel) {
+    updateTodoItem('Flag', 'completed', 'Flag enabled');
+  } else {
+    updateTodoItem('Flag', 'error', 'Flag not enabled - click Copy Flag Link');
+  }
+  
+  // Step 3: API check
+  if (window.LanguageModel && window.LanguageModel.create) {
+    updateTodoItem('API', 'completed', 'API ready');
+  } else {
+    updateTodoItem('API', 'error', 'API not available');
+  }
+  
+  // Check if all basic requirements are met
+  const basicRequirementsMet = chromeVersion && parseInt(chromeVersion[1]) >= 127 && 
+                              window.LanguageModel && window.LanguageModel.create;
+  
+  // Update overall status
+  document.getElementById('overallStatus').textContent = basicRequirementsMet ? 
+    'Basic requirements met' : 'Setup required';
+    
+  // Update button color
+  updateSettingsButton();
+    
+  return basicRequirementsMet;
+}
+
+function checkAllSystemsReady() {
+  const allItems = ['Chrome', 'Flag', 'API', 'Model', 'Warmup'];
+  const allCompleted = allItems.every(item => {
+    const element = document.getElementById(`todo${item}`);
+    return element && element.classList.contains('completed');
+  });
+  
+  const readyMessage = document.getElementById('allReadyMessage');
+  if (allCompleted) {
+    readyMessage.style.display = 'block';
+    document.getElementById('overallStatus').textContent = '🎉 All Systems Ready!';
+  } else {
+    readyMessage.style.display = 'none';
+  }
+  
+  // Update button color
+  updateSettingsButton();
+}
+
+function updateModelStatus(status) {
+  switch(status.type) {
+    case 'checking':
+      updateTodoItem('Model', 'in-progress', status.message);
+      break;
+    case 'downloading':
+      updateTodoItem('Model', 'in-progress', status.message);
+      break;
+    case 'ready':
+      updateTodoItem('Model', 'completed', status.message);
+      break;
+    case 'error':
+      updateTodoItem('Model', 'error', status.message);
+      break;
+  }
+  checkAllSystemsReady();
+}
+
+function updateWarmupStatus(status) {
+  switch(status.type) {
+    case 'warming':
+      updateTodoItem('Warmup', 'in-progress', status.message);
+      break;
+    case 'ready':
+      updateTodoItem('Warmup', 'completed', status.message);
+      break;
+    case 'error':
+      updateTodoItem('Warmup', 'error', status.message);
+      break;
+  }
+  checkAllSystemsReady();
+}
+
+function showSetupWizard() {
+  const setupDiv = document.getElementById('setupWizard');
+  const chatDiv = document.getElementById('chatSection');
+  setupDiv.style.display = 'block';
+  chatDiv.style.display = 'none';
+}
+
+function hideSetupWizard() {
+  const setupDiv = document.getElementById('setupWizard');
+  const chatDiv = document.getElementById('chatSection');
+  setupDiv.style.display = 'none';
+  chatDiv.style.display = 'block';
+}
+
+async function checkChromeCompatibility() {
+  const statusEl = document.getElementById('setupStatus');
+  const checklistItems = document.querySelectorAll('.checklist-item');
+  
+  // Check 1: Chrome version
+  const userAgent = navigator.userAgent;
+  const chromeVersion = userAgent.match(/Chrome\/(\d+)/);
+  
+  if (chromeVersion && parseInt(chromeVersion[1]) >= 127) {
+    checklistItems[0].innerHTML = '✅ Chrome version compatible';
+  } else {
+    checklistItems[0].innerHTML = '❌ Chrome 127+ required';
+    return false;
+  }
+  
+  // Check 2: API availability
+  if (window.LanguageModel) {
+    checklistItems[1].innerHTML = '✅ Gemini Nano API available';
+  } else {
+    checklistItems[1].innerHTML = '❌ Gemini Nano flag not enabled';
+    return false;
+  }
+  
+  // Check 3: Create method
+  if (window.LanguageModel.create) {
+    checklistItems[2].innerHTML = '✅ API methods available';
+  } else {
+    checklistItems[2].innerHTML = '❌ API methods not ready';
+    return false;
+  }
+  
+  return true;
+}
+
+async function initializeSession() {
+  const statusEl = document.getElementById('status');
+  
+  try {
+    statusEl.textContent = '🔍 Checking compatibility...';
+    updateModelStatus({type: 'checking', message: 'Checking compatibility...'});
+    
+    const compatible = await checkChromeCompatibility();
+    if (!compatible) {
+      updateModelStatus({type: 'error', message: 'Compatibility check failed'});
+      showSetupWizard();
+      return false;
+    }
+    
+    statusEl.textContent = '🚀 Initializing Gemini Nano...';
+    updateModelStatus({type: 'checking', message: 'Initializing...'});
+    console.log('Creating LanguageModel session...');
+    
+    session = await LanguageModel.create({
+      monitor(m) {
+        console.log('Monitor callback called');
+        m.addEventListener("downloadprogress", (e) => {
+          const progress = Math.round(e.loaded * 100);
+          statusEl.textContent = `📥 Downloading model: ${progress}%`;
+          updateModelStatus({type: 'downloading', message: `Downloading: ${progress}%`});
+          console.log(`Download Progress: ${progress}%`);
+        });
+      }
+    });
+    
+    console.log('Session created successfully:', session);
+    statusEl.textContent = '✅ Ready to chat!';
+    updateModelStatus({type: 'ready', message: 'Model loaded'});
+    hideSetupWizard();
+    return true;
+  } catch (error) {
+    console.error("Error initializing session:", error);
+    statusEl.textContent = `❌ Error: ${error.message}`;
+    updateModelStatus({type: 'error', message: error.message});
+    showSetupWizard();
+    return false;
+  }
+}
+
+function parseMarkdown(text) {
+  // Basic markdown parsing for common elements
+  return text
+    // Code blocks (```...```)
+    .replace(/```(.*?)```/gs, '<pre><code>$1</code></pre>')
+    // Inline code (`...`)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Headers
+    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+    // Bold (**text** or __text__)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.*?)__/g, '<strong>$1</strong>')
+    // Italic (*text* or _text_)
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/_(.*?)_/g, '<em>$1</em>')
+    // Links [text](url)
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+    // Line breaks
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>')
+    // Unordered lists
+    .replace(/^\* (.+$)/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+    // Ordered lists
+    .replace(/^\d+\. (.+$)/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, '<ol>$1</ol>')
+    // Blockquotes
+    .replace(/^> (.+$)/gm, '<blockquote>$1</blockquote>');
+}
+
+function addChatMessage(message, type) {
+  const chatLog = document.getElementById('chatLog');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `chat-message ${type}-message`;
+  
+  const contentDiv = document.createElement('div');
+  
+  if (type === 'assistant') {
+    // Parse markdown for assistant messages
+    contentDiv.innerHTML = parseMarkdown(message);
+  } else {
+    // Keep user messages as plain text for safety
+    contentDiv.textContent = message;
+  }
+  
+  const timestampDiv = document.createElement('div');
+  timestampDiv.className = 'timestamp';
+  timestampDiv.textContent = new Date().toLocaleTimeString();
+  
+  messageDiv.appendChild(contentDiv);
+  messageDiv.appendChild(timestampDiv);
+  chatLog.appendChild(messageDiv);
+  
+  // Auto-scroll to bottom
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+async function sendPrompt() {
+  const promptEl = document.getElementById('prompt');
+  const submitBtn = document.getElementById('submitBtn');
+  const statusEl = document.getElementById('status');
+  
+  const prompt = promptEl.value.trim();
+  console.log('Sending prompt:', prompt);
+  if (!prompt) return;
+  
+  // Add user message to chat
+  addChatMessage(prompt, 'user');
+  
+  submitBtn.disabled = true;
+  statusEl.textContent = 'Thinking...';
+  promptEl.value = '';
+  
+  try {
+    if (!session) {
+      console.log('No session, initializing...');
+      const initialized = await initializeSession();
+      if (!initialized) {
+        submitBtn.disabled = false;
+        return;
+      }
+    }
+    
+    console.log('Sending prompt to session:', prompt);
+    console.log('Session object:', session);
+    
+    const response = await session.prompt(prompt);
+    
+    console.log("Raw response:", response);
+    console.log("Response type:", typeof response);
+    
+    // Add assistant response to chat
+    addChatMessage(response, 'assistant');
+    statusEl.textContent = 'Response received!';
+    
+  } catch (error) {
+    console.error("Error sending prompt:", error);
+    addChatMessage(`Error: ${error.message}`, 'error');
+    statusEl.textContent = 'Error occurred';
+  } finally {
+    submitBtn.disabled = false;
+  }
+}
+
+async function coldStartGemini() {
+  const statusEl = document.getElementById('status');
+  
+  try {
+    statusEl.textContent = '🔥 Cold starting Gemini Nano...';
+    updateWarmupStatus({type: 'warming', message: 'Starting cold start...'});
+    
+    // Initialize session
+    const initialized = await initializeSession();
+    if (!initialized) {
+      updateWarmupStatus({type: 'error', message: 'Initialization failed'});
+      return;
+    }
+    
+    // Send a small prompt to warm up the model
+    statusEl.textContent = '🔥 Warming up model...';
+    updateWarmupStatus({type: 'warming', message: 'Warming up model...'});
+    const warmupResponse = await session.prompt("Hi");
+    
+    // Add initial ready message to chat
+    addChatMessage("Hello! I'm Gemini Nano running locally in your browser! 🤖✨\n\nI'm ready to help with questions, coding, writing, and more. What would you like to chat about?", 'assistant');
+    
+    statusEl.textContent = '🚀 Gemini Nano is ready and warmed up!';
+    updateWarmupStatus({type: 'ready', message: 'Warmed up & ready'});
+    
+  } catch (error) {
+    console.error("Cold start error:", error);
+    addChatMessage(`❌ Cold start failed: ${error.message}`, 'error');
+    statusEl.textContent = '❌ Cold start failed - check setup';
+    updateWarmupStatus({type: 'error', message: 'Cold start failed'});
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const submitBtn = document.getElementById('submitBtn');
+  const promptEl = document.getElementById('prompt');
+  
+  submitBtn.addEventListener('click', sendPrompt);
+  
+  promptEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendPrompt();
+    }
+  });
+  
+  // Initialize settings panel
+  updateSettingsPanel();
+  
+  // Initialize model and warmup as waiting
+  updateTodoItem('Model', 'waiting', 'Waiting for initialization...');
+  updateTodoItem('Warmup', 'waiting', 'Waiting for model...');
+  
+  // Close dropdown on outside click
+  document.addEventListener('click', function(event) {
+    const settingsPanel = document.querySelector('.settings-panel');
+    const dropdown = document.getElementById('settingsDropdown');
+    
+    if (!settingsPanel.contains(event.target) && dropdown.classList.contains('show')) {
+      settingsExpanded = false;
+      dropdown.classList.remove('show');
+    }
+  });
+  
+  // Cold start Gemini on page load
+  coldStartGemini();
+});
+  </script>
+</body>
+</html>
