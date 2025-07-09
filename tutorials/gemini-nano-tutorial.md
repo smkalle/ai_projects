@@ -1,7 +1,5 @@
 
-# 🚀 Comprehensive Tutorial: Using Gemini Nano in Chrome 138 for AI Engineers
-
-> Authored by a Google SDE3 AI Engineer  
+# 🚀 Comprehensive Tutorial: Using Gemini Nano in Chrome 138+ 
 > Based on insights by [@swyx](https://x.com/swyx) and others  
 > 📅 July 2025 | 🧠 On-device LLM | 🔒 Privacy-first
 
