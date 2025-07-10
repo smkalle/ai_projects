@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎓 StudyMate - AI Study Assistant</title>
+  <meta name="description" content="Local AI-powered study assistant using Gemini Nano. Upload documents, get summaries, explanations, and practice questions - all processed locally in your browser.">
+  
+  <style>
+    /* CSS Custom Properties */
+    :root {
+      --primary-color: #4f46e5;
+      --primary-hover: #4338ca;
+      --secondary-color: #10b981;
+      --accent-color: #f59e0b;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --bg-tertiary: #f3f4f6;
+      --border-color: #e5e7eb;
+      --border-hover: #d1d5db;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --spacing-xs: 0.25rem;
+      --spacing-sm: 0.5rem;
+      --spacing-md: 1rem;
+      --spacing-lg: 1.5rem;
+      --spacing-xl: 2rem;
+      --spacing-2xl: 3rem;
+    }
+
+    /* Dark mode variables */
+    [data-theme="dark"] {
+      --text-primary: #f9fafb;
+      --text-secondary: #d1d5db;
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --bg-tertiary: #374151;
+      --border-color: #374151;
+      --border-hover: #4b5563;
+    }
+
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-size: 16px;
+      overflow-x: hidden;
+    }
+
+    /* Layout containers */
+    .app-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header styles */
+    .header {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+      color: white;
+      padding: var(--spacing-md) var(--spacing-lg);
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-md);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .streak-counter {
+      background: rgba(255, 255, 255, 0.2);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-lg);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .icon-button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: var(--spacing-sm);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      height: 40px;
+    }
+
+    .icon-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    /* Main content area */
+    .main-content {
+      flex: 1;
+      padding: var(--spacing-xl) var(--spacing-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xl);
+    }
+
+    /* Upload zone styles */
+    .upload-zone {
+      background: var(--bg-primary);
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-2xl);
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--primary-color);
+      background: var(--bg-secondary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .upload-zone.dragover {
+      border-color: var(--primary-color);
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(79, 70, 229, 0.1));
+      transform: scale(1.02);
+    }
+
+    .upload-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-lg);
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+    }
+
+    .upload-zone:hover .upload-icon {
+      color: var(--primary-color);
+      transform: scale(1.1);
+    }
+
+    .upload-text {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .upload-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .upload-actions {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-md);
+    }
+
+    .upload-button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .upload-button:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .upload-button.secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .upload-button.secondary:hover {
+      background: var(--border-color);
+    }
+
+    /* Chat/Conversation area */
+    .conversation-area {
+      background: var(--bg-primary);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .conversation-header {
+      background: var(--bg-tertiary);
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .conversation-title {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .status-indicator {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .status-indicator.ready {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .status-indicator.processing {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .status-indicator.error {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: var(--spacing-lg);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+      min-height: 300px;
+    }
+
+    .message {
+      display: flex;
+      gap: var(--spacing-sm);
+      max-width: 80%;
+    }
+
+    .message.user {
+      margin-left: auto;
+      flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+
+    .message.user .message-avatar {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .message.assistant .message-avatar {
+      background: var(--secondary-color);
+      color: white;
+    }
+
+    .message-content {
+      background: var(--bg-secondary);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      word-wrap: break-word;
+    }
+
+    .message.user .message-content {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .message-content pre {
+      background: rgba(0, 0, 0, 0.1);
+      padding: var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      margin: var(--spacing-xs) 0;
+    }
+
+    .message-content code {
+      background: rgba(0, 0, 0, 0.1);
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+    }
+
+    /* Chat input area */
+    .chat-input-area {
+      padding: var(--spacing-lg);
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-primary);
+    }
+
+    .chat-input-container {
+      display: flex;
+      gap: var(--spacing-sm);
+      align-items: flex-end;
+    }
+
+    .chat-input {
+      flex: 1;
+      min-height: 44px;
+      max-height: 120px;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      resize: none;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .send-button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125rem;
+    }
+
+    .send-button:hover:not(:disabled) {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .send-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Quick actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--spacing-md);
+    }
+
+    .action-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .action-card:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .action-icon {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-sm);
+      display: block;
+    }
+
+    .action-title {
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .action-description {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    /* Hidden file input */
+    .file-input {
+      display: none;
+    }
+
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .main-content {
+        padding: var(--spacing-lg) var(--spacing-md);
+        gap: var(--spacing-lg);
+      }
+
+      .upload-zone {
+        padding: var(--spacing-xl);
+      }
+
+      .upload-content {
+        gap: var(--spacing-md);
+      }
+
+      .upload-icon {
+        font-size: 2.5rem;
+      }
+
+      .upload-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .header-content {
+        gap: var(--spacing-sm);
+      }
+
+      .logo {
+        font-size: 1.25rem;
+      }
+
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .message {
+        max-width: 90%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-content {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+      }
+
+      .upload-zone {
+        padding: var(--spacing-lg);
+      }
+
+      .conversation-area {
+        min-height: 300px;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Focus styles for keyboard navigation */
+    .upload-zone:focus-visible,
+    .action-card:focus-visible,
+    .upload-button:focus-visible,
+    .icon-button:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <span>🎓</span>
+          <span>StudyMate</span>
+        </div>
+        
+        <div class="header-controls">
+          <div class="streak-counter" id="streakCounter">
+            🔥 <span id="streakDays">0</span>
+          </div>
+          
+          <button class="icon-button" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <span id="themeIcon">🌙</span>
+          </button>
+          
+          <button class="icon-button" id="settingsButton" title="Settings" aria-label="Settings">
+            <span>⚙️</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Upload Zone -->
+      <section class="upload-zone" id="uploadZone" tabindex="0" role="button" aria-label="Upload study materials">
+        <input type="file" class="file-input" id="fileInput" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,.webp" multiple>
+        
+        <div class="upload-content">
+          <div class="upload-icon" id="uploadIcon">📚</div>
+          <div class="upload-text">Upload Your Study Materials</div>
+          <div class="upload-subtitle">
+            Drop files here or click to browse • PDF, DOC, TXT, Images supported
+          </div>
+          
+          <div class="upload-actions">
+            <button class="upload-button" id="uploadButton">
+              📄 Choose Files
+            </button>
+            <button class="upload-button secondary" id="cameraButton">
+              📷 Take Photo
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Conversation Area -->
+      <section class="conversation-area">
+        <div class="conversation-header">
+          <div class="conversation-title">
+            <span>💬</span>
+            <span>AI Study Assistant</span>
+          </div>
+          <div class="status-indicator ready" id="statusIndicator">Ready</div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+          <div class="message assistant">
+            <div class="message-avatar">🤖</div>
+            <div class="message-content">
+              <p>Hi there! I'm your AI study assistant. Upload any study material and I'll help you:</p>
+              <ul>
+                <li>📋 Summarize key concepts</li>
+                <li>❓ Generate practice questions</li>
+                <li>🔍 Explain difficult topics</li>
+                <li>📝 Create study notes</li>
+              </ul>
+              <p>What would you like to study today?</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="chat-input-area">
+          <div class="chat-input-container">
+            <textarea 
+              class="chat-input" 
+              id="chatInput" 
+              placeholder="Ask me anything about your studies..." 
+              rows="1"
+              aria-label="Chat with AI assistant"
+            ></textarea>
+            <button class="send-button" id="sendButton" aria-label="Send message">
+              <span>📤</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Actions -->
+      <section class="quick-actions">
+        <div class="action-card" id="summaryAction" tabindex="0" role="button">
+          <span class="action-icon">📋</span>
+          <div class="action-title">Quick Summary</div>
+          <div class="action-description">Get instant summaries of uploaded content</div>
+        </div>
+        
+        <div class="action-card" id="quizAction" tabindex="0" role="button">
+          <span class="action-icon">🧠</span>
+          <div class="action-title">Practice Quiz</div>
+          <div class="action-description">Generate questions to test your knowledge</div>
+        </div>
+        
+        <div class="action-card" id="explainAction" tabindex="0" role="button">
+          <span class="action-icon">💡</span>
+          <div class="action-title">Explain Concepts</div>
+          <div class="action-description">Break down complex topics step-by-step</div>
+        </div>
+        
+        <div class="action-card" id="notesAction" tabindex="0" role="button">
+          <span class="action-icon">📝</span>
+          <div class="action-title">Study Notes</div>
+          <div class="action-description">Create organized notes from your materials</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Global variables
+    let geminiSession = null;
+    let currentFiles = [];
+    let conversationHistory = [];
+    let isProcessing = false;
+
+    // DOM elements
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadButton = document.getElementById('uploadButton');
+    const cameraButton = document.getElementById('cameraButton');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendButton = document.getElementById('sendButton');
+    const statusIndicator = document.getElementById('statusIndicator');
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const uploadIcon = document.getElementById('uploadIcon');
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', initializeApp);
+
+    async function initializeApp() {
+      console.log('🎓 StudyMate initializing...');
+      
+      // Set up event listeners
+      setupEventListeners();
+      
+      // Initialize theme
+      initializeTheme();
+      
+      // Initialize Gemini Nano
+      await initializeGeminiNano();
+      
+      // Auto-resize chat input
+      setupChatInputResize();
+      
+      console.log('✅ StudyMate ready!');
+    }
+
+    function setupEventListeners() {
+      // Upload zone events
+      uploadZone.addEventListener('click', () => fileInput.click());
+      uploadZone.addEventListener('dragover', handleDragOver);
+      uploadZone.addEventListener('dragleave', handleDragLeave);
+      uploadZone.addEventListener('drop', handleFileDrop);
+      
+      // File input
+      fileInput.addEventListener('change', handleFileSelect);
+      
+      // Upload buttons
+      uploadButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.click();
+      });
+      
+      cameraButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        capturePhoto();
+      });
+      
+      // Chat functionality
+      sendButton.addEventListener('click', sendMessage);
+      chatInput.addEventListener('keydown', handleChatKeydown);
+      
+      // Theme toggle
+      themeToggle.addEventListener('click', toggleTheme);
+      
+      // Quick actions
+      document.getElementById('summaryAction').addEventListener('click', () => quickAction('summary'));
+      document.getElementById('quizAction').addEventListener('click', () => quickAction('quiz'));
+      document.getElementById('explainAction').addEventListener('click', () => quickAction('explain'));
+      document.getElementById('notesAction').addEventListener('click', () => quickAction('notes'));
+      
+      // Keyboard navigation for action cards
+      document.querySelectorAll('.action-card').forEach(card => {
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            card.click();
+          }
+        });
+      });
+      
+      // Upload zone keyboard navigation
+      uploadZone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          fileInput.click();
+        }
+      });
+    }
+
+    function initializeTheme() {
+      const savedTheme = localStorage.getItem('studymate-theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeIcon.textContent = '☀️';
+      }
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('studymate-theme', newTheme);
+    }
+
+    async function initializeGeminiNano() {
+      try {
+        updateStatus('Initializing AI...', 'processing');
+        
+        // Check if Gemini Nano is available
+        if (!window.LanguageModel) {
+          throw new Error('Gemini Nano not available. Please enable chrome://flags/#prompt-api-for-gemini-nano');
+        }
+        
+        // Try to create session with multimodal support first
+        try {
+          geminiSession = await LanguageModel.create({
+            expectedInputs: [{ type: "image" }],
+            monitor(m) {
+              m.addEventListener("downloadprogress", (e) => {
+                const progress = Math.round(e.loaded * 100);
+                updateStatus(`Downloading AI model: ${progress}%`, 'processing');
+              });
+            }
+          });
+          
+          console.log('✅ Multimodal Gemini session created');
+          addSystemMessage('🎉 AI assistant ready with image analysis support!');
+          
+        } catch (multimodalError) {
+          console.log('⚠️ Multimodal not available, falling back to text-only');
+          
+          // Fall back to text-only session
+          geminiSession = await LanguageModel.create({
+            monitor(m) {
+              m.addEventListener("downloadprogress", (e) => {
+                const progress = Math.round(e.loaded * 100);
+                updateStatus(`Downloading AI model: ${progress}%`, 'processing');
+              });
+            }
+          });
+          
+          console.log('✅ Text-only Gemini session created');
+          addSystemMessage('🤖 AI assistant ready! (Text analysis only - multimodal requires Chrome 138+)');
+        }
+        
+        updateStatus('Ready', 'ready');
+        
+      } catch (error) {
+        console.error('❌ Failed to initialize Gemini:', error);
+        updateStatus('AI Unavailable', 'error');
+        addSystemMessage(`❌ AI initialization failed: ${error.message}`, 'error');
+      }
+    }
+
+    function updateStatus(message, type) {
+      statusIndicator.textContent = message;
+      statusIndicator.className = `status-indicator ${type}`;
+    }
+
+    function setupChatInputResize() {
+      chatInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+      });
+    }
+
+    // File handling functions
+    function handleDragOver(e) {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+    }
+
+    function handleFileDrop(e) {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      
+      const files = Array.from(e.dataTransfer.files);
+      processFiles(files);
+    }
+
+    function handleFileSelect(e) {
+      const files = Array.from(e.target.files);
+      processFiles(files);
+    }
+
+    async function processFiles(files) {
+      if (!files.length) return;
+      
+      updateStatus('Processing files...', 'processing');
+      uploadIcon.textContent = '⏳';
+      
+      try {
+        for (const file of files) {
+          await processFile(file);
+        }
+        
+        uploadIcon.textContent = '✅';
+        updateStatus('Files processed', 'ready');
+        
+        // Auto-suggest what to do next
+        setTimeout(() => {
+          addSystemMessage(`📁 Uploaded ${files.length} file(s). What would you like to do?
+          
+Try asking:
+• "Summarize this content"
+• "Create practice questions"
+• "Explain the main concepts"
+• "Make study notes"`);
+        }, 500);
+        
+      } catch (error) {
+        console.error('File processing error:', error);
+        uploadIcon.textContent = '❌';
+        updateStatus('Processing failed', 'error');
+        addSystemMessage(`❌ Failed to process files: ${error.message}`, 'error');
+      }
+    }
+
+    async function processFile(file) {
+      const fileData = {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        content: null
+      };
+
+      if (file.type.startsWith('image/')) {
+        // Process image file
+        fileData.content = await fileToBase64(file);
+        addFileMessage(`📷 Image uploaded: ${file.name}`, fileData.content);
+        
+      } else if (file.type === 'application/pdf') {
+        // Process PDF (simplified - would need PDF.js for full implementation)
+        addFileMessage(`📄 PDF uploaded: ${file.name} (${formatFileSize(file.size)})`);
+        fileData.content = `[PDF file: ${file.name}]`;
+        
+      } else if (file.type.startsWith('text/') || file.name.endsWith('.txt')) {
+        // Process text file
+        fileData.content = await fileToText(file);
+        addFileMessage(`📝 Text file uploaded: ${file.name}`);
+        
+      } else {
+        // Unsupported file type
+        throw new Error(`Unsupported file type: ${file.type}`);
+      }
+
+      currentFiles.push(fileData);
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function fileToText(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsText(file);
+      });
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    async function capturePhoto() {
+      try {
+        // Use modern camera API if available
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'environment' } 
+          });
+          
+          // Create video element for camera preview
+          const video = document.createElement('video');
+          video.srcObject = stream;
+          video.play();
+          
+          // Create canvas for capture
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          
+          // Wait for video to load
+          video.addEventListener('loadedmetadata', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Capture frame
+            context.drawImage(video, 0, 0);
+            
+            // Convert to blob and process
+            canvas.toBlob(async (blob) => {
+              stream.getTracks().forEach(track => track.stop());
+              
+              const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+              await processFiles([file]);
+            }, 'image/jpeg', 0.9);
+          });
+          
+        } else {
+          // Fallback to file input with camera
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'image/*';
+          input.capture = 'environment';
+          input.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+              processFiles(Array.from(e.target.files));
+            }
+          });
+          input.click();
+        }
+        
+      } catch (error) {
+        console.error('Camera error:', error);
+        addSystemMessage(`❌ Camera access failed: ${error.message}`, 'error');
+      }
+    }
+
+    // Chat functionality
+    function handleChatKeydown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    async function sendMessage() {
+      const message = chatInput.value.trim();
+      if (!message || isProcessing) return;
+      
+      // Add user message
+      addUserMessage(message);
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+      
+      // Process with AI
+      await processWithAI(message);
+    }
+
+    async function processWithAI(userMessage) {
+      if (!geminiSession) {
+        addSystemMessage('❌ AI not available. Please refresh the page.', 'error');
+        return;
+      }
+      
+      isProcessing = true;
+      updateStatus('Thinking...', 'processing');
+      sendButton.disabled = true;
+      
+      try {
+        // Build context from uploaded files
+        let context = '';
+        if (currentFiles.length > 0) {
+          context = 'Available study materials:\n';
+          currentFiles.forEach(file => {
+            if (file.content && typeof file.content === 'string' && !file.content.startsWith('data:')) {
+              context += `\n=== ${file.name} ===\n${file.content}\n`;
+            } else {
+              context += `\n=== ${file.name} ===\n[File uploaded]\n`;
+            }
+          });
+          context += '\n---\n\n';
+        }
+        
+        // Create prompt
+        const prompt = context + `Student question: ${userMessage}
+        
+Please provide a helpful response as a study assistant. If the student has uploaded materials, reference them in your response. Be encouraging, clear, and educational.`;
+        
+        // Get AI response
+        const response = await geminiSession.prompt(prompt);
+        
+        // Add AI response
+        addAssistantMessage(response);
+        
+        // Update conversation history
+        conversationHistory.push({ user: userMessage, assistant: response });
+        
+      } catch (error) {
+        console.error('AI processing error:', error);
+        addSystemMessage(`❌ AI error: ${error.message}`, 'error');
+      } finally {
+        isProcessing = false;
+        updateStatus('Ready', 'ready');
+        sendButton.disabled = false;
+      }
+    }
+
+    async function quickAction(action) {
+      if (!currentFiles.length) {
+        addSystemMessage('📁 Please upload some study materials first!');
+        return;
+      }
+      
+      const actions = {
+        summary: 'Please provide a concise summary of the uploaded materials, highlighting the key concepts and main points.',
+        quiz: 'Create 5 practice questions based on the uploaded materials. Include a mix of multiple choice and short answer questions.',
+        explain: 'Explain the most important concepts from the uploaded materials in simple, easy-to-understand terms.',
+        notes: 'Create organized study notes from the uploaded materials, using bullet points and clear headings.'
+      };
+      
+      const prompt = actions[action];
+      if (prompt) {
+        chatInput.value = prompt;
+        await sendMessage();
+      }
+    }
+
+    // Message display functions
+    function addUserMessage(message) {
+      addMessage(message, 'user', '👤');
+    }
+
+    function addAssistantMessage(message) {
+      addMessage(message, 'assistant', '🤖');
+    }
+
+    function addSystemMessage(message, type = 'assistant') {
+      addMessage(message, type, '💬');
+    }
+
+    function addFileMessage(message, imageSrc = null) {
+      const messageEl = addMessage(message, 'user', '📁');
+      
+      if (imageSrc && imageSrc.startsWith('data:image/')) {
+        const img = document.createElement('img');
+        img.src = imageSrc;
+        img.style.maxWidth = '200px';
+        img.style.maxHeight = '150px';
+        img.style.borderRadius = '8px';
+        img.style.marginTop = '8px';
+        messageEl.querySelector('.message-content').appendChild(img);
+      }
+    }
+
+    function addMessage(content, type, avatar) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      
+      const avatarDiv = document.createElement('div');
+      avatarDiv.className = 'message-avatar';
+      avatarDiv.textContent = avatar;
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+      
+      // Parse markdown-like formatting
+      const formattedContent = parseMessageContent(content);
+      contentDiv.innerHTML = formattedContent;
+      
+      messageDiv.appendChild(avatarDiv);
+      messageDiv.appendChild(contentDiv);
+      
+      chatMessages.appendChild(messageDiv);
+      
+      // Scroll to bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      
+      return messageDiv;
+    }
+
+    function parseMessageContent(content) {
+      return content
+        // Bold text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        // Italic text
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        // Code blocks
+        .replace(/```(.*?)```/gs, '<pre><code>$1</code></pre>')
+        // Inline code
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        // Line breaks
+        .replace(/\n/g, '<br>');
+    }
+
+    // Utility functions
+    function showNotification(message, type = 'info') {
+      // Simple notification system
+      const notification = document.createElement('div');
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'error' ? '#dc2626' : '#10b981'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // Add animation keyframes
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Error handling
+    window.addEventListener('error', (e) => {
+      console.error('Global error:', e.error);
+      addSystemMessage('❌ An unexpected error occurred. Please refresh the page.', 'error');
+    });
+
+    // Service worker registration for offline support (optional)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        // Could register a service worker here for offline support
+        console.log('💡 Service worker support available');
+      });
+    }
+  </script>
+</body>
+</html>

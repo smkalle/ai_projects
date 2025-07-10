@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🍽️ FoodSense - AI Nutrition Coach</title>
+  <meta name="description" content="Instant food analysis and nutrition coaching using AI. Take a photo of any meal and get detailed nutrition facts, calorie counts, and personalized dietary guidance - all processed locally in your browser.">
+  
+  <style>
+    /* CSS Custom Properties */
+    :root {
+      --primary-color: #22c55e;
+      --primary-hover: #16a34a;
+      --secondary-color: #f59e0b;
+      --accent-color: #ef4444;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --error-color: #ef4444;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --text-light: #9ca3af;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --bg-tertiary: #f3f4f6;
+      --bg-card: #ffffff;
+      --border-color: #e5e7eb;
+      --border-hover: #d1d5db;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --radius-2xl: 20px;
+      --spacing-xs: 0.25rem;
+      --spacing-sm: 0.5rem;
+      --spacing-md: 1rem;
+      --spacing-lg: 1.5rem;
+      --spacing-xl: 2rem;
+      --spacing-2xl: 3rem;
+      --nutrition-protein: #8b5cf6;
+      --nutrition-carbs: #3b82f6;
+      --nutrition-fat: #f59e0b;
+      --nutrition-fiber: #10b981;
+    }
+
+    /* Dark mode variables */
+    [data-theme="dark"] {
+      --text-primary: #f9fafb;
+      --text-secondary: #d1d5db;
+      --text-light: #9ca3af;
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --bg-tertiary: #374151;
+      --bg-card: #1f2937;
+      --border-color: #374151;
+      --border-hover: #4b5563;
+    }
+
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-size: 16px;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    [data-theme="dark"] body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+
+    /* Layout containers */
+    .app-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--bg-primary);
+      box-shadow: var(--shadow-xl);
+    }
+
+    /* Header styles */
+    .header {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+      color: white;
+      padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-xl);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .icon-button {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: var(--spacing-sm);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      height: 40px;
+      backdrop-filter: blur(10px);
+    }
+
+    .icon-button:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .daily-progress {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-md);
+      backdrop-filter: blur(10px);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: between;
+      align-items: center;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .progress-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
+    .calories-display {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .calories-subtitle {
+      font-size: 0.75rem;
+      opacity: 0.8;
+    }
+
+    .macro-bars {
+      display: flex;
+      gap: var(--spacing-xs);
+      margin-top: var(--spacing-sm);
+    }
+
+    .macro-bar {
+      flex: 1;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .macro-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    .macro-fill.protein { background: var(--nutrition-protein); }
+    .macro-fill.carbs { background: var(--nutrition-carbs); }
+    .macro-fill.fat { background: var(--nutrition-fat); }
+
+    /* Main content area */
+    .main-content {
+      flex: 1;
+      padding: var(--spacing-xl) var(--spacing-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xl);
+    }
+
+    /* Camera capture zone */
+    .camera-zone {
+      background: var(--bg-card);
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-2xl);
+      padding: var(--spacing-2xl);
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .camera-zone:hover {
+      border-color: var(--primary-color);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.1));
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .camera-zone.active {
+      border-color: var(--primary-color);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.15));
+      padding-bottom: 140px; /* Extra space for buttons */
+    }
+
+    .camera-zone.analyzing {
+      border-color: var(--secondary-color);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.15));
+    }
+
+    .camera-icon {
+      font-size: 4rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-lg);
+      transition: all 0.3s ease;
+    }
+
+    .camera-zone:hover .camera-icon {
+      color: var(--primary-color);
+      transform: scale(1.1);
+    }
+
+    .camera-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .camera-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .camera-actions {
+      display: flex;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+      z-index: 10;
+      background: var(--bg-primary);
+      padding: var(--spacing-md);
+      border-radius: var(--radius-lg);
+      margin-top: var(--spacing-md);
+    }
+
+    .camera-button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border-radius: var(--radius-lg);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-size: 0.875rem;
+    }
+
+    .camera-button:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .camera-button.secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .camera-button.secondary:hover {
+      background: var(--border-color);
+    }
+
+    .camera-button.analyze-always {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+      color: white;
+      font-size: 1.125rem;
+      font-weight: 700;
+      padding: var(--spacing-lg) var(--spacing-xl);
+      margin-top: var(--spacing-md);
+      border: 2px solid var(--primary-color);
+      animation: analyzeButtonPulse 2s ease-in-out infinite;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .camera-button.analyze-always:hover {
+      background: linear-gradient(135deg, var(--primary-hover), #15803d);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: var(--shadow-xl);
+    }
+
+    /* Food photo preview */
+    .photo-preview {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 120px; /* Leave space for buttons */
+      display: none;
+      background: var(--bg-card);
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    .photo-preview.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-image {
+      flex: 1;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    .preview-actions {
+      padding: var(--spacing-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.1));
+      border-top: 2px solid var(--primary-color);
+    }
+
+    .preview-button {
+      padding: var(--spacing-lg) var(--spacing-xl);
+      border: none;
+      border-radius: var(--radius-xl);
+      font-weight: 700;
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      box-shadow: var(--shadow-md);
+    }
+
+    .preview-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.6s;
+    }
+
+    .preview-button:hover::before {
+      left: 100%;
+    }
+
+    .preview-button.analyze {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+      color: white;
+      font-size: 1.25rem;
+      padding: var(--spacing-xl) var(--spacing-2xl);
+      margin-bottom: var(--spacing-sm);
+      border: 2px solid var(--primary-color);
+      animation: analyzeButtonPulse 2s ease-in-out infinite;
+    }
+
+    .preview-button.analyze:hover {
+      background: linear-gradient(135deg, var(--primary-hover), #15803d);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .preview-button.retake {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
+      font-size: 1rem;
+    }
+
+    .preview-button.retake:hover {
+      background: var(--border-color);
+      transform: translateY(-1px);
+    }
+
+    @keyframes analyzeButtonPulse {
+      0%, 100% {
+        box-shadow: var(--shadow-md), 0 0 0 0 rgba(34, 197, 94, 0.4);
+      }
+      50% {
+        box-shadow: var(--shadow-xl), 0 0 0 10px rgba(34, 197, 94, 0);
+      }
+    }
+
+    /* Nutrition analysis results */
+    .nutrition-results {
+      display: none;
+      gap: var(--spacing-lg);
+    }
+
+    .nutrition-results.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nutrition-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .nutrition-header {
+      display: flex;
+      align-items: center;
+      justify-content: between;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .food-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .food-confidence {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .calories-large {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary-color);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .calories-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    /* Macronutrients */
+    .macros-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-md);
+      margin: var(--spacing-lg) 0;
+    }
+
+    .macro-item {
+      text-align: center;
+      padding: var(--spacing-md);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+    }
+
+    .macro-value {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .macro-value.protein { color: var(--nutrition-protein); }
+    .macro-value.carbs { color: var(--nutrition-carbs); }
+    .macro-value.fat { color: var(--nutrition-fat); }
+
+    .macro-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    /* Nutrition details */
+    .nutrition-details {
+      margin-top: var(--spacing-lg);
+    }
+
+    .details-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-md);
+      color: var(--text-primary);
+    }
+
+    .nutrition-list {
+      display: grid;
+      gap: var(--spacing-sm);
+    }
+
+    .nutrition-item {
+      display: flex;
+      justify-content: between;
+      align-items: center;
+      padding: var(--spacing-sm) 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .nutrition-item:last-child {
+      border-bottom: none;
+    }
+
+    .nutrient-name {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .nutrient-value {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Action buttons */
+    .action-buttons {
+      display: flex;
+      gap: var(--spacing-sm);
+      margin-top: var(--spacing-lg);
+    }
+
+    .action-button {
+      flex: 1;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-xs);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .action-button:hover {
+      border-color: var(--primary-color);
+      background: rgba(34, 197, 94, 0.05);
+    }
+
+    .action-button.primary {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .action-button.primary:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Meal history */
+    .meal-history {
+      margin-top: var(--spacing-xl);
+    }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: between;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .history-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .clear-history {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      cursor: pointer;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+    }
+
+    .clear-history:hover {
+      background: var(--bg-secondary);
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .history-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .history-item:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-1px);
+    }
+
+    .history-food {
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .history-details {
+      display: flex;
+      justify-content: between;
+      align-items: center;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    /* Hidden file input */
+    .file-input {
+      display: none;
+    }
+
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Status indicators */
+    .status-badge {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .status-badge.analyzing {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .status-badge.ready {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .status-badge.error {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    /* Responsive design */
+    @media (max-width: 480px) {
+      .app-container {
+        max-width: 100%;
+      }
+
+      .main-content {
+        padding: var(--spacing-lg) var(--spacing-md);
+      }
+
+      .camera-zone {
+        padding: var(--spacing-xl);
+        min-height: 250px;
+      }
+
+      .camera-icon {
+        font-size: 3rem;
+      }
+
+      .macros-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+      }
+
+      .macro-item {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        text-align: left;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Focus styles */
+    .camera-zone:focus-visible,
+    .camera-button:focus-visible,
+    .action-button:focus-visible,
+    .icon-button:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    /* Animations */
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .nutrition-results.active {
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    .analyzing .camera-icon {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="header-top">
+          <div class="logo">
+            <span>🍽️</span>
+            <span>FoodSense</span>
+          </div>
+          
+          <div class="header-controls">
+            <button class="icon-button" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+              <span id="themeIcon">🌙</span>
+            </button>
+            
+            <button class="icon-button" id="settingsButton" title="Settings" aria-label="Settings">
+              <span>⚙️</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="daily-progress">
+          <div class="progress-header">
+            <span class="progress-title">Today's Progress</span>
+            <span class="status-badge ready" id="aiStatus">AI Ready</span>
+          </div>
+          <div class="calories-display" id="dailyCalories">0</div>
+          <div class="calories-subtitle">of 2000 calories</div>
+          <div class="macro-bars">
+            <div class="macro-bar">
+              <div class="macro-fill protein" id="proteinBar" style="width: 0%"></div>
+            </div>
+            <div class="macro-bar">
+              <div class="macro-fill carbs" id="carbsBar" style="width: 0%"></div>
+            </div>
+            <div class="macro-bar">
+              <div class="macro-fill fat" id="fatBar" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Camera Capture Zone -->
+      <section class="camera-zone" id="cameraZone" tabindex="0" role="button" aria-label="Take photo of food for analysis">
+        <input type="file" class="file-input" id="fileInput" accept="image/*" capture="environment">
+        
+        <div class="camera-icon" id="cameraIcon">📷</div>
+        <div class="camera-text" id="cameraText">Snap Your Food</div>
+        <div class="camera-subtitle" id="cameraSubtitle">
+          Take a photo to get instant nutrition analysis
+        </div>
+        
+        <div class="camera-actions">
+          <button class="camera-button" id="cameraButton">
+            📸 Take Photo
+          </button>
+          <button class="camera-button secondary" id="galleryButton">
+            🖼️ From Gallery
+          </button>
+          <button class="camera-button analyze-always" id="analyzeAlwaysButton" style="display: none;">
+            🧠 ANALYZE NUTRITION
+          </button>
+          <button class="camera-button secondary" id="retakeAlwaysButton" style="display: none;">
+            🔄 Retake Photo
+          </button>
+        </div>
+
+        <!-- Photo Preview -->
+        <div class="photo-preview" id="photoPreview">
+          <img class="preview-image" id="previewImage" alt="Food photo preview">
+          <div class="preview-actions">
+            <button class="preview-button analyze" id="analyzeButton">
+              🧠 ANALYZE NUTRITION
+            </button>
+            <button class="preview-button retake" id="retakeButton">
+              🔄 Retake Photo
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Nutrition Analysis Results -->
+      <section class="nutrition-results" id="nutritionResults">
+        <div class="nutrition-card">
+          <div class="nutrition-header">
+            <div>
+              <div class="food-name" id="foodName">Loading...</div>
+              <div class="food-confidence" id="foodConfidence">Analyzing...</div>
+            </div>
+            <div>
+              <div class="calories-large" id="caloriesValue">---</div>
+              <div class="calories-label">Calories</div>
+            </div>
+          </div>
+
+          <div class="macros-grid">
+            <div class="macro-item">
+              <div class="macro-value protein" id="proteinValue">--g</div>
+              <div class="macro-label">Protein</div>
+            </div>
+            <div class="macro-item">
+              <div class="macro-value carbs" id="carbsValue">--g</div>
+              <div class="macro-label">Carbs</div>
+            </div>
+            <div class="macro-item">
+              <div class="macro-value fat" id="fatValue">--g</div>
+              <div class="macro-label">Fat</div>
+            </div>
+          </div>
+
+          <div class="nutrition-details">
+            <div class="details-title">Nutrition Facts</div>
+            <div class="nutrition-list" id="nutritionList">
+              <!-- Nutrition items will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button class="action-button primary" id="logMealButton">
+              ✅ Log Meal
+            </button>
+            <button class="action-button" id="shareButton">
+              📤 Share
+            </button>
+            <button class="action-button" id="newPhotoButton">
+              📷 New Photo
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Meal History -->
+      <section class="meal-history" id="mealHistory">
+        <div class="history-header">
+          <div class="history-title">Recent Meals</div>
+          <button class="clear-history" id="clearHistory">Clear All</button>
+        </div>
+        <div class="history-list" id="historyList">
+          <!-- History items will be populated by JavaScript -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Global variables
+    let geminiSession = null;
+    let currentPhoto = null;
+    let dailyNutrition = {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      sugar: 0,
+      sodium: 0
+    };
+    let mealHistory = [];
+    let isAnalyzing = false;
+
+    // DOM elements
+    const cameraZone = document.getElementById('cameraZone');
+    const fileInput = document.getElementById('fileInput');
+    const cameraButton = document.getElementById('cameraButton');
+    const galleryButton = document.getElementById('galleryButton');
+    const photoPreview = document.getElementById('photoPreview');
+    const previewImage = document.getElementById('previewImage');
+    const analyzeButton = document.getElementById('analyzeButton');
+    const retakeButton = document.getElementById('retakeButton');
+    const nutritionResults = document.getElementById('nutritionResults');
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const aiStatus = document.getElementById('aiStatus');
+    const analyzeAlwaysButton = document.getElementById('analyzeAlwaysButton');
+    const retakeAlwaysButton = document.getElementById('retakeAlwaysButton');
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', initializeApp);
+
+    async function initializeApp() {
+      console.log('🍽️ FoodSense initializing...');
+      
+      // Set up event listeners
+      setupEventListeners();
+      
+      // Initialize theme
+      initializeTheme();
+      
+      // Load saved data
+      loadSavedData();
+      
+      // Initialize Gemini Nano
+      await initializeGeminiNano();
+      
+      // Update daily progress display
+      updateDailyProgress();
+      
+      console.log('✅ FoodSense ready!');
+    }
+
+    function setupEventListeners() {
+      // Camera zone events
+      cameraZone.addEventListener('click', () => {
+        if (!photoPreview.classList.contains('active')) {
+          fileInput.click();
+        }
+      });
+      
+      // File input
+      fileInput.addEventListener('change', handleFileSelect);
+      
+      // Camera buttons
+      cameraButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        capturePhoto();
+      });
+      
+      galleryButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.click();
+      });
+      
+      // Photo preview actions
+      analyzeButton.addEventListener('click', analyzeFood);
+      retakeButton.addEventListener('click', retakePhoto);
+      analyzeAlwaysButton.addEventListener('click', analyzeFood);
+      retakeAlwaysButton.addEventListener('click', retakePhoto);
+      
+      // Theme toggle
+      themeToggle.addEventListener('click', toggleTheme);
+      
+      // Nutrition results actions
+      document.getElementById('logMealButton').addEventListener('click', logCurrentMeal);
+      document.getElementById('shareButton').addEventListener('click', shareNutrition);
+      document.getElementById('newPhotoButton').addEventListener('click', takeNewPhoto);
+      
+      // History actions
+      document.getElementById('clearHistory').addEventListener('click', clearMealHistory);
+      
+      // Keyboard navigation
+      cameraZone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (!photoPreview.classList.contains('active')) {
+            fileInput.click();
+          }
+        }
+      });
+    }
+
+    function initializeTheme() {
+      const savedTheme = localStorage.getItem('foodsense-theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeIcon.textContent = '☀️';
+      }
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('foodsense-theme', newTheme);
+    }
+
+    function loadSavedData() {
+      // Load daily nutrition
+      const savedNutrition = localStorage.getItem('foodsense-daily-nutrition');
+      if (savedNutrition) {
+        const data = JSON.parse(savedNutrition);
+        const today = new Date().toDateString();
+        if (data.date === today) {
+          dailyNutrition = data.nutrition;
+        }
+      }
+      
+      // Load meal history
+      const savedHistory = localStorage.getItem('foodsense-meal-history');
+      if (savedHistory) {
+        mealHistory = JSON.parse(savedHistory);
+        updateHistoryDisplay();
+      }
+    }
+
+    function saveDailyNutrition() {
+      const data = {
+        date: new Date().toDateString(),
+        nutrition: dailyNutrition
+      };
+      localStorage.setItem('foodsense-daily-nutrition', JSON.stringify(data));
+    }
+
+    function saveMealHistory() {
+      localStorage.setItem('foodsense-meal-history', JSON.stringify(mealHistory));
+    }
+
+    async function initializeGeminiNano() {
+      try {
+        updateAIStatus('Initializing AI...', 'analyzing');
+        
+        // Check if Gemini Nano is available
+        if (!window.LanguageModel) {
+          throw new Error('Gemini Nano not available. Please enable chrome://flags/#prompt-api-for-gemini-nano');
+        }
+        
+        // Try to create session with multimodal support
+        geminiSession = await LanguageModel.create({
+          expectedInputs: [{ type: "image" }],
+          monitor(m) {
+            m.addEventListener("downloadprogress", (e) => {
+              const progress = Math.round(e.loaded * 100);
+              updateAIStatus(`Downloading AI: ${progress}%`, 'analyzing');
+            });
+          }
+        });
+        
+        console.log('✅ Gemini session created with multimodal support');
+        updateAIStatus('AI Ready', 'ready');
+        
+      } catch (error) {
+        console.error('❌ Failed to initialize Gemini:', error);
+        updateAIStatus('AI Unavailable', 'error');
+        showNotification('AI initialization failed. Please check browser compatibility.', 'error');
+      }
+    }
+
+    function updateAIStatus(message, type) {
+      aiStatus.textContent = message;
+      aiStatus.className = `status-badge ${type}`;
+    }
+
+    async function capturePhoto() {
+      try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          // Create camera interface
+          const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'environment' } 
+          });
+          
+          // For demo purposes, we'll use file input instead
+          // In a real implementation, you'd create a camera preview
+          fileInput.click();
+          
+        } else {
+          // Fallback to file input
+          fileInput.click();
+        }
+      } catch (error) {
+        console.error('Camera error:', error);
+        fileInput.click();
+      }
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file || !file.type.startsWith('image/')) {
+        showNotification('Please select a valid image file', 'error');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        currentPhoto = e.target.result;
+        previewImage.src = currentPhoto;
+        showPhotoPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function showPhotoPreview() {
+      photoPreview.classList.add('active');
+      cameraZone.classList.add('active');
+      
+      // Show the prominent analyze and retake buttons
+      analyzeAlwaysButton.style.display = 'block';
+      retakeAlwaysButton.style.display = 'block';
+      
+      // Hide the original buttons that are no longer needed
+      cameraButton.style.display = 'none';
+      galleryButton.style.display = 'none';
+      
+      // Update camera zone text (but hide them since we have the photo)
+      document.getElementById('cameraText').style.display = 'none';
+      document.getElementById('cameraSubtitle').style.display = 'none';
+      document.getElementById('cameraIcon').style.display = 'none';
+    }
+
+    function retakePhoto() {
+      photoPreview.classList.remove('active');
+      cameraZone.classList.remove('active');
+      currentPhoto = null;
+      fileInput.value = '';
+      
+      // Hide the analyze/retake buttons and show original buttons
+      analyzeAlwaysButton.style.display = 'none';
+      retakeAlwaysButton.style.display = 'none';
+      cameraButton.style.display = 'flex';
+      galleryButton.style.display = 'flex';
+      
+      // Show and reset camera zone text
+      document.getElementById('cameraText').style.display = 'block';
+      document.getElementById('cameraSubtitle').style.display = 'block';
+      document.getElementById('cameraIcon').style.display = 'block';
+      
+      document.getElementById('cameraText').textContent = 'Snap Your Food';
+      document.getElementById('cameraSubtitle').textContent = 'Take a photo to get instant nutrition analysis';
+      document.getElementById('cameraIcon').textContent = '📷';
+    }
+
+    async function analyzeFood() {
+      if (!geminiSession || !currentPhoto || isAnalyzing) return;
+      
+      isAnalyzing = true;
+      updateAIStatus('Analyzing Food...', 'analyzing');
+      cameraZone.classList.add('analyzing');
+      
+      // Show nutrition results section
+      nutritionResults.classList.add('active');
+      
+      // Reset display
+      document.getElementById('foodName').textContent = 'Analyzing...';
+      document.getElementById('foodConfidence').textContent = 'Please wait...';
+      document.getElementById('caloriesValue').textContent = '---';
+      document.getElementById('proteinValue').textContent = '--g';
+      document.getElementById('carbsValue').textContent = '--g';
+      document.getElementById('fatValue').textContent = '--g';
+      
+      try {
+        const prompt = `You are a nutrition expert analyzing a food photo. Please provide a detailed nutrition analysis in the following JSON format:
+
+{
+  "food_name": "Name of the food item",
+  "confidence": "High/Medium/Low confidence in identification",
+  "serving_size": "Estimated serving size",
+  "calories": 250,
+  "macronutrients": {
+    "protein": 15.5,
+    "carbohydrates": 30.2,
+    "fat": 8.1,
+    "fiber": 4.2
+  },
+  "micronutrients": {
+    "sodium": 450,
+    "sugar": 12.3,
+    "vitamin_c": 25,
+    "calcium": 120,
+    "iron": 2.1
+  },
+  "health_notes": "Brief health assessment and tips"
+}
+
+Please analyze this food image and provide accurate nutrition information. Base estimates on typical serving sizes.
+
+Image: ${currentPhoto}`;
+
+        const response = await geminiSession.prompt(prompt);
+        
+        console.log('AI Response:', response);
+        parseNutritionResponse(response);
+        
+      } catch (error) {
+        console.error('Food analysis error:', error);
+        showNutritionError();
+      } finally {
+        isAnalyzing = false;
+        updateAIStatus('AI Ready', 'ready');
+        cameraZone.classList.remove('analyzing');
+      }
+    }
+
+    function parseNutritionResponse(response) {
+      try {
+        // Try to extract JSON from response
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        let nutritionData;
+        
+        if (jsonMatch) {
+          nutritionData = JSON.parse(jsonMatch[0]);
+        } else {
+          // Fallback: parse text response
+          nutritionData = parseTextResponse(response);
+        }
+        
+        displayNutritionResults(nutritionData);
+        
+      } catch (error) {
+        console.error('Parsing error:', error);
+        showNutritionError();
+      }
+    }
+
+    function parseTextResponse(response) {
+      // Fallback parser for non-JSON responses
+      const lines = response.split('\n');
+      const nutrition = {
+        food_name: 'Identified Food',
+        confidence: 'Medium',
+        calories: 200,
+        macronutrients: {
+          protein: 10,
+          carbohydrates: 25,
+          fat: 8,
+          fiber: 3
+        },
+        micronutrients: {
+          sodium: 300,
+          sugar: 10,
+          vitamin_c: 15,
+          calcium: 100,
+          iron: 2
+        },
+        health_notes: 'Nutrition estimated from image analysis'
+      };
+      
+      // Try to extract specific values from text
+      lines.forEach(line => {
+        const lower = line.toLowerCase();
+        if (lower.includes('calorie')) {
+          const match = line.match(/(\d+)/);
+          if (match) nutrition.calories = parseInt(match[1]);
+        }
+        if (lower.includes('protein')) {
+          const match = line.match(/(\d+\.?\d*)/);
+          if (match) nutrition.macronutrients.protein = parseFloat(match[1]);
+        }
+      });
+      
+      return nutrition;
+    }
+
+    function displayNutritionResults(data) {
+      // Update food identification
+      document.getElementById('foodName').textContent = data.food_name || 'Unknown Food';
+      document.getElementById('foodConfidence').textContent = `${data.confidence || 'Medium'} confidence • ${data.serving_size || '1 serving'}`;
+      
+      // Update calories
+      document.getElementById('caloriesValue').textContent = data.calories || '200';
+      
+      // Update macronutrients
+      const macros = data.macronutrients || {};
+      document.getElementById('proteinValue').textContent = `${macros.protein || 10}g`;
+      document.getElementById('carbsValue').textContent = `${macros.carbohydrates || 25}g`;
+      document.getElementById('fatValue').textContent = `${macros.fat || 8}g`;
+      
+      // Update detailed nutrition
+      const nutritionList = document.getElementById('nutritionList');
+      const micros = data.micronutrients || {};
+      
+      nutritionList.innerHTML = `
+        <div class="nutrition-item">
+          <span class="nutrient-name">Fiber</span>
+          <span class="nutrient-value">${macros.fiber || 3}g</span>
+        </div>
+        <div class="nutrition-item">
+          <span class="nutrient-name">Sugar</span>
+          <span class="nutrient-value">${micros.sugar || 10}g</span>
+        </div>
+        <div class="nutrition-item">
+          <span class="nutrient-name">Sodium</span>
+          <span class="nutrient-value">${micros.sodium || 300}mg</span>
+        </div>
+        <div class="nutrition-item">
+          <span class="nutrient-name">Vitamin C</span>
+          <span class="nutrient-value">${micros.vitamin_c || 15}mg</span>
+        </div>
+        <div class="nutrition-item">
+          <span class="nutrient-name">Calcium</span>
+          <span class="nutrient-value">${micros.calcium || 100}mg</span>
+        </div>
+        <div class="nutrition-item">
+          <span class="nutrient-name">Iron</span>
+          <span class="nutrient-value">${micros.iron || 2}mg</span>
+        </div>
+      `;
+      
+      // Store current analysis for logging
+      window.currentNutritionData = data;
+      
+      showNotification('Food analyzed successfully! 🎉', 'success');
+    }
+
+    function showNutritionError() {
+      document.getElementById('foodName').textContent = 'Analysis Failed';
+      document.getElementById('foodConfidence').textContent = 'Unable to analyze this image';
+      showNotification('Failed to analyze food. Please try a clearer photo.', 'error');
+    }
+
+    function logCurrentMeal() {
+      if (!window.currentNutritionData) return;
+      
+      const data = window.currentNutritionData;
+      const meal = {
+        id: Date.now(),
+        timestamp: new Date(),
+        foodName: data.food_name,
+        calories: data.calories,
+        macros: data.macronutrients,
+        photo: currentPhoto
+      };
+      
+      // Add to history
+      mealHistory.unshift(meal);
+      if (mealHistory.length > 20) mealHistory.pop(); // Keep last 20 meals
+      
+      // Update daily nutrition
+      dailyNutrition.calories += data.calories;
+      dailyNutrition.protein += data.macronutrients.protein || 0;
+      dailyNutrition.carbs += data.macronutrients.carbohydrates || 0;
+      dailyNutrition.fat += data.macronutrients.fat || 0;
+      
+      // Save data
+      saveMealHistory();
+      saveDailyNutrition();
+      
+      // Update displays
+      updateDailyProgress();
+      updateHistoryDisplay();
+      
+      showNotification('Meal logged successfully! 🍽️', 'success');
+      
+      // Reset for next photo
+      setTimeout(takeNewPhoto, 1000);
+    }
+
+    function updateDailyProgress() {
+      document.getElementById('dailyCalories').textContent = Math.round(dailyNutrition.calories);
+      
+      // Update macro bars (assuming 2000 calorie diet: 50% carbs, 30% fat, 20% protein)
+      const proteinPercent = (dailyNutrition.protein * 4) / 2000 * 100;
+      const carbsPercent = (dailyNutrition.carbs * 4) / 2000 * 100;
+      const fatPercent = (dailyNutrition.fat * 9) / 2000 * 100;
+      
+      document.getElementById('proteinBar').style.width = `${Math.min(100, proteinPercent)}%`;
+      document.getElementById('carbsBar').style.width = `${Math.min(100, carbsPercent)}%`;
+      document.getElementById('fatBar').style.width = `${Math.min(100, fatPercent)}%`;
+    }
+
+    function updateHistoryDisplay() {
+      const historyList = document.getElementById('historyList');
+      
+      if (mealHistory.length === 0) {
+        historyList.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">🍽️</div>
+            <div>No meals logged yet</div>
+            <div style="font-size: 0.875rem; margin-top: 0.5rem;">Start by taking a photo of your food!</div>
+          </div>
+        `;
+        return;
+      }
+      
+      historyList.innerHTML = mealHistory.slice(0, 10).map(meal => `
+        <div class="history-item" onclick="viewMealDetails('${meal.id}')">
+          <div class="history-food">${meal.foodName}</div>
+          <div class="history-details">
+            <span>${meal.calories} cal</span>
+            <span>${new Date(meal.timestamp).toLocaleTimeString()}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function clearMealHistory() {
+      if (confirm('Clear all meal history? This cannot be undone.')) {
+        mealHistory = [];
+        dailyNutrition = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0, sodium: 0 };
+        
+        saveMealHistory();
+        saveDailyNutrition();
+        
+        updateDailyProgress();
+        updateHistoryDisplay();
+        
+        showNotification('Meal history cleared', 'success');
+      }
+    }
+
+    function shareNutrition() {
+      if (!window.currentNutritionData) return;
+      
+      const data = window.currentNutritionData;
+      const shareText = `🍽️ Just analyzed my meal with FoodSense!
+
+${data.food_name}
+🔥 ${data.calories} calories
+🥩 ${data.macronutrients.protein}g protein
+🍞 ${data.macronutrients.carbohydrates}g carbs
+🥑 ${data.macronutrients.fat}g fat
+
+#HealthyEating #FoodSense #NutritionTracking`;
+
+      if (navigator.share) {
+        navigator.share({
+          title: 'FoodSense Nutrition Analysis',
+          text: shareText
+        });
+      } else {
+        navigator.clipboard.writeText(shareText);
+        showNotification('Nutrition info copied to clipboard!', 'success');
+      }
+    }
+
+    function takeNewPhoto() {
+      retakePhoto();
+      nutritionResults.classList.remove('active');
+      window.currentNutritionData = null;
+      analyzeAlwaysButton.style.display = 'none';
+    }
+
+    function viewMealDetails(mealId) {
+      const meal = mealHistory.find(m => m.id == mealId);
+      if (!meal) return;
+      
+      // For demo, just show an alert with meal details
+      alert(`${meal.foodName}\n${meal.calories} calories\nLogged at: ${new Date(meal.timestamp).toLocaleString()}`);
+    }
+
+    // Utility functions
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        left: 20px;
+        max-width: 400px;
+        margin: 0 auto;
+        background: ${type === 'error' ? '#dc2626' : type === 'success' ? '#059669' : '#3b82f6'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 12px;
+        z-index: 1000;
+        text-align: center;
+        font-weight: 600;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        animation: slideDown 0.3s ease;
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideUp 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+
+    // Add notification animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideDown {
+        from { transform: translateY(-100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      @keyframes slideUp {
+        from { transform: translateY(0); opacity: 1; }
+        to { transform: translateY(-100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Error handling
+    window.addEventListener('error', (e) => {
+      console.error('Global error:', e.error);
+      showNotification('An unexpected error occurred. Please refresh the app.', 'error');
+    });
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      document.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  </script>
+</body>
+</html>

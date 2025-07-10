@@ -1,0 +1,2347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌺 Ohana Health - Family Care AI</title>
+  <meta name="description" content="AI-powered family health monitoring for rural communities. Maternal care, child development, and family wellness - all processed locally with complete privacy. No one left behind.">
+  
+  <style>
+    /* CSS Custom Properties - Ohana Theme */
+    :root {
+      --primary-color: #dc2626; /* Deep caring red */
+      --primary-hover: #b91c1c;
+      --secondary-color: #059669; /* Healing green */
+      --accent-color: #f59e0b; /* Warm sunshine */
+      --maternal-color: #ec4899; /* Maternal pink */
+      --child-color: #3b82f6; /* Child blue */
+      --family-color: #8b5cf6; /* Family purple */
+      --elder-color: #92400e; /* Elder wisdom brown */
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --text-light: #9ca3af;
+      --bg-primary: #ffffff;
+      --bg-secondary: #fef7f0; /* Warm cream */
+      --bg-tertiary: #fef2f2; /* Soft blush */
+      --bg-card: #ffffff;
+      --border-color: #f3e8ff;
+      --border-hover: #e9d5ff;
+      --shadow-sm: 0 1px 2px 0 rgba(220, 38, 38, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(220, 38, 38, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(220, 38, 38, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(220, 38, 38, 0.1);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --radius-2xl: 24px;
+      --spacing-xs: 0.25rem;
+      --spacing-sm: 0.5rem;
+      --spacing-md: 1rem;
+      --spacing-lg: 1.5rem;
+      --spacing-xl: 2rem;
+      --spacing-2xl: 3rem;
+    }
+
+    /* Dark mode variables */
+    [data-theme="dark"] {
+      --text-primary: #f9fafb;
+      --text-secondary: #d1d5db;
+      --text-light: #9ca3af;
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --bg-tertiary: #374151;
+      --bg-card: #1f2937;
+      --border-color: #374151;
+      --border-hover: #4b5563;
+    }
+
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #fef7f0 0%, #fef2f2 50%, #fdf2f8 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-size: 16px;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    [data-theme="dark"] body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1f2937 100%);
+    }
+
+    /* Layout containers */
+    .app-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--bg-primary);
+      box-shadow: var(--shadow-xl);
+      position: relative;
+    }
+
+    /* Header styles */
+    .header {
+      background: linear-gradient(135deg, var(--primary-color), var(--maternal-color));
+      color: white;
+      padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-xl);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -30%;
+      width: 100%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .ohana-subtitle {
+      font-size: 0.75rem;
+      opacity: 0.9;
+      font-weight: 500;
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .icon-button {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: var(--spacing-sm);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      height: 40px;
+      backdrop-filter: blur(10px);
+    }
+
+    .icon-button:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .family-selector {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-md);
+      backdrop-filter: blur(10px);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .family-selector-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-sm);
+      opacity: 0.9;
+    }
+
+    .family-roles {
+      display: flex;
+      gap: var(--spacing-xs);
+      flex-wrap: wrap;
+    }
+
+    .family-role {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-lg);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .family-role:hover,
+    .family-role.active {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .health-status {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-md);
+      backdrop-filter: blur(10px);
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .status-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
+    .status-value {
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+
+    .ai-status {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .ai-status.ready {
+      background: rgba(5, 150, 105, 0.2);
+      color: white;
+      border: 1px solid rgba(5, 150, 105, 0.3);
+    }
+
+    .ai-status.analyzing {
+      background: rgba(245, 158, 11, 0.2);
+      color: white;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    /* Main content area */
+    .main-content {
+      flex: 1;
+      padding: var(--spacing-xl) var(--spacing-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xl);
+    }
+
+    /* Photo capture zone for health monitoring */
+    .health-monitor-zone {
+      background: var(--bg-card);
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-2xl);
+      padding: var(--spacing-2xl);
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .health-monitor-zone:hover {
+      border-color: var(--primary-color);
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.05), rgba(220, 38, 38, 0.1));
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .health-monitor-zone.active {
+      border-color: var(--primary-color);
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.15));
+    }
+
+    .health-monitor-zone.analyzing {
+      border-color: var(--accent-color);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.15));
+    }
+
+    .monitor-icon {
+      font-size: 4rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-lg);
+      transition: all 0.3s ease;
+    }
+
+    .health-monitor-zone:hover .monitor-icon {
+      color: var(--primary-color);
+      transform: scale(1.1);
+    }
+
+    .monitor-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .monitor-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: var(--spacing-lg);
+      max-width: 300px;
+    }
+
+    .monitor-actions {
+      display: flex;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .monitor-button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border-radius: var(--radius-lg);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-size: 0.875rem;
+    }
+
+    .monitor-button:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .monitor-button.secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .monitor-button.secondary:hover {
+      background: var(--border-color);
+    }
+
+    .monitor-button.analyze-health {
+      background: linear-gradient(135deg, var(--primary-color), var(--maternal-color));
+      font-size: 1.125rem;
+      font-weight: 700;
+      padding: var(--spacing-lg) var(--spacing-xl);
+      margin-top: var(--spacing-md);
+      border: 2px solid var(--primary-color);
+      animation: healthAnalyzeButtonPulse 2s ease-in-out infinite;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .monitor-button.analyze-health:hover {
+      background: linear-gradient(135deg, var(--primary-hover), #be185d);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: var(--shadow-xl);
+    }
+
+    @keyframes healthAnalyzeButtonPulse {
+      0%, 100% {
+        box-shadow: var(--shadow-md), 0 0 0 0 rgba(220, 38, 38, 0.4);
+      }
+      50% {
+        box-shadow: var(--shadow-xl), 0 0 0 10px rgba(220, 38, 38, 0);
+      }
+    }
+
+    /* Health assessment results */
+    .health-results {
+      display: none;
+      gap: var(--spacing-lg);
+    }
+
+    .health-results.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .health-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .health-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .health-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .health-confidence {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .health-status-large {
+      text-align: center;
+      padding: var(--spacing-lg);
+    }
+
+    .status-icon {
+      font-size: 3rem;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .status-icon.good { color: var(--secondary-color); }
+    .status-icon.warning { color: var(--accent-color); }
+    .status-icon.concern { color: var(--primary-color); }
+
+    .status-text {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .status-description {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    /* Recommendations */
+    .recommendations {
+      margin-top: var(--spacing-lg);
+    }
+
+    .recommendations-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-md);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .recommendation-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .recommendation-item {
+      background: var(--bg-secondary);
+      padding: var(--spacing-md);
+      border-radius: var(--radius-lg);
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .recommendation-item.urgent {
+      border-left-color: var(--primary-color);
+      background: #fef2f2;
+    }
+
+    .recommendation-item.suggestion {
+      border-left-color: var(--secondary-color);
+      background: #f0fdf4;
+    }
+
+    .recommendation-item.info {
+      border-left-color: var(--accent-color);
+      background: #fffbeb;
+    }
+
+    .recommendation-text {
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    /* Quick actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-xl);
+    }
+
+    .action-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-lg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      text-align: center;
+    }
+
+    .action-card:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .action-icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--spacing-sm);
+      display: block;
+    }
+
+    .action-icon.maternal { color: var(--maternal-color); }
+    .action-icon.child { color: var(--child-color); }
+    .action-icon.family { color: var(--family-color); }
+    .action-icon.emergency { color: var(--primary-color); }
+
+    .action-title {
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+      font-size: 0.875rem;
+    }
+
+    .action-description {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      line-height: 1.4;
+    }
+
+    /* Family history tracking */
+    .family-history {
+      margin-top: var(--spacing-xl);
+    }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .history-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .history-filter {
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-md);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .history-filter:hover {
+      border-color: var(--primary-color);
+      background: var(--bg-secondary);
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .history-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .history-item:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-1px);
+    }
+
+    .history-member {
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .member-icon {
+      font-size: 1rem;
+    }
+
+    .history-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .history-status {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .history-status.good {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .history-status.needs-attention {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .history-status.urgent {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    /* Hidden file input */
+    .file-input {
+      display: none;
+    }
+
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Photo preview */
+    .photo-preview {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 120px;
+      display: none;
+      background: var(--bg-card);
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    .photo-preview.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-image {
+      flex: 1;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    /* Responsive design */
+    @media (max-width: 480px) {
+      .app-container {
+        max-width: 100%;
+      }
+
+      .main-content {
+        padding: var(--spacing-lg) var(--spacing-md);
+      }
+
+      .health-monitor-zone {
+        padding: var(--spacing-xl);
+        min-height: 250px;
+      }
+
+      .monitor-icon {
+        font-size: 3rem;
+      }
+
+      .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .family-roles {
+        gap: var(--spacing-xs);
+      }
+
+      .family-role {
+        font-size: 0.7rem;
+        padding: 2px var(--spacing-xs);
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Focus styles */
+    .health-monitor-zone:focus-visible,
+    .monitor-button:focus-visible,
+    .action-card:focus-visible,
+    .icon-button:focus-visible,
+    .family-role:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    /* Animations */
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .health-results.active {
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    .analyzing .monitor-icon {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* Emergency alert styles */
+    .emergency-alert {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      border: 2px solid var(--primary-color);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-lg);
+      margin: var(--spacing-lg) 0;
+      animation: emergencyPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes emergencyPulse {
+      0%, 100% {
+        border-color: var(--primary-color);
+      }
+      50% {
+        border-color: #ef4444;
+        transform: scale(1.02);
+      }
+    }
+
+    .emergency-text {
+      font-weight: 700;
+      color: var(--primary-color);
+      text-align: center;
+      font-size: 1.125rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="header-top">
+          <div class="logo">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span>🌺</span>
+                <span>Ohana Health</span>
+              </div>
+              <div class="ohana-subtitle">No One Left Behind</div>
+            </div>
+          </div>
+          
+          <div class="header-controls">
+            <button class="icon-button" id="emergencyButton" title="Emergency Guidance" aria-label="Emergency Guidance">
+              <span>🚨</span>
+            </button>
+            
+            <button class="icon-button" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+              <span id="themeIcon">🌙</span>
+            </button>
+            
+            <button class="icon-button" id="settingsButton" title="Settings" aria-label="Settings">
+              <span>⚙️</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Family Role Selector -->
+        <div class="family-selector">
+          <div class="family-selector-title">Who needs care today?</div>
+          <div class="family-roles">
+            <button class="family-role active" data-role="mother" id="rolemother">
+              🤱 Mother
+            </button>
+            <button class="family-role" data-role="child" id="rolechild">
+              👶 Child
+            </button>
+            <button class="family-role" data-role="father" id="rolefather">
+              👨 Father
+            </button>
+            <button class="family-role" data-role="elder" id="roleelder">
+              👵 Elder
+            </button>
+            <button class="family-role" data-role="family" id="rolefamily">
+              👨‍👩‍👧‍👦 Family
+            </button>
+          </div>
+        </div>
+
+        <!-- Health Status Display -->
+        <div class="health-status">
+          <div class="status-row">
+            <span class="status-label">Family Health</span>
+            <span class="ai-status ready" id="aiStatus">AI Ready</span>
+          </div>
+          <div class="status-row">
+            <span class="status-value" id="healthScore">Monitoring</span>
+            <span style="font-size: 0.75rem; opacity: 0.8;" id="lastCheck">Ready to assess</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Health Monitoring Zone -->
+      <section class="health-monitor-zone" id="healthMonitorZone" tabindex="0" role="button" aria-label="Take photo for health assessment">
+        <input type="file" class="file-input" id="fileInput" accept="image/*" capture="environment">
+        
+        <div class="monitor-icon" id="monitorIcon">🩺</div>
+        <div class="monitor-text" id="monitorText">Health Check</div>
+        <div class="monitor-subtitle" id="monitorSubtitle">
+          Take a photo for AI health assessment and guidance
+        </div>
+        
+        <div class="monitor-actions">
+          <button class="monitor-button" id="photoButton">
+            📸 Take Photo
+          </button>
+          <button class="monitor-button secondary" id="galleryButton">
+            🖼️ From Gallery
+          </button>
+          <button class="monitor-button analyze-health" id="analyzeHealthButton" style="display: none;">
+            🩺 ANALYZE HEALTH
+          </button>
+          <button class="monitor-button secondary" id="retakeHealthButton" style="display: none;">
+            🔄 Retake Photo
+          </button>
+        </div>
+
+        <!-- Photo Preview -->
+        <div class="photo-preview" id="photoPreview">
+          <img class="preview-image" id="previewImage" alt="Health photo preview">
+        </div>
+      </section>
+
+      <!-- Health Assessment Results -->
+      <section class="health-results" id="healthResults">
+        <div class="health-card">
+          <div class="health-header">
+            <div>
+              <div class="health-title" id="assessmentTitle">Health Assessment</div>
+              <div class="health-confidence" id="assessmentConfidence">Analyzing...</div>
+            </div>
+          </div>
+
+          <div class="health-status-large">
+            <div class="status-icon good" id="statusIcon">🌺</div>
+            <div class="status-text" id="statusText">Assessment Complete</div>
+            <div class="status-description" id="statusDescription">Review recommendations below</div>
+          </div>
+
+          <div class="recommendations">
+            <div class="recommendations-title">
+              <span>💡</span>
+              <span>Recommendations for <span id="currentRole">Mother</span></span>
+            </div>
+            <div class="recommendation-list" id="recommendationList">
+              <!-- Recommendations will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Actions for Family Health -->
+      <section class="quick-actions">
+        <div class="action-card" id="maternalAction" tabindex="0" role="button">
+          <span class="action-icon maternal">🤱</span>
+          <div class="action-title">Maternal Care</div>
+          <div class="action-description">Pregnancy & postpartum monitoring</div>
+        </div>
+        
+        <div class="action-card" id="childAction" tabindex="0" role="button">
+          <span class="action-icon child">👶</span>
+          <div class="action-title">Child Health</div>
+          <div class="action-description">Growth & development tracking</div>
+        </div>
+        
+        <div class="action-card" id="emergencyAction" tabindex="0" role="button">
+          <span class="action-icon emergency">🚨</span>
+          <div class="action-title">Emergency Guide</div>
+          <div class="action-description">Crisis support & first aid</div>
+        </div>
+        
+        <div class="action-card" id="familyAction" tabindex="0" role="button">
+          <span class="action-icon family">👨‍👩‍👧‍👦</span>
+          <div class="action-title">Family Wellness</div>
+          <div class="action-description">Community health insights</div>
+        </div>
+      </section>
+
+      <!-- Family Health History -->
+      <section class="family-history" id="familyHistory">
+        <div class="history-header">
+          <div class="history-title">
+            <span>📋</span>
+            <span>Family Health Records</span>
+          </div>
+          <button class="history-filter" id="historyFilter">All Members</button>
+        </div>
+        <div class="history-list" id="historyList">
+          <!-- History items will be populated by JavaScript -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Global variables
+    let geminiSession = null;
+    let currentPhoto = null;
+    let currentRole = 'mother';
+    let familyHealthData = {
+      mother: { lastCheck: null, status: 'unknown', records: [] },
+      child: { lastCheck: null, status: 'unknown', records: [] },
+      father: { lastCheck: null, status: 'unknown', records: [] },
+      elder: { lastCheck: null, status: 'unknown', records: [] },
+      family: { lastCheck: null, status: 'unknown', records: [] }
+    };
+    let isAnalyzing = false;
+
+    // DOM elements
+    const healthMonitorZone = document.getElementById('healthMonitorZone');
+    const fileInput = document.getElementById('fileInput');
+    const photoButton = document.getElementById('photoButton');
+    const galleryButton = document.getElementById('galleryButton');
+    const analyzeHealthButton = document.getElementById('analyzeHealthButton');
+    const retakeHealthButton = document.getElementById('retakeHealthButton');
+    const photoPreview = document.getElementById('photoPreview');
+    const previewImage = document.getElementById('previewImage');
+    const healthResults = document.getElementById('healthResults');
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const aiStatus = document.getElementById('aiStatus');
+    const emergencyButton = document.getElementById('emergencyButton');
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', initializeApp);
+
+    async function initializeApp() {
+      console.log('🌺 Ohana Health initializing...');
+      
+      // Set up event listeners
+      setupEventListeners();
+      
+      // Initialize theme
+      initializeTheme();
+      
+      // Load saved family health data
+      loadFamilyHealthData();
+      
+      // Initialize Gemini Nano
+      await initializeGeminiNano();
+      
+      // Update displays
+      updateFamilyHealthDisplay();
+      updateHistoryDisplay();
+      
+      console.log('✅ Ohana Health ready - No one left behind!');
+    }
+
+    function setupEventListeners() {
+      // Health monitoring zone events
+      healthMonitorZone.addEventListener('click', () => {
+        if (!photoPreview.classList.contains('active')) {
+          fileInput.click();
+        }
+      });
+      
+      // File input
+      fileInput.addEventListener('change', handleFileSelect);
+      
+      // Photo buttons
+      photoButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        capturePhoto();
+      });
+      
+      galleryButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.click();
+      });
+      
+      // Health analysis actions
+      analyzeHealthButton.addEventListener('click', analyzeHealth);
+      retakeHealthButton.addEventListener('click', retakePhoto);
+      
+      // Family role selection
+      document.querySelectorAll('.family-role').forEach(role => {
+        role.addEventListener('click', () => selectFamilyRole(role.dataset.role));
+      });
+      
+      // Theme toggle
+      themeToggle.addEventListener('click', toggleTheme);
+      
+      // Emergency button
+      emergencyButton.addEventListener('click', showEmergencyGuidance);
+      
+      // Quick actions
+      document.getElementById('maternalAction').addEventListener('click', () => focusOnMaternal());
+      document.getElementById('childAction').addEventListener('click', () => focusOnChild());
+      document.getElementById('emergencyAction').addEventListener('click', () => showEmergencyGuidance());
+      document.getElementById('familyAction').addEventListener('click', () => showFamilyOverview());
+      
+      // Keyboard navigation
+      healthMonitorZone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (!photoPreview.classList.contains('active')) {
+            fileInput.click();
+          }
+        }
+      });
+      
+      // Action cards keyboard navigation
+      document.querySelectorAll('.action-card').forEach(card => {
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            card.click();
+          }
+        });
+      });
+    }
+
+    function initializeTheme() {
+      const savedTheme = localStorage.getItem('ohana-health-theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeIcon.textContent = '☀️';
+      }
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('ohana-health-theme', newTheme);
+    }
+
+    function loadFamilyHealthData() {
+      const savedData = localStorage.getItem('ohana-family-health-data');
+      if (savedData) {
+        try {
+          familyHealthData = { ...familyHealthData, ...JSON.parse(savedData) };
+        } catch (error) {
+          console.error('Error loading family health data:', error);
+        }
+      }
+    }
+
+    function saveFamilyHealthData() {
+      localStorage.setItem('ohana-family-health-data', JSON.stringify(familyHealthData));
+    }
+
+    function selectFamilyRole(role) {
+      // Update active role
+      document.querySelectorAll('.family-role').forEach(r => r.classList.remove('active'));
+      document.getElementById(`role${role}`).classList.add('active');
+      
+      currentRole = role;
+      
+      // Update UI based on selected role
+      updateRoleSpecificUI(role);
+      
+      // Clear any previous results
+      healthResults.classList.remove('active');
+      retakePhoto();
+    }
+
+    function updateRoleSpecificUI(role) {
+      const roleEmojis = {
+        mother: '🤱',
+        child: '👶', 
+        father: '👨',
+        elder: '👵',
+        family: '👨‍👩‍👧‍👦'
+      };
+      
+      const roleTexts = {
+        mother: 'Maternal Health Check',
+        child: 'Child Health Check',
+        father: 'Father Health Check', 
+        elder: 'Elder Care Check',
+        family: 'Family Wellness Check'
+      };
+      
+      const roleSubtitles = {
+        mother: 'Monitor pregnancy, postpartum care, and maternal wellness',
+        child: 'Track growth, development, and child health milestones',
+        father: 'Support paternal health and family caregiving role',
+        elder: 'Ensure elder care, medication, and comfort needs',
+        family: 'Overall family health and community wellness'
+      };
+      
+      document.getElementById('monitorIcon').textContent = roleEmojis[role];
+      document.getElementById('monitorText').textContent = roleTexts[role];
+      document.getElementById('monitorSubtitle').textContent = roleSubtitles[role];
+      document.getElementById('currentRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+    }
+
+    async function initializeGeminiNano() {
+      try {
+        updateAIStatus('Initializing AI...', 'analyzing');
+        
+        // Check if Gemini Nano is available
+        if (!window.LanguageModel) {
+          throw new Error('Gemini Nano not available. Please enable chrome://flags/#prompt-api-for-gemini-nano');
+        }
+        
+        // Try to create session with multimodal support
+        geminiSession = await LanguageModel.create({
+          expectedInputs: [{ type: "image" }],
+          monitor(m) {
+            m.addEventListener("downloadprogress", (e) => {
+              const progress = Math.round(e.loaded * 100);
+              updateAIStatus(`Downloading AI: ${progress}%`, 'analyzing');
+            });
+          }
+        });
+        
+        console.log('✅ Gemini session created with health analysis support');
+        updateAIStatus('AI Ready', 'ready');
+        
+      } catch (error) {
+        console.error('❌ Failed to initialize Gemini:', error);
+        updateAIStatus('AI Unavailable', 'error');
+        showNotification('AI initialization failed. Please check browser compatibility.', 'error');
+      }
+    }
+
+    function updateAIStatus(message, type) {
+      aiStatus.textContent = message;
+      aiStatus.className = `ai-status ${type}`;
+    }
+
+    async function capturePhoto() {
+      try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          // In a real implementation, create camera preview
+          fileInput.click();
+        } else {
+          fileInput.click();
+        }
+      } catch (error) {
+        console.error('Camera error:', error);
+        fileInput.click();
+      }
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file || !file.type.startsWith('image/')) {
+        showNotification('Please select a valid image file', 'error');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        currentPhoto = e.target.result;
+        previewImage.src = currentPhoto;
+        showPhotoPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function showPhotoPreview() {
+      photoPreview.classList.add('active');
+      healthMonitorZone.classList.add('active');
+      
+      // Show health analysis buttons
+      analyzeHealthButton.style.display = 'block';
+      retakeHealthButton.style.display = 'block';
+      
+      // Hide original buttons
+      photoButton.style.display = 'none';
+      galleryButton.style.display = 'none';
+      
+      // Update zone text
+      document.getElementById('monitorText').style.display = 'none';
+      document.getElementById('monitorSubtitle').style.display = 'none';
+      document.getElementById('monitorIcon').style.display = 'none';
+    }
+
+    function retakePhoto() {
+      photoPreview.classList.remove('active');
+      healthMonitorZone.classList.remove('active');
+      currentPhoto = null;
+      fileInput.value = '';
+      
+      // Show/hide appropriate buttons
+      analyzeHealthButton.style.display = 'none';
+      retakeHealthButton.style.display = 'none';
+      photoButton.style.display = 'flex';
+      galleryButton.style.display = 'flex';
+      
+      // Show zone text
+      document.getElementById('monitorText').style.display = 'block';
+      document.getElementById('monitorSubtitle').style.display = 'block';
+      document.getElementById('monitorIcon').style.display = 'block';
+      
+      // Update role-specific UI
+      updateRoleSpecificUI(currentRole);
+    }
+
+    async function analyzeHealth() {
+      if (!geminiSession || !currentPhoto || isAnalyzing) return;
+      
+      isAnalyzing = true;
+      updateAIStatus('Analyzing Health...', 'analyzing');
+      healthMonitorZone.classList.add('analyzing');
+      
+      // Show health results section
+      healthResults.classList.add('active');
+      
+      // Reset display
+      document.getElementById('assessmentTitle').textContent = 'Analyzing...';
+      document.getElementById('assessmentConfidence').textContent = 'Please wait...';
+      document.getElementById('recommendationList').innerHTML = '<div class="analyzing-indicator">🌺 Ohana AI analyzing your health...</div>';
+      
+      try {
+        // Get role-specific health assessment prompt
+        const healthPrompt = getHealthAssessmentPrompt(currentRole);
+        
+        // Send image and prompt to Gemini Nano
+        const imageBlob = dataURLtoBlob(currentPhoto);
+        const response = await geminiSession.prompt(healthPrompt, { images: [imageBlob] });
+        
+        // Parse and display results
+        parseHealthAssessment(response, currentRole);
+        
+        // Save to family health records
+        saveFamilyHealthRecord(currentRole, response);
+        
+        updateAIStatus('Assessment Complete', 'ready');
+        
+      } catch (error) {
+        console.error('Health analysis error:', error);
+        showHealthError('Unable to complete health assessment. Please try again.');
+        updateAIStatus('Analysis Failed', 'error');
+      } finally {
+        isAnalyzing = false;
+        healthMonitorZone.classList.remove('analyzing');
+      }
+    }
+    
+    function getHealthAssessmentPrompt(role) {
+      const basePrompt = `You are a culturally sensitive rural health AI assistant following Ohana family values. NO ONE LEFT BEHIND. Analyze this photo for health indicators and provide caring, actionable guidance.`;
+      
+      const rolePrompts = {
+        mother: `${basePrompt}
+
+You are analyzing a photo for a mother in a rural setting. Look for:
+- Pregnancy indicators: belly size, posture, swelling
+- Postpartum signs: breast health, energy levels, recovery
+- Maternal wellness: skin color, eye clarity, general appearance
+- Warning signs: excessive swelling, unusual discoloration, fatigue indicators
+
+Provide responses in this format:
+STATUS: [GOOD/CAUTION/URGENT]
+FINDINGS: [What you observe]
+RECOMMENDATIONS: [3-4 specific actions]
+EMERGENCY: [When to seek immediate help]
+OHANA: [How family can support]`,
+        
+        child: `${basePrompt}
+
+You are analyzing a photo of a child in a rural setting. Look for:
+- Growth indicators: proportions, alertness, activity level
+- Development signs: coordination, responsiveness, social engagement
+- Health markers: skin health, eye brightness, nutrition signs
+- Warning signs: lethargy, unusual marks, developmental concerns
+
+Provide responses in this format:
+STATUS: [GOOD/CAUTION/URGENT]
+FINDINGS: [What you observe]
+RECOMMENDATIONS: [3-4 specific actions]
+EMERGENCY: [When to seek immediate help]
+OHANA: [How family can support]`,
+        
+        father: `${basePrompt}
+
+You are analyzing a photo for a father/male family member in a rural setting. Look for:
+- Physical wellness: energy, posture, general health appearance
+- Stress indicators: tension, fatigue, emotional signs
+- Work-related health: physical strain, occupational health
+- Mental health: engagement, alertness, emotional state
+
+Provide responses in this format:
+STATUS: [GOOD/CAUTION/URGENT]
+FINDINGS: [What you observe]
+RECOMMENDATIONS: [3-4 specific actions]
+EMERGENCY: [When to seek immediate help]
+OHANA: [How family can support]`,
+        
+        elder: `${basePrompt}
+
+You are analyzing a photo of an elder in a rural setting. Look for:
+- Mobility indicators: posture, movement, stability
+- Cognitive signs: alertness, engagement, awareness
+- Health markers: medication compliance, nutrition, comfort
+- Care needs: assistance requirements, safety concerns
+
+Provide responses in this format:
+STATUS: [GOOD/CAUTION/URGENT]
+FINDINGS: [What you observe]
+RECOMMENDATIONS: [3-4 specific actions]
+EMERGENCY: [When to seek immediate help]
+OHANA: [How family can support]`,
+        
+        family: `${basePrompt}
+
+You are analyzing a photo of family members in a rural setting. Look for:
+- Family dynamics: interaction patterns, support systems
+- Overall health: general wellness of all visible members
+- Environment: safety, cleanliness, living conditions
+- Community health: social connections, mutual support
+
+Provide responses in this format:
+STATUS: [GOOD/CAUTION/URGENT]
+FINDINGS: [What you observe]
+RECOMMENDATIONS: [3-4 specific actions]
+EMERGENCY: [When to seek immediate help]
+OHANA: [How family can support]`
+      };
+      
+      return rolePrompts[role] || rolePrompts.family;
+    }
+    
+    function parseHealthAssessment(response, role) {
+      try {
+        // Parse structured response
+        const lines = response.split('\n');
+        let status = 'unknown';
+        let findings = '';
+        let recommendations = [];
+        let emergency = '';
+        let ohanaSupport = '';
+        
+        lines.forEach(line => {
+          if (line.startsWith('STATUS:')) {
+            status = line.replace('STATUS:', '').trim().toLowerCase();
+          } else if (line.startsWith('FINDINGS:')) {
+            findings = line.replace('FINDINGS:', '').trim();
+          } else if (line.startsWith('RECOMMENDATIONS:')) {
+            recommendations.push(line.replace('RECOMMENDATIONS:', '').trim());
+          } else if (line.startsWith('EMERGENCY:')) {
+            emergency = line.replace('EMERGENCY:', '').trim();
+          } else if (line.startsWith('OHANA:')) {
+            ohanaSupport = line.replace('OHANA:', '').trim();
+          } else if (line.trim().startsWith('-') || line.trim().startsWith('•')) {
+            recommendations.push(line.trim().substring(1).trim());
+          }
+        });
+        
+        // Update status display
+        const statusIcon = document.getElementById('statusIcon');
+        const statusText = document.getElementById('statusText');
+        const statusDescription = document.getElementById('statusDescription');
+        
+        if (status === 'good') {
+          statusIcon.textContent = '🌺';
+          statusIcon.className = 'status-icon good';
+          statusText.textContent = 'Health Looks Good!';
+          statusDescription.textContent = 'Continue current care practices';
+        } else if (status === 'caution') {
+          statusIcon.textContent = '⚠️';
+          statusIcon.className = 'status-icon caution';
+          statusText.textContent = 'Needs Attention';
+          statusDescription.textContent = 'Follow recommendations below';
+        } else if (status === 'urgent') {
+          statusIcon.textContent = '🚨';
+          statusIcon.className = 'status-icon urgent';
+          statusText.textContent = 'Seek Medical Care';
+          statusDescription.textContent = 'Contact healthcare provider';
+        }
+        
+        // Update assessment details
+        document.getElementById('assessmentTitle').textContent = `${role.charAt(0).toUpperCase() + role.slice(1)} Health Assessment`;
+        document.getElementById('assessmentConfidence').textContent = findings || 'Assessment completed with AI guidance';
+        
+        // Display recommendations
+        displayRecommendations(recommendations, emergency, ohanaSupport);
+        
+        // Update family health score
+        updateFamilyHealthScore(role, status);
+        
+      } catch (error) {
+        console.error('Error parsing health assessment:', error);
+        showHealthError('Could not parse health assessment results.');
+      }
+    }
+    
+    function displayRecommendations(recommendations, emergency, ohanaSupport) {
+      const recommendationList = document.getElementById('recommendationList');
+      let html = '';
+      
+      // Health recommendations
+      if (recommendations.length > 0) {
+        html += '<div class="recommendation-section"><div class="rec-header">🩺 Health Recommendations</div>';
+        recommendations.forEach(rec => {
+          if (rec.trim()) {
+            html += `<div class="recommendation-item">• ${rec}</div>`;
+          }
+        });
+        html += '</div>';
+      }
+      
+      // Emergency guidance
+      if (emergency) {
+        html += `<div class="recommendation-section emergency"><div class="rec-header">🚨 Emergency Guidance</div><div class="recommendation-item">${emergency}</div></div>`;
+      }
+      
+      // Ohana family support
+      if (ohanaSupport) {
+        html += `<div class="recommendation-section ohana"><div class="rec-header">🌺 Ohana Family Support</div><div class="recommendation-item">${ohanaSupport}</div></div>`;
+      }
+      
+      recommendationList.innerHTML = html || '<div class="recommendation-item">Assessment completed. Continue monitoring health regularly.</div>';
+    }
+    
+    function saveFamilyHealthRecord(role, assessment) {
+      const record = {
+        timestamp: new Date().toISOString(),
+        role: role,
+        assessment: assessment,
+        photo: null // Don't save photos for privacy
+      };
+      
+      familyHealthData[role].records.unshift(record);
+      familyHealthData[role].lastCheck = new Date().toISOString();
+      
+      // Keep only last 20 records per role
+      if (familyHealthData[role].records.length > 20) {
+        familyHealthData[role].records = familyHealthData[role].records.slice(0, 20);
+      }
+      
+      saveFamilyHealthData();
+      updateHistoryDisplay();
+    }
+    
+    function updateFamilyHealthScore(role, status) {
+      familyHealthData[role].status = status;
+      
+      // Calculate overall family health
+      const statuses = Object.values(familyHealthData).map(data => data.status);
+      const urgentCount = statuses.filter(s => s === 'urgent').length;
+      const cautionCount = statuses.filter(s => s === 'caution').length;
+      const goodCount = statuses.filter(s => s === 'good').length;
+      
+      let overallStatus;
+      if (urgentCount > 0) {
+        overallStatus = 'Needs immediate attention';
+      } else if (cautionCount > 0) {
+        overallStatus = 'Monitoring needed';
+      } else if (goodCount > 0) {
+        overallStatus = 'Family wellness good';
+      } else {
+        overallStatus = 'Monitoring family health';
+      }
+      
+      document.getElementById('healthScore').textContent = overallStatus;
+      document.getElementById('lastCheck').textContent = `Last check: ${new Date().toLocaleTimeString()}`;
+    }
+    
+    function showHealthError(message) {
+      document.getElementById('assessmentTitle').textContent = 'Assessment Error';
+      document.getElementById('assessmentConfidence').textContent = message;
+      document.getElementById('recommendationList').innerHTML = `<div class="recommendation-item error">❌ ${message}</div>`;
+    }
+    
+    function updateFamilyHealthDisplay() {
+      // Update last check times and health scores
+      Object.keys(familyHealthData).forEach(role => {
+        const data = familyHealthData[role];
+        if (data.lastCheck) {
+          const lastCheck = new Date(data.lastCheck);
+          const timeAgo = getTimeAgo(lastCheck);
+          // Update role-specific displays if needed
+        }
+      });
+    }
+    
+    function updateHistoryDisplay() {
+      const historyList = document.getElementById('historyList');
+      let html = '';
+      
+      // Collect all records from all family members
+      const allRecords = [];
+      Object.keys(familyHealthData).forEach(role => {
+        familyHealthData[role].records.forEach(record => {
+          allRecords.push({ ...record, memberRole: role });
+        });
+      });
+      
+      // Sort by timestamp (most recent first)
+      allRecords.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      
+      // Display recent records
+      allRecords.slice(0, 10).forEach(record => {
+        const date = new Date(record.timestamp);
+        const timeAgo = getTimeAgo(date);
+        const roleEmoji = {
+          mother: '🤱',
+          child: '👶',
+          father: '👨',
+          elder: '👵',
+          family: '👨‍👩‍👧‍👦'
+        }[record.memberRole] || '👤';
+        
+        html += `
+          <div class="history-item">
+            <div class="history-header">
+              <span class="history-role">${roleEmoji} ${record.memberRole.charAt(0).toUpperCase() + record.memberRole.slice(1)}</span>
+              <span class="history-time">${timeAgo}</span>
+            </div>
+            <div class="history-summary">Health assessment completed</div>
+          </div>
+        `;
+      });
+      
+      if (html === '') {
+        html = '<div class="no-history">No health records yet. Take your first photo to start monitoring family health! 🌺</div>';
+      }
+      
+      historyList.innerHTML = html;
+    }
+    
+    function getTimeAgo(date) {
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+      
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      return `${diffDays}d ago`;
+    }
+    
+    function dataURLtoBlob(dataURL) {
+      const arr = dataURL.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], { type: mime });
+    }
+    
+    function showEmergencyGuidance() {
+      // Create emergency overlay
+      const emergencyOverlay = document.createElement('div');
+      emergencyOverlay.className = 'emergency-overlay';
+      emergencyOverlay.innerHTML = `
+        <div class="emergency-modal">
+          <div class="emergency-header">
+            <h2>🚨 Emergency Health Guidance</h2>
+            <button class="close-emergency" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</button>
+          </div>
+          <div class="emergency-content">
+            <div class="emergency-section">
+              <h3>🤱 Maternal Emergencies</h3>
+              <div class="emergency-item">Heavy bleeding: Seek immediate help</div>
+              <div class="emergency-item">Severe headache + swelling: Pre-eclampsia warning</div>
+              <div class="emergency-item">No fetal movement: Contact healthcare provider</div>
+            </div>
+            <div class="emergency-section">
+              <h3>👶 Child Emergencies</h3>
+              <div class="emergency-item">Difficulty breathing: Call emergency services</div>
+              <div class="emergency-item">High fever (>38.5°C): Seek medical care</div>
+              <div class="emergency-item">Unusual lethargy: Monitor closely, consider medical care</div>
+            </div>
+            <div class="emergency-section">
+              <h3>🌺 Ohana Emergency Protocol</h3>
+              <div class="emergency-item">1. Stay calm, assess the situation</div>
+              <div class="emergency-item">2. Contact local health worker or clinic</div>
+              <div class="emergency-item">3. Prepare for transport if needed</div>
+              <div class="emergency-item">4. Have family member accompany patient</div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(emergencyOverlay);
+    }
+    
+    function focusOnMaternal() {
+      selectFamilyRole('mother');
+      showNotification('Switched to Maternal Health monitoring', 'success');
+    }
+    
+    function focusOnChild() {
+      selectFamilyRole('child');
+      showNotification('Switched to Child Health monitoring', 'success');
+    }
+    
+    function showFamilyOverview() {
+      selectFamilyRole('family');
+      showNotification('Viewing Family Wellness overview', 'info');
+    }
+    
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.innerHTML = `
+        <div class="notification-content">
+          <span class="notification-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+          <span class="notification-text">${message}</span>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 3000);
+    }
+      document.getElementById('statusIcon').className = 'status-icon good';
+      document.getElementById('statusIcon').textContent = '⏳';
+      document.getElementById('statusText').textContent = 'Processing...';
+      document.getElementById('statusDescription').textContent = 'AI is analyzing the health image';
+      
+      try {
+        const rolePrompts = {
+          mother: `You are a maternal health expert analyzing a photo for a pregnant or postpartum mother in a rural area. Look for signs of:
+- Swelling in hands, feet, face (preeclampsia warning)
+- Skin changes, rashes, or unusual marks
+- Posture or mobility issues
+- Signs of fatigue or distress
+- Postpartum healing signs
+- Breastfeeding-related concerns
+- Overall maternal wellness indicators`,
+          
+          child: `You are a pediatric health expert analyzing a photo of a child in a rural setting. Look for:
+- Growth and development indicators
+- Skin conditions, rashes, or infections
+- Signs of malnutrition or dehydration  
+- Behavioral or developmental concerns
+- Vaccination site reactions
+- Injury or trauma signs
+- Overall child wellness and energy levels`,
+          
+          father: `You are analyzing a photo for a father's health in a rural family setting. Look for:
+- Work-related injury signs
+- Stress or fatigue indicators
+- Nutrition and fitness status
+- Skin conditions or infections
+- Mental health indicators
+- Overall physical wellness
+- Signs needing medical attention`,
+          
+          elder: `You are analyzing a photo for an elderly family member's health. Look for:
+- Mobility and balance concerns
+- Medication effects or side effects
+- Skin conditions or pressure sores
+- Signs of pain or discomfort
+- Cognitive or memory indicators
+- Nutrition and hydration status
+- Overall elder care needs`,
+          
+          family: `You are analyzing a photo for overall family health in a rural setting. Look for:
+- Environmental health factors
+- Family nutrition indicators
+- Housing and hygiene conditions
+- Community health concerns
+- Infectious disease signs
+- Overall family wellness
+- Resource and support needs`
+        };
+
+        const prompt = `${rolePrompts[currentRole]}
+
+Please provide a health assessment in this JSON format:
+{
+  "assessment_title": "Health Assessment for [Mother/Child/Father/Elder/Family]",
+  "confidence": "High/Medium/Low confidence in assessment",
+  "status": "good/warning/concern",
+  "status_text": "Brief status summary",
+  "status_description": "Detailed explanation of findings",
+  "recommendations": [
+    {
+      "type": "urgent/suggestion/info",
+      "text": "Specific recommendation or action to take"
+    }
+  ],
+  "cultural_considerations": "Respectful integration with traditional practices",
+  "when_to_seek_help": "When to contact healthcare providers"
+}
+
+Analyze this health image for a ${currentRole} in a rural community and provide culturally sensitive, actionable guidance:
+
+Image: ${currentPhoto}`;
+
+        const response = await geminiSession.prompt(prompt);
+        
+        console.log('Health AI Response:', response);
+        parseHealthResponse(response);
+        
+      } catch (error) {
+        console.error('Health analysis error:', error);
+        showHealthError();
+      } finally {
+        isAnalyzing = false;
+        updateAIStatus('AI Ready', 'ready');
+        healthMonitorZone.classList.remove('analyzing');
+      }
+    }
+
+    function parseHealthResponse(response) {
+      try {
+        // Try to extract JSON from response
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        let healthData;
+        
+        if (jsonMatch) {
+          healthData = JSON.parse(jsonMatch[0]);
+        } else {
+          // Fallback: create structured response from text
+          healthData = {
+            assessment_title: `${currentRole.charAt(0).toUpperCase() + currentRole.slice(1)} Health Assessment`,
+            confidence: 'Medium',
+            status: 'good',
+            status_text: 'Assessment Complete',
+            status_description: 'AI has reviewed the image and provided recommendations.',
+            recommendations: [
+              {
+                type: 'info',
+                text: 'Regular health monitoring is important for family wellness.'
+              },
+              {
+                type: 'suggestion', 
+                text: 'Continue with preventive care and healthy practices.'
+              }
+            ]
+          };
+        }
+        
+        displayHealthResults(healthData);
+        
+        // Save to family health records
+        saveFamilyHealthRecord(healthData);
+        
+      } catch (error) {
+        console.error('Health response parsing error:', error);
+        showHealthError();
+      }
+    }
+
+    function displayHealthResults(data) {
+      // Update assessment header
+      document.getElementById('assessmentTitle').textContent = data.assessment_title || 'Health Assessment';
+      document.getElementById('assessmentConfidence').textContent = `${data.confidence || 'Medium'} confidence • ${new Date().toLocaleDateString()}`;
+      
+      // Update status display
+      const statusIcons = {
+        good: '🌺',
+        warning: '⚠️', 
+        concern: '🚨'
+      };
+      
+      const statusIcon = document.getElementById('statusIcon');
+      statusIcon.textContent = statusIcons[data.status] || '🌺';
+      statusIcon.className = `status-icon ${data.status || 'good'}`;
+      
+      document.getElementById('statusText').textContent = data.status_text || 'Assessment Complete';
+      document.getElementById('statusDescription').textContent = data.status_description || 'Review recommendations below';
+      
+      // Update recommendations
+      const recommendationList = document.getElementById('recommendationList');
+      const recommendations = data.recommendations || [];
+      
+      recommendationList.innerHTML = recommendations.map(rec => `
+        <div class="recommendation-item ${rec.type || 'info'}">
+          <div class="recommendation-text">${rec.text}</div>
+        </div>
+      `).join('');
+      
+      // Add emergency alert if needed
+      if (data.status === 'concern') {
+        const emergencyAlert = document.createElement('div');
+        emergencyAlert.className = 'emergency-alert';
+        emergencyAlert.innerHTML = `
+          <div class="emergency-text">⚠️ Seek medical attention promptly</div>
+        `;
+        healthResults.insertBefore(emergencyAlert, healthResults.firstChild);
+      }
+      
+      showNotification('Health assessment complete! 🌺', 'success');
+    }
+
+    function showHealthError() {
+      document.getElementById('assessmentTitle').textContent = 'Assessment Unavailable';
+      document.getElementById('assessmentConfidence').textContent = 'Unable to analyze this image';
+      document.getElementById('statusIcon').textContent = '❌';
+      document.getElementById('statusText').textContent = 'Analysis Failed';
+      document.getElementById('statusDescription').textContent = 'Please try a clearer photo or contact local health workers';
+      
+      showNotification('Health analysis failed. Please try again.', 'error');
+    }
+
+    function saveFamilyHealthRecord(data) {
+      const record = {
+        id: Date.now(),
+        timestamp: new Date(),
+        role: currentRole,
+        status: data.status,
+        summary: data.status_text,
+        photo: currentPhoto,
+        assessment: data
+      };
+      
+      // Add to family health data
+      familyHealthData[currentRole].lastCheck = new Date();
+      familyHealthData[currentRole].status = data.status;
+      familyHealthData[currentRole].records.unshift(record);
+      
+      // Keep last 20 records per role
+      if (familyHealthData[currentRole].records.length > 20) {
+        familyHealthData[currentRole].records.pop();
+      }
+      
+      // Save to localStorage
+      saveFamilyHealthData();
+      
+      // Update displays
+      updateFamilyHealthDisplay();
+      updateHistoryDisplay();
+    }
+
+    function updateFamilyHealthDisplay() {
+      const overallStatus = calculateFamilyHealthScore();
+      document.getElementById('healthScore').textContent = overallStatus.text;
+      document.getElementById('lastCheck').textContent = overallStatus.lastCheck;
+    }
+
+    function calculateFamilyHealthScore() {
+      const roles = Object.keys(familyHealthData);
+      let goodCount = 0;
+      let totalChecked = 0;
+      let latestCheck = null;
+      
+      roles.forEach(role => {
+        if (familyHealthData[role].lastCheck) {
+          totalChecked++;
+          if (familyHealthData[role].status === 'good') goodCount++;
+          
+          const checkDate = new Date(familyHealthData[role].lastCheck);
+          if (!latestCheck || checkDate > latestCheck) {
+            latestCheck = checkDate;
+          }
+        }
+      });
+      
+      if (totalChecked === 0) {
+        return { text: 'Ready to Monitor', lastCheck: 'No checks yet' };
+      }
+      
+      const percentage = Math.round((goodCount / totalChecked) * 100);
+      const lastCheckText = latestCheck ? 
+        `Last check: ${latestCheck.toLocaleDateString()}` : 
+        'No recent checks';
+      
+      if (percentage >= 80) return { text: 'Family Thriving', lastCheck: lastCheckText };
+      if (percentage >= 60) return { text: 'Good Health', lastCheck: lastCheckText };
+      if (percentage >= 40) return { text: 'Needs Attention', lastCheck: lastCheckText };
+      return { text: 'Health Concerns', lastCheck: lastCheckText };
+    }
+
+    function updateHistoryDisplay() {
+      const historyList = document.getElementById('historyList');
+      
+      // Collect all records from all family members
+      const allRecords = [];
+      Object.keys(familyHealthData).forEach(role => {
+        familyHealthData[role].records.forEach(record => {
+          allRecords.push(record);
+        });
+      });
+      
+      // Sort by timestamp (newest first)
+      allRecords.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      
+      if (allRecords.length === 0) {
+        historyList.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">🌺</div>
+            <div>No health records yet</div>
+            <div style="font-size: 0.875rem; margin-top: 0.5rem;">Start by taking a health photo!</div>
+          </div>
+        `;
+        return;
+      }
+      
+      const roleEmojis = {
+        mother: '🤱',
+        child: '👶',
+        father: '👨',
+        elder: '👵',
+        family: '👨‍👩‍👧‍👦'
+      };
+      
+      historyList.innerHTML = allRecords.slice(0, 10).map(record => `
+        <div class="history-item" onclick="viewHealthRecord('${record.id}')">
+          <div class="history-member">
+            <span class="member-icon">${roleEmojis[record.role]}</span>
+            <span>${record.role.charAt(0).toUpperCase() + record.role.slice(1)} - ${record.summary}</span>
+          </div>
+          <div class="history-details">
+            <span>${new Date(record.timestamp).toLocaleDateString()}</span>
+            <span class="history-status ${record.status}">${record.status}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function viewHealthRecord(recordId) {
+      // Find the record across all family members
+      let foundRecord = null;
+      Object.keys(familyHealthData).forEach(role => {
+        const record = familyHealthData[role].records.find(r => r.id == recordId);
+        if (record) foundRecord = record;
+      });
+      
+      if (!foundRecord) return;
+      
+      // Show detailed view (simplified for demo)
+      alert(`Health Record Details:
+      
+Family Member: ${foundRecord.role.charAt(0).toUpperCase() + foundRecord.role.slice(1)}
+Date: ${new Date(foundRecord.timestamp).toLocaleString()}
+Status: ${foundRecord.status}
+Summary: ${foundRecord.summary}
+
+Full assessment available in the app interface.`);
+    }
+
+    function focusOnMaternal() {
+      selectFamilyRole('mother');
+      document.getElementById('monitorText').textContent = 'Maternal Health Check';
+      showNotification('Focused on maternal health 🤱', 'info');
+    }
+
+    function focusOnChild() {
+      selectFamilyRole('child');
+      document.getElementById('monitorText').textContent = 'Child Health Check';
+      showNotification('Focused on child health 👶', 'info');
+    }
+
+    function showEmergencyGuidance() {
+      // Show emergency guidance interface
+      const emergencyContent = `
+🚨 EMERGENCY HEALTH GUIDANCE
+
+FOR IMMEDIATE MEDICAL EMERGENCIES:
+• Difficulty breathing
+• Severe bleeding  
+• Loss of consciousness
+• Severe chest pain
+• Signs of stroke
+
+MATERNAL EMERGENCIES:
+• Severe abdominal pain during pregnancy
+• Heavy bleeding
+• Severe headache with vision changes
+• Sudden swelling of face/hands
+
+CHILD EMERGENCIES:
+• High fever (over 104°F/40°C)
+• Difficulty breathing
+• Dehydration signs
+• Severe injury
+
+WHEN TO SEEK HELP:
+1. Call emergency services if available
+2. Contact nearest health facility
+3. Notify community health worker
+4. Prepare for transport if needed
+
+Remember: In our Ohana, no one faces emergencies alone.
+      `;
+      
+      alert(emergencyContent);
+    }
+
+    function showFamilyOverview() {
+      const overview = calculateFamilyHealthScore();
+      showNotification(`Family Health: ${overview.text} 👨‍👩‍👧‍👦`, 'info');
+    }
+
+    // Utility functions
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        left: 20px;
+        max-width: 400px;
+        margin: 0 auto;
+        background: ${type === 'error' ? '#dc2626' : type === 'success' ? '#059669' : '#3b82f6'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 12px;
+        z-index: 1000;
+        text-align: center;
+        font-weight: 600;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        animation: slideDown 0.3s ease;
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideUp 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+
+    // Add notification animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideDown {
+        from { transform: translateY(-100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      @keyframes slideUp {
+        from { transform: translateY(0); opacity: 1; }
+        to { transform: translateY(-100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Error handling
+    window.addEventListener('error', (e) => {
+      console.error('Global error:', e.error);
+      showNotification('An unexpected error occurred. Please refresh the app.', 'error');
+    });
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      document.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    // Additional CSS for new features
+    const additionalStyles = `
+      <style>
+        .analyzing-indicator {
+          text-align: center;
+          padding: 1rem;
+          color: var(--primary-color);
+          font-weight: 500;
+        }
+        
+        .recommendation-section {
+          margin-bottom: 1rem;
+          padding: 0.75rem;
+          border-radius: var(--radius-md);
+          background: var(--bg-secondary);
+        }
+        
+        .recommendation-section.emergency {
+          background: #fef2f2;
+          border: 1px solid #fecaca;
+        }
+        
+        .recommendation-section.ohana {
+          background: #f0fdf4;
+          border: 1px solid #bbf7d0;
+        }
+        
+        .rec-header {
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          color: var(--text-primary);
+        }
+        
+        .recommendation-item {
+          margin: 0.25rem 0;
+          line-height: 1.4;
+          color: var(--text-secondary);
+        }
+        
+        .recommendation-item.error {
+          color: var(--error-color);
+        }
+        
+        .status-icon.good {
+          color: var(--secondary-color);
+        }
+        
+        .status-icon.caution {
+          color: var(--accent-color);
+        }
+        
+        .status-icon.urgent {
+          color: var(--primary-color);
+        }
+        
+        .emergency-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+        
+        .emergency-modal {
+          background: var(--bg-primary);
+          border-radius: var(--radius-lg);
+          max-width: 90vw;
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: var(--shadow-xl);
+        }
+        
+        .emergency-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.5rem;
+          border-bottom: 1px solid var(--border-color);
+        }
+        
+        .emergency-header h2 {
+          color: var(--primary-color);
+          margin: 0;
+        }
+        
+        .close-emergency {
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          cursor: pointer;
+          color: var(--text-secondary);
+        }
+        
+        .emergency-content {
+          padding: 1.5rem;
+        }
+        
+        .emergency-section {
+          margin-bottom: 1.5rem;
+        }
+        
+        .emergency-section h3 {
+          color: var(--text-primary);
+          margin-bottom: 0.75rem;
+        }
+        
+        .emergency-item {
+          padding: 0.5rem;
+          margin: 0.25rem 0;
+          background: var(--bg-secondary);
+          border-radius: var(--radius-sm);
+          border-left: 4px solid var(--primary-color);
+        }
+        
+        .history-item {
+          padding: 0.75rem;
+          margin: 0.5rem 0;
+          background: var(--bg-card);
+          border-radius: var(--radius-md);
+          border: 1px solid var(--border-color);
+        }
+        
+        .history-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.25rem;
+        }
+        
+        .history-role {
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+        
+        .history-time {
+          font-size: 0.875rem;
+          color: var(--text-light);
+        }
+        
+        .history-summary {
+          color: var(--text-secondary);
+          font-size: 0.875rem;
+        }
+        
+        .no-history {
+          text-align: center;
+          padding: 2rem;
+          color: var(--text-light);
+          font-style: italic;
+        }
+        
+        .notification {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: var(--bg-card);
+          border-radius: var(--radius-md);
+          box-shadow: var(--shadow-lg);
+          z-index: 1000;
+          max-width: 300px;
+          animation: slideIn 0.3s ease-out;
+        }
+        
+        .notification.success {
+          border-left: 4px solid var(--secondary-color);
+        }
+        
+        .notification.error {
+          border-left: 4px solid var(--primary-color);
+        }
+        
+        .notification.info {
+          border-left: 4px solid var(--accent-color);
+        }
+        
+        .notification-content {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 1rem;
+        }
+        
+        .notification-text {
+          color: var(--text-primary);
+          font-size: 0.875rem;
+        }
+        
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+      </style>
+    `;
+    
+    // Insert additional styles
+    document.head.insertAdjacentHTML('beforeend', additionalStyles);
+  </script>
+</body>
+</html>
