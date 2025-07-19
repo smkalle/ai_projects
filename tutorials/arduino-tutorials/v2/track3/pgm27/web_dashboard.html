@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Injection Molding Controller Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0a0e1a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.warning { background-color: #f59e0b; }
+        .status-indicator.error { background-color: #ef4444; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: linear-gradient(145deg, #1f2937, #111827);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border: 1px solid #374151;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+            border-color: #3b82f6;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #3b82f6;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .wide-card {
+            grid-column: span 2;
+        }
+
+        .full-width {
+            grid-column: span 4;
+        }
+
+        .process-phase {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .phase-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #3b82f6;
+            margin-bottom: 0.5rem;
+        }
+
+        .pressure-chart {
+            height: 250px;
+            background: #000;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #374151;
+        }
+
+        .pressure-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .temperature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .temp-zone {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 0.8rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .temp-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .temp-label {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-top: 0.25rem;
+        }
+
+        .spc-chart {
+            height: 200px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .spc-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .quality-gauge {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+
+        .gauge-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .gauge-background {
+            fill: none;
+            stroke: #374151;
+            stroke-width: 12;
+        }
+
+        .gauge-progress {
+            fill: none;
+            stroke: #10b981;
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease;
+        }
+
+        .gauge-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .gauge-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #10b981;
+        }
+
+        .gauge-label {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        .control-panel {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .control-button {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+        }
+
+        .control-button.danger {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .control-button.danger:hover {
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+        }
+
+        .control-button.warning {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        }
+
+        .digital-twin-panel {
+            background: rgba(147, 51, 234, 0.1);
+            border: 1px solid #8b5cf6;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .sync-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .sync-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 1.5s infinite;
+        }
+
+        .sync-dot.disconnected {
+            background: #ef4444;
+        }
+
+        .optimization-card {
+            text-align: center;
+        }
+
+        .optimization-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .optimization-benefits {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .benefit-item {
+            background: rgba(16, 185, 129, 0.1);
+            padding: 0.5rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .maintenance-alert {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .alert-title {
+            color: #ef4444;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .process-visualization {
+            height: 300px;
+            background: linear-gradient(to bottom, #1f2937 0%, #111827 100%);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .injection-profile {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, #3b82f6 0%, #1d4ed8 100%);
+            transition: height 0.5s ease;
+        }
+
+        .cavity-balance {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .cavity-indicator {
+            background: rgba(59, 130, 246, 0.2);
+            padding: 0.5rem;
+            border-radius: 6px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .cavity-indicator.balanced {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .cavity-indicator.unbalanced {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        .production-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-top: 0.25rem;
+        }
+
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 0.5rem 1rem;
+            background: rgba(0,0,0,0.8);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 1400px) {
+            .dashboard {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .full-width {
+                grid-column: span 3;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .wide-card,
+            .full-width {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            .wide-card,
+            .full-width {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Smart Injection Molding Controller</h1>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-indicator" id="systemStatus"></div>
+                <span>System Ready</span>
+            </div>
+            <div class="status-item">
+                <div class="status-indicator" id="processStatus"></div>
+                <span>Process Active</span>
+            </div>
+            <div class="status-item">
+                <div class="status-indicator" id="digitalTwinStatus"></div>
+                <span>Digital Twin</span>
+            </div>
+            <div class="status-item">
+                <div class="status-indicator" id="spcStatus"></div>
+                <span>SPC Control</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- Process Phase Display -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">⚙️</div>
+                Process Phase
+            </div>
+            <div class="process-phase">
+                <div class="phase-name" id="currentPhase">INJECTION</div>
+                <div class="metric">
+                    <span class="metric-label">Cycle Time</span>
+                    <span class="metric-value" id="cycleTime">25.3 s</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Progress</span>
+                    <span class="metric-value" id="cycleProgress">67%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cavity Pressure Monitoring -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">📊</div>
+                Cavity Pressure
+            </div>
+            <div class="metric">
+                <span class="metric-label">Average Pressure</span>
+                <span class="metric-value" id="avgPressure">1247 bar</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Peak Pressure</span>
+                <span class="metric-value" id="peakPressure">1823 bar</span>
+            </div>
+            <div class="cavity-balance">
+                <div class="cavity-indicator balanced" id="cavity1">
+                    <div class="temp-value">1245</div>
+                    <div class="temp-label">Cavity 1</div>
+                </div>
+                <div class="cavity-indicator balanced" id="cavity2">
+                    <div class="temp-value">1251</div>
+                    <div class="temp-label">Cavity 2</div>
+                </div>
+                <div class="cavity-indicator unbalanced" id="cavity3">
+                    <div class="temp-value">1238</div>
+                    <div class="temp-label">Cavity 3</div>
+                </div>
+                <div class="cavity-indicator balanced" id="cavity4">
+                    <div class="temp-value">1249</div>
+                    <div class="temp-label">Cavity 4</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Temperature Monitoring -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">🌡️</div>
+                Temperature Control
+            </div>
+            <div class="temperature-grid">
+                <div class="temp-zone">
+                    <div class="temp-value" id="barrel1Temp">242°C</div>
+                    <div class="temp-label">Barrel 1</div>
+                </div>
+                <div class="temp-zone">
+                    <div class="temp-value" id="barrel2Temp">251°C</div>
+                    <div class="temp-label">Barrel 2</div>
+                </div>
+                <div class="temp-zone">
+                    <div class="temp-value" id="barrel3Temp">258°C</div>
+                    <div class="temp-label">Barrel 3</div>
+                </div>
+                <div class="temp-zone">
+                    <div class="temp-value" id="nozzleTemp">255°C</div>
+                    <div class="temp-label">Nozzle</div>
+                </div>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Mold Temperature</span>
+                <span class="metric-value" id="moldTemp">62.1°C</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Melt Temperature</span>
+                <span class="metric-value" id="meltTemp">248°C</span>
+            </div>
+        </div>
+
+        <!-- Quality Prediction -->
+        <div class="card optimization-card">
+            <div class="card-title">
+                <div class="card-icon">🎯</div>
+                Quality Prediction
+            </div>
+            <div class="quality-gauge">
+                <svg class="gauge-svg">
+                    <circle class="gauge-background" cx="75" cy="75" r="60"></circle>
+                    <circle class="gauge-progress" cx="75" cy="75" r="60" 
+                            stroke-dasharray="0 377" id="qualityGauge"></circle>
+                </svg>
+                <div class="gauge-text">
+                    <div class="gauge-value" id="qualityScore">93</div>
+                    <div class="gauge-label">Quality %</div>
+                </div>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Predicted Weight</span>
+                <span class="metric-value" id="predictedWeight">15.7 g</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Confidence</span>
+                <span class="metric-value" id="predictionConfidence">96%</span>
+            </div>
+        </div>
+
+        <!-- Real-time Pressure Profile -->
+        <div class="card wide-card">
+            <div class="card-title">
+                <div class="card-icon">📈</div>
+                Real-time Pressure Profile
+            </div>
+            <div class="pressure-chart">
+                <canvas class="pressure-canvas" id="pressureCanvas"></canvas>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Pressure Balance</span>
+                <span class="metric-value" id="pressureBalance">±2.1%</span>
+            </div>
+        </div>
+
+        <!-- SPC Control Charts -->
+        <div class="card wide-card">
+            <div class="card-title">
+                <div class="card-icon">📊</div>
+                Statistical Process Control
+            </div>
+            <div class="spc-chart">
+                <canvas class="spc-canvas" id="spcCanvas"></canvas>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Process Cp</span>
+                <span class="metric-value" id="processCp">1.67</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Process Cpk</span>
+                <span class="metric-value" id="processCpk">1.45</span>
+            </div>
+        </div>
+
+        <!-- Digital Twin Status -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">🔗</div>
+                Digital Twin
+            </div>
+            <div class="digital-twin-panel">
+                <div class="sync-indicator">
+                    <div class="sync-dot" id="syncDot"></div>
+                    <span id="syncStatus">Synchronized</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Simulation Accuracy</span>
+                    <span class="metric-value" id="simAccuracy">94.2%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Model Confidence</span>
+                    <span class="metric-value" id="modelConfidence">88%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Last Sync</span>
+                    <span class="metric-value" id="lastSync">2s ago</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Process Optimization -->
+        <div class="card optimization-card">
+            <div class="card-title">
+                <div class="card-icon">⚡</div>
+                AI Optimization
+            </div>
+            <div class="optimization-score" id="optimizationScore">15%</div>
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <span style="font-size: 0.9rem; color: #9ca3af;">Cycle Time Reduction</span>
+            </div>
+            <div class="optimization-benefits">
+                <div class="benefit-item">
+                    <div class="temp-value">8.2%</div>
+                    <div class="temp-label">Energy Savings</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="temp-value">12%</div>
+                    <div class="temp-label">Quality Improvement</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Controls -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">🎮</div>
+                Process Control
+            </div>
+            <div class="control-panel">
+                <button class="control-button" onclick="startCycle()">Start Cycle</button>
+                <button class="control-button warning" onclick="pauseCycle()">Pause Cycle</button>
+                <button class="control-button danger" onclick="emergencyStop()">Emergency Stop</button>
+                <button class="control-button" onclick="calibrateSystem()">Calibrate System</button>
+                <button class="control-button" onclick="runOptimization()">Run Optimization</button>
+            </div>
+        </div>
+
+        <!-- Production Statistics -->
+        <div class="card full-width">
+            <div class="card-title">
+                <div class="card-icon">📊</div>
+                Production Dashboard
+            </div>
+            <div class="production-stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="partsToday">2,847</div>
+                    <div class="stat-label">Parts Today</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="qualityRate">97.3%</div>
+                    <div class="stat-label">Quality Rate</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="efficiency">94.6%</div>
+                    <div class="stat-label">OEE</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="scrapRate">2.1%</div>
+                    <div class="stat-label">Scrap Rate</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="avgCycleTime">23.8s</div>
+                    <div class="stat-label">Avg Cycle Time</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="energyUsage">142 kWh</div>
+                    <div class="stat-label">Energy Usage</div>
+                </div>
+            </div>
+            
+            <!-- Maintenance Alerts -->
+            <div class="maintenance-alert" id="maintenanceAlert" style="display: none;">
+                <div class="alert-title">Maintenance Required</div>
+                <div id="maintenanceDetails">Heater Zone 2 efficiency degraded. Schedule maintenance within 48 hours.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="connection-status">
+        <div class="status-indicator" id="connectionIndicator"></div>
+        <span id="connectionText">Connected</span>
+    </div>
+
+    <script>
+        // WebSocket connection
+        let ws;
+        let isConnected = false;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+
+        // Data storage
+        let processData = {
+            phase: 'INJECTION',
+            cycle_time: 25.3,
+            pressure: {
+                average: 1247,
+                peak: 1823,
+                cavities: [1245, 1251, 1238, 1249]
+            },
+            temperature: {
+                barrel1: 242,
+                barrel2: 251,
+                barrel3: 258,
+                nozzle: 255,
+                mold: 62.1,
+                melt: 248
+            },
+            quality: {
+                score: 93,
+                weight: 15.7,
+                confidence: 96
+            }
+        };
+
+        let digitalTwin = {
+            synchronized: true,
+            accuracy: 94.2,
+            confidence: 88,
+            lastSync: '2s ago'
+        };
+
+        let spcData = {
+            cp: 1.67,
+            cpk: 1.45,
+            pressure_data: [],
+            weight_data: [],
+            cycle_time_data: []
+        };
+
+        let pressureHistory = new Array(200).fill(0);
+        let optimizationData = {
+            cycle_reduction: 15,
+            energy_savings: 8.2,
+            quality_improvement: 12
+        };
+
+        // Initialize dashboard
+        function initDashboard() {
+            connectWebSocket();
+            initializePressureChart();
+            initializeSPCChart();
+            startDataSimulation();
+            updateDashboard();
+            setInterval(updateDashboard, 1000);
+        }
+
+        // WebSocket connection
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = function() {
+                isConnected = true;
+                reconnectAttempts = 0;
+                updateConnectionStatus('Connected', 'success');
+                console.log('WebSocket connected');
+            };
+            
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
+                }
+            };
+            
+            ws.onclose = function() {
+                isConnected = false;
+                updateConnectionStatus('Disconnected', 'error');
+                
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    setTimeout(() => {
+                        reconnectAttempts++;
+                        updateConnectionStatus(`Reconnecting... (${reconnectAttempts}/${maxReconnectAttempts})`, 'warning');
+                        connectWebSocket();
+                    }, 3000);
+                }
+            };
+        }
+
+        // Handle WebSocket messages
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'process_data':
+                    updateProcessData(data.data);
+                    break;
+                case 'digital_twin':
+                    updateDigitalTwin(data.data);
+                    break;
+                case 'optimization':
+                    updateOptimization(data.data);
+                    break;
+                case 'spc_data':
+                    updateSPCData(data.data);
+                    break;
+            }
+        }
+
+        // Update dashboard displays
+        function updateDashboard() {
+            // Process phase
+            document.getElementById('currentPhase').textContent = processData.phase;
+            document.getElementById('cycleTime').textContent = processData.cycle_time.toFixed(1) + ' s';
+            
+            // Pressure data
+            document.getElementById('avgPressure').textContent = processData.pressure.average + ' bar';
+            document.getElementById('peakPressure').textContent = processData.pressure.peak + ' bar';
+            
+            // Update cavity indicators
+            for (let i = 0; i < 4; i++) {
+                const cavity = document.getElementById(`cavity${i+1}`);
+                const pressure = processData.pressure.cavities[i];
+                cavity.querySelector('.temp-value').textContent = pressure;
+                
+                const deviation = Math.abs(pressure - processData.pressure.average);
+                const isBalanced = deviation < processData.pressure.average * 0.05; // 5% tolerance
+                cavity.className = `cavity-indicator ${isBalanced ? 'balanced' : 'unbalanced'}`;
+            }
+            
+            // Temperature data
+            document.getElementById('barrel1Temp').textContent = processData.temperature.barrel1 + '°C';
+            document.getElementById('barrel2Temp').textContent = processData.temperature.barrel2 + '°C';
+            document.getElementById('barrel3Temp').textContent = processData.temperature.barrel3 + '°C';
+            document.getElementById('nozzleTemp').textContent = processData.temperature.nozzle + '°C';
+            document.getElementById('moldTemp').textContent = processData.temperature.mold.toFixed(1) + '°C';
+            document.getElementById('meltTemp').textContent = processData.temperature.melt + '°C';
+            
+            // Quality data
+            updateQualityGauge(processData.quality.score);
+            document.getElementById('qualityScore').textContent = processData.quality.score;
+            document.getElementById('predictedWeight').textContent = processData.quality.weight.toFixed(1) + ' g';
+            document.getElementById('predictionConfidence').textContent = processData.quality.confidence + '%';
+            
+            // Digital twin
+            document.getElementById('simAccuracy').textContent = digitalTwin.accuracy.toFixed(1) + '%';
+            document.getElementById('modelConfidence').textContent = digitalTwin.confidence + '%';
+            document.getElementById('lastSync').textContent = digitalTwin.lastSync;
+            
+            const syncDot = document.getElementById('syncDot');
+            const syncStatus = document.getElementById('syncStatus');
+            if (digitalTwin.synchronized) {
+                syncDot.className = 'sync-dot';
+                syncStatus.textContent = 'Synchronized';
+            } else {
+                syncDot.className = 'sync-dot disconnected';
+                syncStatus.textContent = 'Disconnected';
+            }
+            
+            // SPC data
+            document.getElementById('processCp').textContent = spcData.cp.toFixed(2);
+            document.getElementById('processCpk').textContent = spcData.cpk.toFixed(2);
+            
+            // Optimization data
+            document.getElementById('optimizationScore').textContent = optimizationData.cycle_reduction + '%';
+            
+            // Status indicators
+            updateStatusIndicators();
+            
+            // Update charts
+            updatePressureChart();
+            updateSPCChart();
+        }
+
+        // Update quality gauge
+        function updateQualityGauge(quality) {
+            const gauge = document.getElementById('qualityGauge');
+            const circumference = 2 * Math.PI * 60;
+            const progress = (quality / 100) * circumference;
+            
+            gauge.style.strokeDasharray = `${progress} ${circumference}`;
+            
+            // Update color based on quality
+            if (quality >= 90) {
+                gauge.style.stroke = '#10b981';
+            } else if (quality >= 70) {
+                gauge.style.stroke = '#f59e0b';
+            } else {
+                gauge.style.stroke = '#ef4444';
+            }
+        }
+
+        // Initialize pressure chart
+        function initializePressureChart() {
+            const canvas = document.getElementById('pressureCanvas');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+
+        // Update pressure chart
+        function updatePressureChart() {
+            const canvas = document.getElementById('pressureCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid
+            ctx.strokeStyle = '#374151';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i <= 10; i++) {
+                const y = (canvas.height / 10) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Draw pressure curve
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < pressureHistory.length; i++) {
+                const x = (canvas.width / pressureHistory.length) * i;
+                const y = canvas.height - ((pressureHistory[i] / 2000) * canvas.height);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Draw cavity pressure lines
+            const colors = ['#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+            processData.pressure.cavities.forEach((pressure, index) => {
+                ctx.strokeStyle = colors[index];
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                
+                const y = canvas.height - ((pressure / 2000) * canvas.height);
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            });
+        }
+
+        // Initialize SPC chart
+        function initializeSPCChart() {
+            const canvas = document.getElementById('spcCanvas');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+
+        // Update SPC chart
+        function updateSPCChart() {
+            const canvas = document.getElementById('spcCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw control limits
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            
+            // Upper control limit
+            const ucl_y = canvas.height * 0.2;
+            ctx.beginPath();
+            ctx.moveTo(0, ucl_y);
+            ctx.lineTo(canvas.width, ucl_y);
+            ctx.stroke();
+            
+            // Lower control limit
+            const lcl_y = canvas.height * 0.8;
+            ctx.beginPath();
+            ctx.moveTo(0, lcl_y);
+            ctx.lineTo(canvas.width, lcl_y);
+            ctx.stroke();
+            
+            // Center line
+            ctx.strokeStyle = '#10b981';
+            ctx.setLineDash([]);
+            const center_y = canvas.height * 0.5;
+            ctx.beginPath();
+            ctx.moveTo(0, center_y);
+            ctx.lineTo(canvas.width, center_y);
+            ctx.stroke();
+            
+            // Plot data points (simulated)
+            ctx.fillStyle = '#3b82f6';
+            for (let i = 0; i < 20; i++) {
+                const x = (canvas.width / 20) * i;
+                const variation = (Math.random() - 0.5) * 0.3;
+                const y = center_y + (variation * canvas.height);
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+
+        // Update status indicators
+        function updateStatusIndicators() {
+            const systemStatus = document.getElementById('systemStatus');
+            const processStatus = document.getElementById('processStatus');
+            const digitalTwinStatus = document.getElementById('digitalTwinStatus');
+            const spcStatus = document.getElementById('spcStatus');
+            
+            // System status (based on overall health)
+            if (processData.quality.score >= 90) {
+                systemStatus.className = 'status-indicator';
+            } else if (processData.quality.score >= 70) {
+                systemStatus.className = 'status-indicator warning';
+            } else {
+                systemStatus.className = 'status-indicator error';
+            }
+            
+            // Process status (based on cycle state)
+            if (processData.phase === 'INJECTION' || processData.phase === 'PACK_HOLD') {
+                processStatus.className = 'status-indicator';
+            } else {
+                processStatus.className = 'status-indicator warning';
+            }
+            
+            // Digital twin status
+            if (digitalTwin.synchronized && digitalTwin.accuracy > 90) {
+                digitalTwinStatus.className = 'status-indicator';
+            } else {
+                digitalTwinStatus.className = 'status-indicator warning';
+            }
+            
+            // SPC status
+            if (spcData.cp > 1.33 && spcData.cpk > 1.33) {
+                spcStatus.className = 'status-indicator';
+            } else {
+                spcStatus.className = 'status-indicator warning';
+            }
+        }
+
+        // Update connection status
+        function updateConnectionStatus(message, type) {
+            const indicator = document.getElementById('connectionIndicator');
+            const text = document.getElementById('connectionText');
+            
+            text.textContent = message;
+            
+            switch (type) {
+                case 'success':
+                    indicator.className = 'status-indicator';
+                    break;
+                case 'warning':
+                    indicator.className = 'status-indicator warning';
+                    break;
+                case 'error':
+                    indicator.className = 'status-indicator error';
+                    break;
+            }
+        }
+
+        // Simulate real-time data updates
+        function startDataSimulation() {
+            setInterval(() => {
+                // Simulate pressure variations
+                pressureHistory.shift();
+                pressureHistory.push(processData.pressure.average + (Math.random() - 0.5) * 100);
+                
+                // Simulate process phase changes
+                const phases = ['INJECTION', 'PACK_HOLD', 'COOLING', 'EJECTION'];
+                if (Math.random() < 0.02) { // 2% chance per update
+                    const currentIndex = phases.indexOf(processData.phase);
+                    processData.phase = phases[(currentIndex + 1) % phases.length];
+                }
+                
+                // Simulate temperature variations
+                processData.temperature.barrel1 += (Math.random() - 0.5) * 2;
+                processData.temperature.barrel2 += (Math.random() - 0.5) * 2;
+                processData.temperature.barrel3 += (Math.random() - 0.5) * 2;
+                processData.temperature.nozzle += (Math.random() - 0.5) * 1;
+                processData.temperature.mold += (Math.random() - 0.5) * 0.5;
+                
+                // Simulate cavity pressure variations
+                for (let i = 0; i < 4; i++) {
+                    processData.pressure.cavities[i] += (Math.random() - 0.5) * 20;
+                }
+                processData.pressure.average = processData.pressure.cavities.reduce((a, b) => a + b, 0) / 4;
+                
+                // Simulate quality variations
+                processData.quality.score += (Math.random() - 0.5) * 2;
+                processData.quality.score = Math.max(70, Math.min(100, processData.quality.score));
+                
+                // Simulate digital twin sync
+                if (Math.random() < 0.1) {
+                    digitalTwin.accuracy += (Math.random() - 0.5) * 2;
+                    digitalTwin.accuracy = Math.max(85, Math.min(98, digitalTwin.accuracy));
+                }
+                
+            }, 1000);
+        }
+
+        // Control functions
+        function startCycle() {
+            if (ws && isConnected) {
+                ws.send(JSON.stringify({ command: 'start_cycle' }));
+            }
+            console.log('Start cycle command sent');
+        }
+
+        function pauseCycle() {
+            if (ws && isConnected) {
+                ws.send(JSON.stringify({ command: 'pause_cycle' }));
+            }
+            console.log('Pause cycle command sent');
+        }
+
+        function emergencyStop() {
+            if (confirm('Are you sure you want to trigger an emergency stop?')) {
+                if (ws && isConnected) {
+                    ws.send(JSON.stringify({ command: 'emergency_stop' }));
+                }
+                console.log('Emergency stop activated');
+            }
+        }
+
+        function calibrateSystem() {
+            if (ws && isConnected) {
+                ws.send(JSON.stringify({ command: 'calibrate_system' }));
+            }
+            console.log('System calibration started');
+        }
+
+        function runOptimization() {
+            if (ws && isConnected) {
+                ws.send(JSON.stringify({ command: 'run_optimization' }));
+            }
+            console.log('Optimization process started');
+        }
+
+        // Process data updates
+        function updateProcessData(data) {
+            processData = { ...processData, ...data };
+        }
+
+        function updateDigitalTwin(data) {
+            digitalTwin = { ...digitalTwin, ...data };
+        }
+
+        function updateOptimization(data) {
+            optimizationData = { ...optimizationData, ...data };
+        }
+
+        function updateSPCData(data) {
+            spcData = { ...spcData, ...data };
+        }
+
+        // Initialize dashboard when page loads
+        window.addEventListener('load', initDashboard);
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            setTimeout(() => {
+                initializePressureChart();
+                initializeSPCChart();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

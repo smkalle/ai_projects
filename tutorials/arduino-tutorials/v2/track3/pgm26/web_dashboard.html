@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Printing Process Monitor Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f1419;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.warning { background-color: #FF9800; }
+        .status-indicator.error { background-color: #F44336; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: linear-gradient(145deg, #1a1f2e, #16202e);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border: 1px solid #2d3748;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #64b5f6;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            width: 20px;
+            height: 20px;
+            background: #64b5f6;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #a0aec0;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .thermal-display {
+            grid-column: span 2;
+            position: relative;
+        }
+
+        .thermal-canvas {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            background: #000;
+            cursor: crosshair;
+        }
+
+        .thermal-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #2d3748;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .chart-container {
+            grid-column: span 3;
+            height: 400px;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        .controls {
+            grid-column: span 1;
+        }
+
+        .control-button {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .control-button.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+
+        .control-button.danger:hover {
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: #f44336;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .alert.show {
+            transform: translateX(0);
+        }
+
+        .alert.warning {
+            background: #ff9800;
+        }
+
+        .alert.success {
+            background: #4caf50;
+        }
+
+        .prediction-card {
+            text-align: center;
+        }
+
+        .prediction-score {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .prediction-confidence {
+            font-size: 0.9rem;
+            color: #a0aec0;
+            margin-bottom: 1rem;
+        }
+
+        .failure-type {
+            background: rgba(244, 67, 54, 0.2);
+            color: #ff6b6b;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 0.5rem 1rem;
+            background: rgba(0,0,0,0.8);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .layer-visualization {
+            height: 200px;
+            background: linear-gradient(to top, #1a1f2e 0%, #2d3748 100%);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .layer-stack {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            transition: height 0.5s ease;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .thermal-display,
+            .chart-container {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            .thermal-display,
+            .chart-container,
+            .controls {
+                grid-column: span 1;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>3D Printing Process Monitor</h1>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-indicator" id="systemStatus"></div>
+                <span>System Status</span>
+            </div>
+            <div class="status-item">
+                <div class="status-indicator" id="printStatus"></div>
+                <span>Print Status</span>
+            </div>
+            <div class="status-item">
+                <div class="status-indicator" id="mlStatus"></div>
+                <span>ML Engine</span>
+            </div>
+            <div class="status-item">
+                <div class="status-indicator" id="cloudStatus"></div>
+                <span>Cloud Connection</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- Temperature Monitoring -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">🌡️</div>
+                Temperature Monitoring
+            </div>
+            <div class="metric">
+                <span class="metric-label">Hotend Temperature</span>
+                <span class="metric-value" id="hotendTemp">--°C</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Bed Temperature</span>
+                <span class="metric-value" id="bedTemp">--°C</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Ambient Temperature</span>
+                <span class="metric-value" id="ambientTemp">--°C</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Thermal Uniformity</span>
+                <span class="metric-value" id="thermalUniformity">--%</span>
+            </div>
+        </div>
+
+        <!-- Print Progress -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">📊</div>
+                Print Progress
+            </div>
+            <div class="metric">
+                <span class="metric-label">Current Layer</span>
+                <span class="metric-value" id="currentLayer">--</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Total Layers</span>
+                <span class="metric-value" id="totalLayers">--</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Completion</span>
+                <span class="metric-value" id="completionPercent">0%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Time Remaining</span>
+                <span class="metric-value" id="timeRemaining">--:--</span>
+            </div>
+            <div class="layer-visualization">
+                <div class="layer-stack" id="layerStack"></div>
+            </div>
+        </div>
+
+        <!-- Thermal Imaging Display -->
+        <div class="card thermal-display">
+            <div class="card-title">
+                <div class="card-icon">🔥</div>
+                Real-Time Thermal Imaging
+            </div>
+            <canvas class="thermal-canvas" id="thermalCanvas"></canvas>
+            <div class="thermal-info">
+                <div>Mouse: (<span id="mouseX">0</span>, <span id="mouseY">0</span>)</div>
+                <div>Temp: <span id="mouseTemp">--°C</span></div>
+                <div>Min: <span id="minTemp">--°C</span> | Max: <span id="maxTemp">--°C</span></div>
+            </div>
+        </div>
+
+        <!-- Flow Monitoring -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">💧</div>
+                Flow Monitoring
+            </div>
+            <div class="metric">
+                <span class="metric-label">Flow Rate</span>
+                <span class="metric-value" id="flowRate">-- mm/s</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Cumulative Flow</span>
+                <span class="metric-value" id="cumulativeFlow">-- mm</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Flow Stability</span>
+                <span class="metric-value" id="flowStability">--%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Filament Weight</span>
+                <span class="metric-value" id="filamentWeight">-- g</span>
+            </div>
+        </div>
+
+        <!-- Quality Prediction -->
+        <div class="card prediction-card">
+            <div class="card-title">
+                <div class="card-icon">🤖</div>
+                AI Quality Prediction
+            </div>
+            <div class="prediction-score" id="qualityScore">85%</div>
+            <div class="prediction-confidence">Confidence: <span id="confidence">92%</span></div>
+            <div class="failure-type" id="failureType" style="display: none;">
+                Potential Issue: <span id="failureTypeText">None</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Predictions Made</span>
+                <span class="metric-value" id="totalPredictions">0</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Accuracy</span>
+                <span class="metric-value" id="predictionAccuracy">--%</span>
+            </div>
+        </div>
+
+        <!-- System Controls -->
+        <div class="card controls">
+            <div class="card-title">
+                <div class="card-icon">⚙️</div>
+                System Controls
+            </div>
+            <button class="control-button" onclick="pausePrint()">Pause Print</button>
+            <button class="control-button" onclick="resumePrint()">Resume Print</button>
+            <button class="control-button danger" onclick="emergencyStop()">Emergency Stop</button>
+            <button class="control-button" onclick="calibrateSystem()">Calibrate System</button>
+            <button class="control-button" onclick="downloadData()">Download Data</button>
+            <button class="control-button" onclick="showSettings()">Settings</button>
+        </div>
+
+        <!-- Historical Data Chart -->
+        <div class="card chart-container">
+            <div class="card-title">
+                <div class="card-icon">📈</div>
+                Historical Data
+            </div>
+            <canvas class="chart-canvas" id="dataChart"></canvas>
+        </div>
+    </div>
+
+    <div class="alert" id="alertBox">
+        <span id="alertMessage">Alert message</span>
+    </div>
+
+    <div class="connection-status">
+        <div class="status-indicator" id="connectionIndicator"></div>
+        <span id="connectionText">Connecting...</span>
+    </div>
+
+    <script>
+        // WebSocket connection
+        let ws;
+        let isConnected = false;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+
+        // Data storage
+        let sensorData = {
+            hotend_temp: 0,
+            bed_temp: 0,
+            ambient_temp: 0,
+            flow_rate: 0,
+            current_layer: 0,
+            completion: 0,
+            thermal_array: new Array(768).fill(25)
+        };
+
+        let historicalData = {
+            temperature: [],
+            flow: [],
+            quality: [],
+            timestamps: []
+        };
+
+        // Initialize dashboard
+        function initDashboard() {
+            connectWebSocket();
+            initThermalCanvas();
+            initDataChart();
+            startDataFetch();
+        }
+
+        // WebSocket connection
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = function() {
+                isConnected = true;
+                reconnectAttempts = 0;
+                updateConnectionStatus('Connected', 'success');
+                console.log('WebSocket connected');
+            };
+            
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
+                }
+            };
+            
+            ws.onclose = function() {
+                isConnected = false;
+                updateConnectionStatus('Disconnected', 'error');
+                
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    setTimeout(() => {
+                        reconnectAttempts++;
+                        updateConnectionStatus(`Reconnecting... (${reconnectAttempts}/${maxReconnectAttempts})`, 'warning');
+                        connectWebSocket();
+                    }, 3000);
+                } else {
+                    updateConnectionStatus('Connection Failed', 'error');
+                }
+            };
+            
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                updateConnectionStatus('Connection Error', 'error');
+            };
+        }
+
+        // Handle WebSocket messages
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'sensor_data':
+                    updateSensorData(data.data);
+                    break;
+                case 'prediction':
+                    updatePrediction(data.data);
+                    break;
+                case 'alert':
+                    showAlert(data.message, data.severity);
+                    break;
+                case 'thermal_data':
+                    updateThermalDisplay(data.data);
+                    break;
+                default:
+                    console.log('Unknown message type:', data.type);
+            }
+        }
+
+        // Fetch data from REST API
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                updateDashboard(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function startDataFetch() {
+            fetchData();
+            setInterval(fetchData, 2000); // Update every 2 seconds
+        }
+
+        // Update dashboard with new data
+        function updateDashboard(data) {
+            if (data.sensor_data) {
+                updateSensorData(data.sensor_data);
+            }
+            
+            if (data.prediction) {
+                updatePrediction(data.prediction);
+            }
+            
+            if (data.system) {
+                updateSystemMetrics(data.system);
+            }
+        }
+
+        // Update sensor data displays
+        function updateSensorData(data) {
+            sensorData = { ...sensorData, ...data };
+            
+            // Update temperature displays
+            document.getElementById('hotendTemp').textContent = `${data.hotend_temp?.toFixed(1) || '--'}°C`;
+            document.getElementById('bedTemp').textContent = `${data.bed_temp?.toFixed(1) || '--'}°C`;
+            document.getElementById('ambientTemp').textContent = `${data.ambient_temp?.toFixed(1) || '--'}°C`;
+            
+            // Update flow displays
+            document.getElementById('flowRate').textContent = `${data.flow_rate?.toFixed(2) || '--'} mm/s`;
+            document.getElementById('cumulativeFlow').textContent = `${data.cumulative_flow?.toFixed(1) || '--'} mm`;
+            
+            // Update progress displays
+            document.getElementById('currentLayer').textContent = data.current_layer || '--';
+            document.getElementById('completionPercent').textContent = `${data.completion?.toFixed(1) || 0}%`;
+            
+            // Update progress bar
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = `${data.completion || 0}%`;
+            
+            // Update layer visualization
+            updateLayerVisualization(data.current_layer, data.total_layers);
+            
+            // Add to historical data
+            addToHistoricalData(data);
+            
+            // Update status indicators
+            updateStatusIndicators(data);
+        }
+
+        // Update AI prediction display
+        function updatePrediction(data) {
+            const qualityScore = Math.round(data.success_probability * 100);
+            const confidence = Math.round(data.confidence * 100);
+            
+            document.getElementById('qualityScore').textContent = `${qualityScore}%`;
+            document.getElementById('confidence').textContent = `${confidence}%`;
+            
+            // Update quality score color
+            const scoreElement = document.getElementById('qualityScore');
+            if (qualityScore >= 80) {
+                scoreElement.style.background = 'linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)';
+            } else if (qualityScore >= 60) {
+                scoreElement.style.background = 'linear-gradient(135deg, #FF9800 0%, #FFC107 100%)';
+            } else {
+                scoreElement.style.background = 'linear-gradient(135deg, #F44336 0%, #E57373 100%)';
+            }
+            
+            // Show failure type if risk is high
+            if (data.failure_risk > 0.3) {
+                document.getElementById('failureType').style.display = 'block';
+                document.getElementById('failureTypeText').textContent = data.failure_type || 'Unknown';
+            } else {
+                document.getElementById('failureType').style.display = 'none';
+            }
+        }
+
+        // Initialize thermal canvas
+        function initThermalCanvas() {
+            const canvas = document.getElementById('thermalCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // Add mouse move event for temperature reading
+            canvas.addEventListener('mousemove', function(event) {
+                const rect = canvas.getBoundingClientRect();
+                const x = Math.floor((event.clientX - rect.left) / (canvas.width / 32));
+                const y = Math.floor((event.clientY - rect.top) / (canvas.height / 24));
+                
+                document.getElementById('mouseX').textContent = x;
+                document.getElementById('mouseY').textContent = y;
+                
+                if (x >= 0 && x < 32 && y >= 0 && y < 24) {
+                    const index = y * 32 + x;
+                    const temp = sensorData.thermal_array[index] || 25;
+                    document.getElementById('mouseTemp').textContent = `${temp.toFixed(1)}°C`;
+                }
+            });
+            
+            // Start thermal display update
+            setInterval(updateThermalCanvas, 125); // 8 Hz update rate
+        }
+
+        // Update thermal canvas
+        function updateThermalCanvas() {
+            const canvas = document.getElementById('thermalCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            if (!sensorData.thermal_array) return;
+            
+            const imageData = ctx.createImageData(32, 24);
+            const data = imageData.data;
+            
+            // Find min and max temperatures
+            let minTemp = Math.min(...sensorData.thermal_array);
+            let maxTemp = Math.max(...sensorData.thermal_array);
+            
+            // Update temperature range display
+            document.getElementById('minTemp').textContent = `${minTemp.toFixed(1)}°C`;
+            document.getElementById('maxTemp').textContent = `${maxTemp.toFixed(1)}°C`;
+            
+            // Convert thermal data to colors
+            for (let i = 0; i < 768; i++) {
+                const temp = sensorData.thermal_array[i];
+                const normalized = (temp - minTemp) / (maxTemp - minTemp);
+                const color = temperatureToColor(normalized);
+                
+                const pixelIndex = i * 4;
+                data[pixelIndex] = color.r;     // Red
+                data[pixelIndex + 1] = color.g; // Green
+                data[pixelIndex + 2] = color.b; // Blue
+                data[pixelIndex + 3] = 255;     // Alpha
+            }
+            
+            // Draw thermal image
+            ctx.putImageData(imageData, 0, 0);
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(canvas, 0, 0, 32, 24, 0, 0, canvas.width, canvas.height);
+        }
+
+        // Convert temperature to color (thermal colormap)
+        function temperatureToColor(normalized) {
+            // Iron colormap approximation
+            const value = Math.max(0, Math.min(1, normalized));
+            
+            let r, g, b;
+            
+            if (value < 0.25) {
+                r = 0;
+                g = 0;
+                b = Math.floor(255 * value * 4);
+            } else if (value < 0.5) {
+                r = 0;
+                g = Math.floor(255 * (value - 0.25) * 4);
+                b = 255;
+            } else if (value < 0.75) {
+                r = Math.floor(255 * (value - 0.5) * 4);
+                g = 255;
+                b = 255 - Math.floor(255 * (value - 0.5) * 4);
+            } else {
+                r = 255;
+                g = 255 - Math.floor(255 * (value - 0.75) * 4);
+                b = 0;
+            }
+            
+            return { r, g, b };
+        }
+
+        // Initialize data chart
+        function initDataChart() {
+            // This would typically use Chart.js or similar library
+            // For now, we'll create a simple canvas-based chart
+            const canvas = document.getElementById('dataChart');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // Start chart update
+            setInterval(updateDataChart, 5000); // Update every 5 seconds
+        }
+
+        // Update data chart
+        function updateDataChart() {
+            const canvas = document.getElementById('dataChart');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background grid
+            ctx.strokeStyle = '#2d3748';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i <= 10; i++) {
+                const x = (canvas.width / 10) * i;
+                const y = (canvas.height / 10) * i;
+                
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Draw temperature data
+            if (historicalData.temperature.length > 1) {
+                ctx.strokeStyle = '#64b5f6';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                for (let i = 0; i < historicalData.temperature.length; i++) {
+                    const x = (canvas.width / (historicalData.temperature.length - 1)) * i;
+                    const y = canvas.height - ((historicalData.temperature[i] / 300) * canvas.height);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+            }
+            
+            // Draw quality prediction data
+            if (historicalData.quality.length > 1) {
+                ctx.strokeStyle = '#4CAF50';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                for (let i = 0; i < historicalData.quality.length; i++) {
+                    const x = (canvas.width / (historicalData.quality.length - 1)) * i;
+                    const y = canvas.height - (historicalData.quality[i] * canvas.height);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+            }
+        }
+
+        // Add data to historical arrays
+        function addToHistoricalData(data) {
+            const maxDataPoints = 100;
+            
+            historicalData.temperature.push(data.hotend_temp || 0);
+            historicalData.flow.push(data.flow_rate || 0);
+            historicalData.quality.push((data.quality_score || 0.5));
+            historicalData.timestamps.push(new Date());
+            
+            // Keep only recent data
+            if (historicalData.temperature.length > maxDataPoints) {
+                historicalData.temperature.shift();
+                historicalData.flow.shift();
+                historicalData.quality.shift();
+                historicalData.timestamps.shift();
+            }
+        }
+
+        // Update layer visualization
+        function updateLayerVisualization(currentLayer, totalLayers) {
+            const layerStack = document.getElementById('layerStack');
+            if (!currentLayer || !totalLayers) return;
+            
+            const percentage = (currentLayer / totalLayers) * 100;
+            layerStack.style.height = `${percentage}%`;
+            layerStack.style.background = `linear-gradient(to top, #4CAF50 0%, #8BC34A 100%)`;
+        }
+
+        // Update status indicators
+        function updateStatusIndicators(data) {
+            // System status based on overall health
+            const systemStatus = document.getElementById('systemStatus');
+            if (data.hotend_temp > 250 || data.bed_temp > 100) {
+                systemStatus.className = 'status-indicator warning';
+            } else {
+                systemStatus.className = 'status-indicator';
+            }
+            
+            // Print status based on flow and progress
+            const printStatus = document.getElementById('printStatus');
+            if (data.flow_rate > 0.1) {
+                printStatus.className = 'status-indicator';
+            } else {
+                printStatus.className = 'status-indicator warning';
+            }
+        }
+
+        // Update connection status
+        function updateConnectionStatus(message, type) {
+            const indicator = document.getElementById('connectionIndicator');
+            const text = document.getElementById('connectionText');
+            
+            text.textContent = message;
+            
+            switch (type) {
+                case 'success':
+                    indicator.className = 'status-indicator';
+                    break;
+                case 'warning':
+                    indicator.className = 'status-indicator warning';
+                    break;
+                case 'error':
+                    indicator.className = 'status-indicator error';
+                    break;
+            }
+        }
+
+        // Show alert message
+        function showAlert(message, severity = 'info') {
+            const alertBox = document.getElementById('alertBox');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            alertMessage.textContent = message;
+            alertBox.className = `alert ${severity} show`;
+            
+            setTimeout(() => {
+                alertBox.className = 'alert';
+            }, 5000);
+        }
+
+        // Control functions
+        function pausePrint() {
+            if (ws && isConnected) {
+                ws.send(JSON.stringify({ command: 'pause_print' }));
+                showAlert('Pause command sent', 'success');
+            }
+        }
+
+        function resumePrint() {
+            if (ws && isConnected) {
+                ws.send(JSON.stringify({ command: 'resume_print' }));
+                showAlert('Resume command sent', 'success');
+            }
+        }
+
+        function emergencyStop() {
+            if (confirm('Are you sure you want to trigger an emergency stop?')) {
+                if (ws && isConnected) {
+                    ws.send(JSON.stringify({ command: 'emergency_stop' }));
+                    showAlert('EMERGENCY STOP ACTIVATED', 'error');
+                }
+            }
+        }
+
+        function calibrateSystem() {
+            if (ws && isConnected) {
+                ws.send(JSON.stringify({ command: 'calibrate' }));
+                showAlert('Calibration started', 'success');
+            }
+        }
+
+        function downloadData() {
+            // Create CSV data
+            let csvContent = "timestamp,hotend_temp,bed_temp,flow_rate,quality_score\n";
+            
+            for (let i = 0; i < historicalData.timestamps.length; i++) {
+                csvContent += `${historicalData.timestamps[i].toISOString()},`;
+                csvContent += `${historicalData.temperature[i]},`;
+                csvContent += `${historicalData.flow[i]},`;
+                csvContent += `${historicalData.quality[i]}\n`;
+            }
+            
+            // Download file
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `print_data_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function showSettings() {
+            showAlert('Settings panel coming soon', 'info');
+        }
+
+        // Initialize dashboard when page loads
+        window.addEventListener('load', initDashboard);
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            // Reinitialize canvases with new dimensions
+            setTimeout(() => {
+                initThermalCanvas();
+                initDataChart();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

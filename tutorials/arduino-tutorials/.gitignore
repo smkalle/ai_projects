@@ -1,0 +1,85 @@
+# Arduino IDE files
+*.hex
+*.elf
+*.map
+*.lst
+
+# Temporary Arduino IDE files
+*~
+*.tmp
+*.bak
+*.orig
+
+# Arduino IDE build directory
+build/
+build_*/
+
+# Libraries downloaded by Arduino IDE
+libraries/
+
+# Arduino IDE preferences
+preferences.txt
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Log files
+*.log
+
+# Temporary files
+tmp/
+temp/
+
+# Backup files
+*.backup
+
+# System files
+.fuse_hidden*
+
+# Windows
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.AppleDouble
+.LSOverride
+Icon?
+
+# Linux
+*~
+
+# Python cache (if any Python tools are used)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node modules (if any web tools are used)
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Personal notes or sensitive information
+PRIVATE/
+private/
+secrets/
+keys/
+*.key
+*.pem
+config.ini
