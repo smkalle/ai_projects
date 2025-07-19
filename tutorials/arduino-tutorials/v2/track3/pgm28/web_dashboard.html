@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welding Quality Monitor Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f1419;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #c72c41 0%, #801336 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.warning { background-color: #FF9800; }
+        .status-indicator.error { background-color: #F44336; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: linear-gradient(145deg, #1a1f2e, #16202e);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border: 1px solid #2d3748;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            width: 20px;
+            height: 20px;
+            background: #ff6b6b;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #a0aec0;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .wide-card {
+            grid-column: span 2;
+        }
+
+        .full-width {
+            grid-column: span 4;
+        }
+
+        .waveform-display {
+            height: 200px;
+            background: #000;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+        .waveform-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .frequency-display {
+            height: 250px;
+            background: #000;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .frequency-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .welding-process {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .process-type {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+
+        .quality-gauge {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+
+        .gauge-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .gauge-background {
+            fill: none;
+            stroke: #2d3748;
+            stroke-width: 8;
+        }
+
+        .gauge-progress {
+            fill: none;
+            stroke: #4CAF50;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease;
+        }
+
+        .gauge-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .gauge-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .gauge-label {
+            font-size: 0.8rem;
+            color: #a0aec0;
+        }
+
+        .alert-panel {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid #f44336;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .alert-title {
+            color: #f44336;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-list {
+            list-style: none;
+            font-size: 0.9rem;
+        }
+
+        .alert-item {
+            padding: 0.25rem 0;
+            border-bottom: 1px solid rgba(244, 67, 54, 0.2);
+        }
+
+        .parameter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .control-button {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .control-button.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+
+        .control-button.danger:hover {
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .defect-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .defect-none { background-color: #4CAF50; }
+        .defect-porosity { background-color: #FF9800; }
+        .defect-crack { background-color: #f44336; }
+        .defect-incomplete { background-color: #9C27B0; }
+
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 0.5rem 1rem;
+            background: rgba(0,0,0,0.8);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .spec-compliance {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 6px;
+        }
+
+        .compliant {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+        }
+
+        .non-compliant {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+        }
+
+        .heat-input-meter {
+            height: 100px;
+            background: linear-gradient(to top, #4CAF50 0%, #FF9800 50%, #f44336 100%);
+            border-radius: 8px;
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .heat-input-indicator {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.8);
+            transition: bottom 0.3s ease;
+        }
+
+        @media (max-width: 1400px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            .full-width {
+                grid-column: span 3;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+            }
+            .wide-card,
+            .full-width {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            .wide-card,
+            .full-width {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Welding Quality Monitor Dashboard</h1>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-indicator" id="systemStatus"></div>
+                <span>System Status</span>
+            </div>
+            <div class="status-item">
+                <div class="status-indicator" id="weldStatus"></div>
+                <span>Weld Status</span>
+            </div>
+            <div class="status-item">
+                <div class="status-indicator" id="mlStatus"></div>
+                <span>AI Analysis</span>
+            </div>
+            <div class="status-item">
+                <div class="status-indicator" id="dataStatus"></div>
+                <span>Data Logging</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- Welding Process Type -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">⚡</div>
+                Welding Process
+            </div>
+            <div class="welding-process">
+                <div class="process-type" id="processType">MIG Welding</div>
+                <div class="metric">
+                    <span class="metric-label">Mode</span>
+                    <span class="metric-value" id="weldMode">CV</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Material</span>
+                    <span class="metric-value" id="baseMaterial">Steel</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Thickness</span>
+                    <span class="metric-value" id="materialThickness">6.0 mm</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Electrical Parameters -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">⚡</div>
+                Electrical Parameters
+            </div>
+            <div class="parameter-grid">
+                <div class="metric">
+                    <span class="metric-label">Current</span>
+                    <span class="metric-value" id="weldCurrent">-- A</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Voltage</span>
+                    <span class="metric-value" id="weldVoltage">-- V</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Power</span>
+                    <span class="metric-value" id="weldPower">-- kW</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Arc Stability</span>
+                    <span class="metric-value" id="arcStability">--%</span>
+                </div>
+            </div>
+            <div class="heat-input-meter">
+                <div class="heat-input-indicator" id="heatInputIndicator"></div>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Heat Input</span>
+                <span class="metric-value" id="heatInput">-- kJ/mm</span>
+            </div>
+        </div>
+
+        <!-- Quality Assessment -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">🎯</div>
+                Quality Assessment
+            </div>
+            <div class="quality-gauge">
+                <svg class="gauge-svg">
+                    <circle class="gauge-background" cx="75" cy="75" r="60"></circle>
+                    <circle class="gauge-progress" cx="75" cy="75" r="60" 
+                            stroke-dasharray="0 377" id="qualityGauge"></circle>
+                </svg>
+                <div class="gauge-text">
+                    <div class="gauge-value" id="qualityScore">85</div>
+                    <div class="gauge-label">Quality %</div>
+                </div>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Prediction Confidence</span>
+                <span class="metric-value" id="confidence">92%</span>
+            </div>
+        </div>
+
+        <!-- Travel Speed & Position -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">🏃</div>
+                Motion Parameters
+            </div>
+            <div class="metric">
+                <span class="metric-label">Travel Speed</span>
+                <span class="metric-value" id="travelSpeed">-- mm/min</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Wire Feed Speed</span>
+                <span class="metric-value" id="wireFeedSpeed">-- m/min</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Arc Length</span>
+                <span class="metric-value" id="arcLength">-- mm</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Position</span>
+                <span class="metric-value" id="weldPosition">-- mm</span>
+            </div>
+        </div>
+
+        <!-- Current/Voltage Waveform -->
+        <div class="card wide-card">
+            <div class="card-title">
+                <div class="card-icon">📊</div>
+                Electrical Waveforms (Real-time)
+            </div>
+            <div class="waveform-display">
+                <canvas class="waveform-canvas" id="waveformCanvas"></canvas>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Sample Rate</span>
+                <span class="metric-value">10 kHz</span>
+            </div>
+        </div>
+
+        <!-- Acoustic Analysis -->
+        <div class="card wide-card">
+            <div class="card-title">
+                <div class="card-icon">🔊</div>
+                Acoustic Frequency Analysis
+            </div>
+            <div class="frequency-display">
+                <canvas class="frequency-canvas" id="frequencyCanvas"></canvas>
+            </div>
+            <div class="parameter-grid">
+                <div class="metric">
+                    <span class="metric-label">Dominant Freq</span>
+                    <span class="metric-value" id="dominantFreq">-- Hz</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Noise Level</span>
+                    <span class="metric-value" id="noiseLevel">-- dB</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Defect Detection -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">🔍</div>
+                Defect Detection
+            </div>
+            <div class="alert-panel">
+                <div class="alert-title">Detected Issues</div>
+                <ul class="alert-list" id="defectList">
+                    <li class="alert-item">
+                        <span class="defect-indicator defect-none"></span>
+                        No defects detected
+                    </li>
+                </ul>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Porosity Risk</span>
+                <span class="metric-value" id="porosityRisk">Low</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Crack Risk</span>
+                <span class="metric-value" id="crackRisk">Low</span>
+            </div>
+        </div>
+
+        <!-- Standards Compliance -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">📋</div>
+                Standards Compliance
+            </div>
+            <div class="spec-compliance compliant" id="awsCompliance">
+                <span>✓</span>
+                <span>AWS D1.1</span>
+            </div>
+            <div class="spec-compliance compliant" id="isoCompliance">
+                <span>✓</span>
+                <span>ISO 3834</span>
+            </div>
+            <div class="spec-compliance compliant" id="asmeCompliance">
+                <span>✓</span>
+                <span>ASME IX</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Overall Grade</span>
+                <span class="metric-value" id="overallGrade">A</span>
+            </div>
+        </div>
+
+        <!-- System Controls -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">⚙️</div>
+                System Controls
+            </div>
+            <button class="control-button" onclick="startWelding()">Start Monitoring</button>
+            <button class="control-button" onclick="pauseWelding()">Pause Monitoring</button>
+            <button class="control-button danger" onclick="emergencyStop()">Emergency Stop</button>
+            <button class="control-button" onclick="calibrateSystem()">Calibrate System</button>
+            <button class="control-button" onclick="exportData()">Export Data</button>
+            <button class="control-button" onclick="generateReport()">Generate Report</button>
+        </div>
+
+        <!-- Environmental Conditions -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">🌡️</div>
+                Environmental
+            </div>
+            <div class="metric">
+                <span class="metric-label">Ambient Temp</span>
+                <span class="metric-value" id="ambientTemp">-- °C</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Humidity</span>
+                <span class="metric-value" id="humidity">-- %</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Wind Speed</span>
+                <span class="metric-value" id="windSpeed">-- m/s</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Gas Flow</span>
+                <span class="metric-value" id="gasFlow">-- L/min</span>
+            </div>
+        </div>
+
+        <!-- Historical Data Chart -->
+        <div class="card full-width">
+            <div class="card-title">
+                <div class="card-icon">📈</div>
+                Historical Welding Data
+            </div>
+            <canvas id="historicalChart" style="width: 100%; height: 300px; background: rgba(255,255,255,0.05); border-radius: 8px;"></canvas>
+        </div>
+    </div>
+
+    <div class="connection-status">
+        <div class="status-indicator" id="connectionIndicator"></div>
+        <span id="connectionText">Connecting...</span>
+    </div>
+
+    <script>
+        // WebSocket connection
+        let ws;
+        let isConnected = false;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+
+        // Data storage
+        let weldingData = {
+            current: 0,
+            voltage: 0,
+            power: 0,
+            heat_input: 0,
+            arc_stability: 0,
+            travel_speed: 0,
+            quality_score: 85,
+            confidence: 92
+        };
+
+        let historicalData = {
+            current: [],
+            voltage: [],
+            quality: [],
+            timestamps: []
+        };
+
+        let waveformData = {
+            current: new Array(1000).fill(0),
+            voltage: new Array(1000).fill(0)
+        };
+
+        let frequencyData = new Array(512).fill(0);
+
+        // Initialize dashboard
+        function initDashboard() {
+            connectWebSocket();
+            initWaveformCanvas();
+            initFrequencyCanvas();
+            initHistoricalChart();
+            startDataFetch();
+            simulateWeldingData(); // For demonstration
+        }
+
+        // WebSocket connection
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = function() {
+                isConnected = true;
+                reconnectAttempts = 0;
+                updateConnectionStatus('Connected', 'success');
+                console.log('WebSocket connected');
+            };
+            
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
+                }
+            };
+            
+            ws.onclose = function() {
+                isConnected = false;
+                updateConnectionStatus('Disconnected', 'error');
+                
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    setTimeout(() => {
+                        reconnectAttempts++;
+                        updateConnectionStatus(`Reconnecting... (${reconnectAttempts}/${maxReconnectAttempts})`, 'warning');
+                        connectWebSocket();
+                    }, 3000);
+                } else {
+                    updateConnectionStatus('Connection Failed', 'error');
+                }
+            };
+        }
+
+        // Handle WebSocket messages
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'welding_data':
+                    updateWeldingData(data.data);
+                    break;
+                case 'waveform_data':
+                    updateWaveformData(data.data);
+                    break;
+                case 'frequency_data':
+                    updateFrequencyData(data.data);
+                    break;
+                case 'defect_alert':
+                    updateDefectDetection(data.data);
+                    break;
+                default:
+                    console.log('Unknown message type:', data.type);
+            }
+        }
+
+        // Fetch data from REST API
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/welding_status');
+                const data = await response.json();
+                updateDashboard(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function startDataFetch() {
+            fetchData();
+            setInterval(fetchData, 1000); // Update every second
+        }
+
+        // Update welding data
+        function updateWeldingData(data) {
+            weldingData = { ...weldingData, ...data };
+            
+            // Update electrical parameters
+            document.getElementById('weldCurrent').textContent = `${data.current?.toFixed(1) || '--'} A`;
+            document.getElementById('weldVoltage').textContent = `${data.voltage?.toFixed(1) || '--'} V`;
+            document.getElementById('weldPower').textContent = `${data.power?.toFixed(2) || '--'} kW`;
+            document.getElementById('arcStability').textContent = `${(data.arc_stability * 100)?.toFixed(1) || '--'}%`;
+            document.getElementById('heatInput').textContent = `${data.heat_input?.toFixed(2) || '--'} kJ/mm`;
+            
+            // Update motion parameters
+            document.getElementById('travelSpeed').textContent = `${data.travel_speed?.toFixed(1) || '--'} mm/min`;
+            document.getElementById('wireFeedSpeed').textContent = `${data.wire_feed_speed?.toFixed(1) || '--'} m/min`;
+            document.getElementById('arcLength').textContent = `${data.arc_length?.toFixed(1) || '--'} mm`;
+            
+            // Update quality gauge
+            updateQualityGauge(data.quality_score * 100, data.confidence * 100);
+            
+            // Update heat input indicator
+            updateHeatInputMeter(data.heat_input);
+            
+            // Add to historical data
+            addToHistoricalData(data);
+            
+            // Update status indicators
+            updateStatusIndicators(data);
+        }
+
+        // Update quality gauge
+        function updateQualityGauge(quality, confidence) {
+            const gauge = document.getElementById('qualityGauge');
+            const scoreElement = document.getElementById('qualityScore');
+            const confidenceElement = document.getElementById('confidence');
+            
+            const circumference = 2 * Math.PI * 60;
+            const progress = (quality / 100) * circumference;
+            
+            gauge.style.strokeDasharray = `${progress} ${circumference}`;
+            
+            // Update color based on quality
+            if (quality >= 80) {
+                gauge.style.stroke = '#4CAF50';
+                scoreElement.style.color = '#4CAF50';
+            } else if (quality >= 60) {
+                gauge.style.stroke = '#FF9800';
+                scoreElement.style.color = '#FF9800';
+            } else {
+                gauge.style.stroke = '#f44336';
+                scoreElement.style.color = '#f44336';
+            }
+            
+            scoreElement.textContent = Math.round(quality);
+            confidenceElement.textContent = `${Math.round(confidence)}%`;
+        }
+
+        // Update heat input meter
+        function updateHeatInputMeter(heatInput) {
+            const indicator = document.getElementById('heatInputIndicator');
+            const maxHeatInput = 3.0; // kJ/mm
+            const percentage = Math.min((heatInput / maxHeatInput) * 100, 100);
+            indicator.style.bottom = `${percentage}%`;
+        }
+
+        // Initialize waveform canvas
+        function initWaveformCanvas() {
+            const canvas = document.getElementById('waveformCanvas');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            setInterval(updateWaveformCanvas, 50); // 20 Hz update
+        }
+
+        // Update waveform canvas
+        function updateWaveformCanvas() {
+            const canvas = document.getElementById('waveformCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid
+            ctx.strokeStyle = '#2d3748';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i <= 10; i++) {
+                const y = (canvas.height / 10) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Draw current waveform
+            ctx.strokeStyle = '#FF6B6B';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < waveformData.current.length; i++) {
+                const x = (canvas.width / waveformData.current.length) * i;
+                const y = canvas.height - ((waveformData.current[i] / 300) * canvas.height);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Draw voltage waveform
+            ctx.strokeStyle = '#64B5F6';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < waveformData.voltage.length; i++) {
+                const x = (canvas.width / waveformData.voltage.length) * i;
+                const y = canvas.height - ((waveformData.voltage[i] / 50) * canvas.height);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+        }
+
+        // Initialize frequency canvas
+        function initFrequencyCanvas() {
+            const canvas = document.getElementById('frequencyCanvas');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            setInterval(updateFrequencyCanvas, 100); // 10 Hz update
+        }
+
+        // Update frequency canvas
+        function updateFrequencyCanvas() {
+            const canvas = document.getElementById('frequencyCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw frequency spectrum
+            ctx.fillStyle = '#4CAF50';
+            
+            for (let i = 0; i < frequencyData.length; i++) {
+                const x = (canvas.width / frequencyData.length) * i;
+                const height = (frequencyData[i] / 100) * canvas.height;
+                const y = canvas.height - height;
+                
+                ctx.fillRect(x, y, canvas.width / frequencyData.length - 1, height);
+            }
+            
+            // Draw frequency labels
+            ctx.fillStyle = '#a0aec0';
+            ctx.font = '12px Arial';
+            ctx.fillText('0 Hz', 10, canvas.height - 10);
+            ctx.fillText('5 kHz', canvas.width - 50, canvas.height - 10);
+        }
+
+        // Initialize historical chart
+        function initHistoricalChart() {
+            const canvas = document.getElementById('historicalChart');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 300;
+            
+            setInterval(updateHistoricalChart, 5000); // Update every 5 seconds
+        }
+
+        // Update historical chart
+        function updateHistoricalChart() {
+            const canvas = document.getElementById('historicalChart');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid
+            ctx.strokeStyle = '#2d3748';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i <= 10; i++) {
+                const x = (canvas.width / 10) * i;
+                const y = (canvas.height / 10) * i;
+                
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Draw historical data
+            if (historicalData.current.length > 1) {
+                ctx.strokeStyle = '#FF6B6B';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                for (let i = 0; i < historicalData.current.length; i++) {
+                    const x = (canvas.width / (historicalData.current.length - 1)) * i;
+                    const y = canvas.height - ((historicalData.current[i] / 300) * canvas.height);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+            }
+        }
+
+        // Add data to historical arrays
+        function addToHistoricalData(data) {
+            const maxDataPoints = 100;
+            
+            historicalData.current.push(data.current || 0);
+            historicalData.voltage.push(data.voltage || 0);
+            historicalData.quality.push(data.quality_score || 0.85);
+            historicalData.timestamps.push(new Date());
+            
+            // Keep only recent data
+            if (historicalData.current.length > maxDataPoints) {
+                historicalData.current.shift();
+                historicalData.voltage.shift();
+                historicalData.quality.shift();
+                historicalData.timestamps.shift();
+            }
+        }
+
+        // Update defect detection
+        function updateDefectDetection(data) {
+            const defectList = document.getElementById('defectList');
+            defectList.innerHTML = '';
+            
+            if (data.defects && data.defects.length > 0) {
+                data.defects.forEach(defect => {
+                    const li = document.createElement('li');
+                    li.className = 'alert-item';
+                    li.innerHTML = `
+                        <span class="defect-indicator defect-${defect.type}"></span>
+                        ${defect.description}
+                    `;
+                    defectList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.className = 'alert-item';
+                li.innerHTML = `
+                    <span class="defect-indicator defect-none"></span>
+                    No defects detected
+                `;
+                defectList.appendChild(li);
+            }
+            
+            // Update risk indicators
+            document.getElementById('porosityRisk').textContent = data.porosity_risk || 'Low';
+            document.getElementById('crackRisk').textContent = data.crack_risk || 'Low';
+        }
+
+        // Update status indicators
+        function updateStatusIndicators(data) {
+            const systemStatus = document.getElementById('systemStatus');
+            const weldStatus = document.getElementById('weldStatus');
+            const mlStatus = document.getElementById('mlStatus');
+            const dataStatus = document.getElementById('dataStatus');
+            
+            // System status
+            if (data.current > 0) {
+                systemStatus.className = 'status-indicator';
+            } else {
+                systemStatus.className = 'status-indicator warning';
+            }
+            
+            // Weld status
+            if (data.arc_stability > 0.8) {
+                weldStatus.className = 'status-indicator';
+            } else if (data.arc_stability > 0.6) {
+                weldStatus.className = 'status-indicator warning';
+            } else {
+                weldStatus.className = 'status-indicator error';
+            }
+            
+            // ML status
+            if (data.confidence > 0.8) {
+                mlStatus.className = 'status-indicator';
+            } else {
+                mlStatus.className = 'status-indicator warning';
+            }
+            
+            // Data status
+            dataStatus.className = 'status-indicator';
+        }
+
+        // Update connection status
+        function updateConnectionStatus(message, type) {
+            const indicator = document.getElementById('connectionIndicator');
+            const text = document.getElementById('connectionText');
+            
+            text.textContent = message;
+            
+            switch (type) {
+                case 'success':
+                    indicator.className = 'status-indicator';
+                    break;
+                case 'warning':
+                    indicator.className = 'status-indicator warning';
+                    break;
+                case 'error':
+                    indicator.className = 'status-indicator error';
+                    break;
+            }
+        }
+
+        // Control functions
+        function startWelding() {
+            if (ws && isConnected) {
+                ws.send(JSON.stringify({ command: 'start_monitoring' }));
+            }
+        }
+
+        function pauseWelding() {
+            if (ws && isConnected) {
+                ws.send(JSON.stringify({ command: 'pause_monitoring' }));
+            }
+        }
+
+        function emergencyStop() {
+            if (confirm('Are you sure you want to trigger an emergency stop?')) {
+                if (ws && isConnected) {
+                    ws.send(JSON.stringify({ command: 'emergency_stop' }));
+                }
+            }
+        }
+
+        function calibrateSystem() {
+            if (ws && isConnected) {
+                ws.send(JSON.stringify({ command: 'calibrate' }));
+            }
+        }
+
+        function exportData() {
+            // Create CSV data
+            let csvContent = "timestamp,current,voltage,quality_score\n";
+            
+            for (let i = 0; i < historicalData.timestamps.length; i++) {
+                csvContent += `${historicalData.timestamps[i].toISOString()},`;
+                csvContent += `${historicalData.current[i]},`;
+                csvContent += `${historicalData.voltage[i]},`;
+                csvContent += `${historicalData.quality[i]}\n`;
+            }
+            
+            // Download file
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `welding_data_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function generateReport() {
+            alert('Generating welding quality report...');
+        }
+
+        // Simulate welding data for demonstration
+        function simulateWeldingData() {
+            setInterval(() => {
+                // Simulate current waveform
+                for (let i = 0; i < waveformData.current.length - 1; i++) {
+                    waveformData.current[i] = waveformData.current[i + 1];
+                }
+                waveformData.current[waveformData.current.length - 1] = 
+                    180 + 50 * Math.sin(Date.now() * 0.01) + 20 * Math.random();
+                
+                // Simulate voltage waveform
+                for (let i = 0; i < waveformData.voltage.length - 1; i++) {
+                    waveformData.voltage[i] = waveformData.voltage[i + 1];
+                }
+                waveformData.voltage[waveformData.voltage.length - 1] = 
+                    24 + 3 * Math.sin(Date.now() * 0.008) + 1 * Math.random();
+                
+                // Simulate frequency data
+                for (let i = 0; i < frequencyData.length; i++) {
+                    frequencyData[i] = Math.random() * 80 * Math.exp(-i / 100);
+                }
+                
+                // Update dominant frequency
+                const dominantFreq = 50 + Math.random() * 200;
+                document.getElementById('dominantFreq').textContent = `${dominantFreq.toFixed(0)} Hz`;
+                document.getElementById('noiseLevel').textContent = `${(65 + Math.random() * 10).toFixed(1)} dB`;
+                
+            }, 50);
+            
+            setInterval(() => {
+                // Simulate welding parameters
+                const simulatedData = {
+                    current: 180 + 20 * Math.random(),
+                    voltage: 24 + 2 * Math.random(),
+                    power: (180 + 20 * Math.random()) * (24 + 2 * Math.random()) / 1000,
+                    heat_input: 1.2 + 0.3 * Math.random(),
+                    arc_stability: 0.85 + 0.1 * Math.random(),
+                    travel_speed: 250 + 50 * Math.random(),
+                    wire_feed_speed: 8.5 + 1 * Math.random(),
+                    arc_length: 12 + 2 * Math.random(),
+                    quality_score: 0.85 + 0.1 * Math.random(),
+                    confidence: 0.92 + 0.05 * Math.random()
+                };
+                
+                updateWeldingData(simulatedData);
+            }, 1000);
+        }
+
+        // Initialize dashboard when page loads
+        window.addEventListener('load', initDashboard);
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            setTimeout(() => {
+                initWaveformCanvas();
+                initFrequencyCanvas();
+                initHistoricalChart();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Composite Curing Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: auto;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .header .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .main-container {
+            margin-top: 120px;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 2rem;
+            max-width: 1800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .status-panel {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .status-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .status-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .status-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-label {
+            color: #6c757d;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .status-unit {
+            font-size: 1.2rem;
+            color: #495057;
+            margin-left: 0.3rem;
+        }
+        
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .panel:hover {
+            transform: translateY(-2px);
+        }
+        
+        .panel h3 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin-top: 1rem;
+        }
+        
+        .cure-progress {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 30px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 0 1rem;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .zone-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .zone-item {
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .zone-temp {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .zone-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.3rem;
+        }
+        
+        .alerts-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .alert {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            border-left: 4px solid;
+            background: #f8f9fa;
+        }
+        
+        .alert.warning {
+            border-left-color: #f39c12;
+            background: #fef9e7;
+        }
+        
+        .alert.error {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
+        }
+        
+        .alert.info {
+            border-left-color: #3498db;
+            background: #e8f4f8;
+        }
+        
+        .alert-time {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            float: right;
+        }
+        
+        .controls-panel {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-top: 1rem;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .control-group {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .control-group h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #495057;
+            font-weight: 500;
+        }
+        
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn.success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+        
+        .kinetics-display {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+        
+        .kinetics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .kinetics-item {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .kinetics-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .kinetics-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.3rem;
+        }
+        
+        .connection-status {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+        
+        .connection-status.connected {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .connection-status.disconnected {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .status-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            
+            .zone-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🔬 Composite Curing Analytics Dashboard</h1>
+        <div class="subtitle">Aerospace-Grade Autoclave Control & Real-Time Cure Kinetics Monitoring</div>
+    </header>
+    
+    <div class="connection-status" id="connectionStatus">Connecting...</div>
+    
+    <div class="main-container">
+        <!-- Status Overview Panel -->
+        <div class="status-panel">
+            <h3>🎯 Process Overview</h3>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-value" id="avgTemperature">--</div>
+                    <div class="status-label">Avg Temperature</div>
+                    <span class="status-unit">°C</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="cureProgress">--</div>
+                    <div class="status-label">Cure Progress</div>
+                    <span class="status-unit">%</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="autoclavePress">--</div>
+                    <div class="status-label">Autoclave Pressure</div>
+                    <span class="status-unit">psi</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="vacuumLevel">--</div>
+                    <div class="status-label">Vacuum Level</div>
+                    <span class="status-unit">mmHg</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="resinViscosity">--</div>
+                    <div class="status-label">Resin Viscosity</div>
+                    <span class="status-unit">Pa·s</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="qualityScore">--</div>
+                    <div class="status-label">Quality Score</div>
+                    <span class="status-unit">%</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Temperature Profile Chart -->
+        <div class="panel">
+            <h3>🌡️ Multi-Zone Temperature Profile</h3>
+            <div class="chart-container">
+                <canvas id="temperatureChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Cure Kinetics Chart -->
+        <div class="panel">
+            <h3>🧪 Cure Kinetics Analysis</h3>
+            <div class="chart-container">
+                <canvas id="cureChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Zone Temperature Grid -->
+        <div class="panel">
+            <h3>🏭 Zone Temperature Distribution</h3>
+            <div class="zone-grid" id="zoneGrid">
+                <!-- Zone items will be populated dynamically -->
+            </div>
+        </div>
+        
+        <!-- Pressure and Vacuum Monitoring -->
+        <div class="panel">
+            <h3>⚡ Pressure & Vacuum Monitoring</h3>
+            <div class="chart-container">
+                <canvas id="pressureChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Real-time Cure Progress -->
+        <div class="panel">
+            <h3>📊 Cure Progress Monitoring</h3>
+            <div class="cure-progress">
+                <span>0%</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill">
+                        <div class="progress-text" id="progressText">0%</div>
+                    </div>
+                </div>
+                <span>100%</span>
+            </div>
+            
+            <div class="kinetics-display">
+                <h4>Cure Kinetics Parameters</h4>
+                <div class="kinetics-grid">
+                    <div class="kinetics-item">
+                        <div class="kinetics-value" id="cureRate">--</div>
+                        <div class="kinetics-label">Cure Rate (1/s)</div>
+                    </div>
+                    <div class="kinetics-item">
+                        <div class="kinetics-value" id="glassTransition">--</div>
+                        <div class="kinetics-label">Tg (°C)</div>
+                    </div>
+                    <div class="kinetics-item">
+                        <div class="kinetics-value" id="gelTime">--</div>
+                        <div class="kinetics-label">Gel Time (min)</div>
+                    </div>
+                    <div class="kinetics-item">
+                        <div class="kinetics-value" id="vitrificationTime">--</div>
+                        <div class="kinetics-label">Vitrification (min)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Optimization & Prediction -->
+        <div class="panel">
+            <h3>🎯 Process Optimization</h3>
+            <div class="chart-container">
+                <canvas id="optimizationChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- System Alerts -->
+        <div class="panel">
+            <h3>⚠️ System Alerts & Events</h3>
+            <div class="alerts-container" id="alertsContainer">
+                <!-- Alerts will be populated dynamically -->
+            </div>
+        </div>
+        
+        <!-- Control Panel -->
+        <div class="controls-panel">
+            <h3>🎛️ Process Control Panel</h3>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>Temperature Control</h4>
+                    <div class="input-group">
+                        <label for="targetTemp">Target Temperature (°C)</label>
+                        <input type="number" id="targetTemp" min="20" max="400" value="180">
+                    </div>
+                    <div class="input-group">
+                        <label for="heatingRate">Heating Rate (°C/min)</label>
+                        <input type="number" id="heatingRate" min="0.5" max="5.0" step="0.1" value="2.0">
+                    </div>
+                    <button class="btn" onclick="updateTemperatureControl()">Update Temperature</button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>Pressure Control</h4>
+                    <div class="input-group">
+                        <label for="targetPressure">Target Pressure (psi)</label>
+                        <input type="number" id="targetPressure" min="0" max="150" value="85">
+                    </div>
+                    <div class="input-group">
+                        <label for="vacuumLevel">Vacuum Level (mmHg)</label>
+                        <input type="number" id="vacuumLevel" min="0" max="760" value="29">
+                    </div>
+                    <button class="btn" onclick="updatePressureControl()">Update Pressure</button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>Material Selection</h4>
+                    <div class="input-group">
+                        <label for="materialType">Composite Material</label>
+                        <select id="materialType">
+                            <option value="AS4_3501-6">AS4/3501-6 Carbon/Epoxy</option>
+                            <option value="T800_M21">T800/M21 Carbon/Epoxy</option>
+                            <option value="IM7_8552">IM7/8552 Carbon/Epoxy</option>
+                            <option value="T700_2510">T700/2510 Carbon/Epoxy</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="partThickness">Part Thickness (mm)</label>
+                        <input type="number" id="partThickness" min="1" max="50" step="0.1" value="8.0">
+                    </div>
+                    <button class="btn" onclick="updateMaterial()">Update Material</button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>Process Controls</h4>
+                    <button class="btn success" onclick="startProcess()">Start Cure Cycle</button>
+                    <button class="btn danger" onclick="stopProcess()">Emergency Stop</button>
+                    <button class="btn" onclick="resetProcess()">Reset System</button>
+                    <button class="btn" onclick="exportData()">Export Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables for charts and WebSocket
+        let temperatureChart, cureChart, pressureChart, optimizationChart;
+        let websocket;
+        let isConnected = false;
+        
+        // Data storage for charts
+        let temperatureData = [];
+        let cureData = [];
+        let pressureData = [];
+        let optimizationData = [];
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            initializeZoneGrid();
+            connectWebSocket();
+            startDataSimulation(); // For demo purposes
+        });
+        
+        function initializeCharts() {
+            // Temperature Chart
+            const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+            temperatureChart = new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Zone 1',
+                        data: [],
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        fill: false
+                    }, {
+                        label: 'Zone 6',
+                        data: [],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        fill: false
+                    }, {
+                        label: 'Zone 12',
+                        data: [],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        fill: false
+                    }, {
+                        label: 'Average',
+                        data: [],
+                        borderColor: '#f39c12',
+                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                        borderWidth: 3,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+            
+            // Cure Kinetics Chart
+            const cureCtx = document.getElementById('cureChart').getContext('2d');
+            cureChart = new Chart(cureCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Degree of Cure (α)',
+                        data: [],
+                        borderColor: '#9b59b6',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Cure Rate (dα/dt)',
+                        data: [],
+                        borderColor: '#e67e22',
+                        backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                        yAxisID: 'y1'
+                    }, {
+                        label: 'Glass Transition Temp (Tg)',
+                        data: [],
+                        borderColor: '#1abc9c',
+                        backgroundColor: 'rgba(26, 188, 156, 0.1)',
+                        yAxisID: 'y2'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Degree of Cure (α)'
+                            },
+                            min: 0,
+                            max: 1
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Cure Rate (1/s)'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        },
+                        y2: {
+                            type: 'linear',
+                            display: false,
+                            position: 'right'
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+            
+            // Pressure Chart
+            const pressureCtx = document.getElementById('pressureChart').getContext('2d');
+            pressureChart = new Chart(pressureCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Autoclave Pressure (psi)',
+                        data: [],
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Vacuum Level (mmHg)',
+                        data: [],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Pressure (psi)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Vacuum (mmHg)'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Optimization Chart
+            const optCtx = document.getElementById('optimizationChart').getContext('2d');
+            optimizationChart = new Chart(optCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Quality Score (%)',
+                        data: [],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Energy Consumption (kWh)',
+                        data: [],
+                        borderColor: '#f39c12',
+                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                        yAxisID: 'y1'
+                    }, {
+                        label: 'Residual Stress (MPa)',
+                        data: [],
+                        borderColor: '#9b59b6',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        yAxisID: 'y2'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Quality Score (%)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Energy (kWh)'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        },
+                        y2: {
+                            type: 'linear',
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        function initializeZoneGrid() {
+            const zoneGrid = document.getElementById('zoneGrid');
+            for (let i = 1; i <= 12; i++) {
+                const zoneItem = document.createElement('div');
+                zoneItem.className = 'zone-item';
+                zoneItem.innerHTML = `
+                    <div class="zone-temp" id="zone${i}Temp">--°C</div>
+                    <div class="zone-label">Zone ${i}</div>
+                `;
+                zoneGrid.appendChild(zoneItem);
+            }
+        }
+        
+        function connectWebSocket() {
+            try {
+                websocket = new WebSocket('ws://192.168.1.100:8080');
+                
+                websocket.onopen = function() {
+                    console.log('WebSocket connected');
+                    isConnected = true;
+                    updateConnectionStatus('connected');
+                };
+                
+                websocket.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                };
+                
+                websocket.onclose = function() {
+                    console.log('WebSocket disconnected');
+                    isConnected = false;
+                    updateConnectionStatus('disconnected');
+                    // Attempt to reconnect after 5 seconds
+                    setTimeout(connectWebSocket, 5000);
+                };
+                
+                websocket.onerror = function(error) {
+                    console.error('WebSocket error:', error);
+                    isConnected = false;
+                    updateConnectionStatus('disconnected');
+                };
+                
+            } catch (error) {
+                console.error('Failed to connect WebSocket:', error);
+                updateConnectionStatus('disconnected');
+                // Fallback to simulation mode
+                setTimeout(connectWebSocket, 5000);
+            }
+        }
+        
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'cure_kinetics_data':
+                    updateCureKineticsData(data.data);
+                    break;
+                case 'temperature_data':
+                    updateTemperatureData(data.data);
+                    break;
+                case 'pressure_data':
+                    updatePressureData(data.data);
+                    break;
+                case 'optimization_data':
+                    updateOptimizationData(data.data);
+                    break;
+                case 'system_alert':
+                    addAlert(data.alert);
+                    break;
+                default:
+                    console.log('Unknown message type:', data.type);
+            }
+        }
+        
+        function updateConnectionStatus(status) {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.className = `connection-status ${status}`;
+            statusElement.textContent = status === 'connected' ? '🟢 Connected' : '🔴 Disconnected';
+        }
+        
+        function updateCureKineticsData(data) {
+            // Update status panel
+            document.getElementById('cureProgress').textContent = (data.degree_of_cure * 100).toFixed(1);
+            document.getElementById('resinViscosity').textContent = data.resin_viscosity.toExponential(2);
+            
+            // Update cure progress bar
+            const progressPercent = data.degree_of_cure * 100;
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            document.getElementById('progressText').textContent = progressPercent.toFixed(1) + '%';
+            
+            // Update kinetics display
+            document.getElementById('cureRate').textContent = data.cure_rate.toExponential(3);
+            document.getElementById('glassTransition').textContent = data.glass_transition_temp.toFixed(1);
+            document.getElementById('gelTime').textContent = data.gel_time ? (data.gel_time / 60).toFixed(1) : '--';
+            document.getElementById('vitrificationTime').textContent = data.vitrification_time ? (data.vitrification_time / 60).toFixed(1) : '--';
+            
+            // Update cure chart
+            updateChart(cureChart, [data.degree_of_cure, data.cure_rate * 1000, data.glass_transition_temp]);
+        }
+        
+        function updateTemperatureData(data) {
+            // Update status panel
+            document.getElementById('avgTemperature').textContent = data.average_temperature.toFixed(1);
+            
+            // Update zone temperatures
+            for (let i = 0; i < 12; i++) {
+                const zoneTemp = document.getElementById(`zone${i + 1}Temp`);
+                if (zoneTemp && data.zone_temperatures[i] !== undefined) {
+                    zoneTemp.textContent = data.zone_temperatures[i].toFixed(1) + '°C';
+                    
+                    // Color code based on temperature range
+                    const temp = data.zone_temperatures[i];
+                    if (temp < 50) {
+                        zoneTemp.style.color = '#3498db'; // Blue for cool
+                    } else if (temp < 150) {
+                        zoneTemp.style.color = '#f39c12'; // Orange for warm
+                    } else {
+                        zoneTemp.style.color = '#e74c3c'; // Red for hot
+                    }
+                }
+            }
+            
+            // Update temperature chart
+            const tempValues = [
+                data.zone_temperatures[0] || 0,
+                data.zone_temperatures[5] || 0,
+                data.zone_temperatures[11] || 0,
+                data.average_temperature
+            ];
+            updateChart(temperatureChart, tempValues);
+        }
+        
+        function updatePressureData(data) {
+            // Update status panel
+            document.getElementById('autoclavePress').textContent = data.autoclave_pressure.toFixed(1);
+            document.getElementById('vacuumLevel').textContent = data.vacuum_level.toFixed(1);
+            
+            // Update pressure chart
+            updateChart(pressureChart, [data.autoclave_pressure, data.vacuum_level]);
+        }
+        
+        function updateOptimizationData(data) {
+            // Update status panel
+            document.getElementById('qualityScore').textContent = data.quality_score.toFixed(1);
+            
+            // Update optimization chart
+            updateChart(optimizationChart, [
+                data.quality_score,
+                data.energy_consumption,
+                data.residual_stress_level
+            ]);
+        }
+        
+        function updateChart(chart, values) {
+            const now = new Date();
+            const timeLabel = now.toLocaleTimeString();
+            
+            // Add new data point
+            chart.data.labels.push(timeLabel);
+            values.forEach((value, index) => {
+                if (chart.data.datasets[index]) {
+                    chart.data.datasets[index].data.push(value);
+                }
+            });
+            
+            // Keep only last 50 data points
+            if (chart.data.labels.length > 50) {
+                chart.data.labels.shift();
+                chart.data.datasets.forEach(dataset => {
+                    dataset.data.shift();
+                });
+            }
+            
+            chart.update('none');
+        }
+        
+        function addAlert(alert) {
+            const alertsContainer = document.getElementById('alertsContainer');
+            const alertElement = document.createElement('div');
+            alertElement.className = `alert ${alert.type}`;
+            alertElement.innerHTML = `
+                <span class="alert-time">${new Date().toLocaleTimeString()}</span>
+                <strong>${alert.title}:</strong> ${alert.message}
+            `;
+            
+            alertsContainer.insertBefore(alertElement, alertsContainer.firstChild);
+            
+            // Keep only last 10 alerts
+            while (alertsContainer.children.length > 10) {
+                alertsContainer.removeChild(alertsContainer.lastChild);
+            }
+        }
+        
+        // Control panel functions
+        function updateTemperatureControl() {
+            const targetTemp = document.getElementById('targetTemp').value;
+            const heatingRate = document.getElementById('heatingRate').value;
+            
+            sendCommand({
+                type: 'temperature_control',
+                target_temperature: parseFloat(targetTemp),
+                heating_rate: parseFloat(heatingRate)
+            });
+            
+            addAlert({
+                type: 'info',
+                title: 'Temperature Control Updated',
+                message: `Target: ${targetTemp}°C, Rate: ${heatingRate}°C/min`
+            });
+        }
+        
+        function updatePressureControl() {
+            const targetPressure = document.getElementById('targetPressure').value;
+            const vacuumLevel = document.getElementById('vacuumLevel').value;
+            
+            sendCommand({
+                type: 'pressure_control',
+                target_pressure: parseFloat(targetPressure),
+                vacuum_level: parseFloat(vacuumLevel)
+            });
+            
+            addAlert({
+                type: 'info',
+                title: 'Pressure Control Updated',
+                message: `Pressure: ${targetPressure} psi, Vacuum: ${vacuumLevel} mmHg`
+            });
+        }
+        
+        function updateMaterial() {
+            const materialType = document.getElementById('materialType').value;
+            const partThickness = document.getElementById('partThickness').value;
+            
+            sendCommand({
+                type: 'material_update',
+                material_type: materialType,
+                part_thickness: parseFloat(partThickness)
+            });
+            
+            addAlert({
+                type: 'info',
+                title: 'Material Updated',
+                message: `Material: ${materialType}, Thickness: ${partThickness}mm`
+            });
+        }
+        
+        function startProcess() {
+            sendCommand({
+                type: 'start_process'
+            });
+            
+            addAlert({
+                type: 'info',
+                title: 'Process Started',
+                message: 'Cure cycle initiated successfully'
+            });
+        }
+        
+        function stopProcess() {
+            if (confirm('Are you sure you want to emergency stop the process?')) {
+                sendCommand({
+                    type: 'emergency_stop'
+                });
+                
+                addAlert({
+                    type: 'error',
+                    title: 'Emergency Stop',
+                    message: 'Process stopped by operator'
+                });
+            }
+        }
+        
+        function resetProcess() {
+            if (confirm('Are you sure you want to reset the system?')) {
+                sendCommand({
+                    type: 'reset_system'
+                });
+                
+                addAlert({
+                    type: 'warning',
+                    title: 'System Reset',
+                    message: 'System has been reset to initial state'
+                });
+            }
+        }
+        
+        function exportData() {
+            // Create CSV data
+            const csvData = generateCSVData();
+            const blob = new Blob([csvData], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            
+            // Create download link
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cure_data_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.csv`;
+            a.click();
+            
+            window.URL.revokeObjectURL(url);
+            
+            addAlert({
+                type: 'info',
+                title: 'Data Exported',
+                message: 'Process data downloaded successfully'
+            });
+        }
+        
+        function generateCSVData() {
+            let csv = 'Timestamp,Zone1_Temp,Zone6_Temp,Zone12_Temp,Avg_Temp,Cure_Progress,Cure_Rate,Pressure,Vacuum,Quality_Score\n';
+            
+            // Add sample data (in real implementation, this would come from actual data)
+            const dataLength = temperatureChart.data.labels.length;
+            for (let i = 0; i < dataLength; i++) {
+                const row = [
+                    temperatureChart.data.labels[i] || '',
+                    temperatureChart.data.datasets[0].data[i] || '',
+                    temperatureChart.data.datasets[1].data[i] || '',
+                    temperatureChart.data.datasets[2].data[i] || '',
+                    temperatureChart.data.datasets[3].data[i] || '',
+                    cureChart.data.datasets[0].data[i] || '',
+                    cureChart.data.datasets[1].data[i] || '',
+                    pressureChart.data.datasets[0].data[i] || '',
+                    pressureChart.data.datasets[1].data[i] || '',
+                    optimizationChart.data.datasets[0].data[i] || ''
+                ].join(',');
+                csv += row + '\n';
+            }
+            
+            return csv;
+        }
+        
+        function sendCommand(command) {
+            if (isConnected && websocket.readyState === WebSocket.OPEN) {
+                websocket.send(JSON.stringify(command));
+            } else {
+                console.log('WebSocket not connected, command would be:', command);
+                addAlert({
+                    type: 'warning',
+                    title: 'Connection Warning',
+                    message: 'Command sent in simulation mode (no WebSocket connection)'
+                });
+            }
+        }
+        
+        // Demo data simulation (for when WebSocket is not available)
+        function startDataSimulation() {
+            let simulationTime = 0;
+            let cureProgress = 0;
+            let temperature = 25;
+            
+            setInterval(() => {
+                if (!isConnected) {
+                    simulationTime += 1;
+                    
+                    // Simulate cure cycle progression
+                    if (simulationTime > 60) { // Start heating after 1 minute
+                        temperature = Math.min(180, temperature + 0.5);
+                        cureProgress = Math.min(1.0, cureProgress + 0.002);
+                    }
+                    
+                    // Generate simulated data
+                    const zoneTemps = Array.from({length: 12}, (_, i) => 
+                        temperature + (Math.random() - 0.5) * 10
+                    );
+                    
+                    // Simulate temperature data
+                    updateTemperatureData({
+                        zone_temperatures: zoneTemps,
+                        average_temperature: temperature,
+                        temperature_uniformity: 2.5
+                    });
+                    
+                    // Simulate cure kinetics data
+                    updateCureKineticsData({
+                        degree_of_cure: cureProgress,
+                        cure_rate: cureProgress < 0.8 ? 0.001 + Math.random() * 0.002 : 0.0001,
+                        resin_viscosity: Math.pow(10, 3 + cureProgress * 4),
+                        glass_transition_temp: -15 + cureProgress * 230,
+                        gel_time: cureProgress > 0.47 ? simulationTime * 60 : null,
+                        vitrification_time: cureProgress > 0.85 ? simulationTime * 60 : null
+                    });
+                    
+                    // Simulate pressure data
+                    updatePressureData({
+                        autoclave_pressure: 85 + (Math.random() - 0.5) * 5,
+                        vacuum_level: 29 + (Math.random() - 0.5) * 2
+                    });
+                    
+                    // Simulate optimization data
+                    updateOptimizationData({
+                        quality_score: 85 + Math.random() * 10,
+                        energy_consumption: simulationTime * 0.1,
+                        residual_stress_level: 20 + cureProgress * 15
+                    });
+                    
+                    // Occasional alerts
+                    if (Math.random() < 0.02) {
+                        const alerts = [
+                            { type: 'info', title: 'Process Update', message: 'Cure kinetics model updated' },
+                            { type: 'warning', title: 'Temperature Variance', message: 'Zone 3 temperature slightly high' },
+                            { type: 'info', title: 'Optimization', message: 'Process parameters optimized' }
+                        ];
+                        addAlert(alerts[Math.floor(Math.random() * alerts.length)]);
+                    }
+                }
+            }, 2000); // Update every 2 seconds
+        }
+    </script>
+</body>
+</html>

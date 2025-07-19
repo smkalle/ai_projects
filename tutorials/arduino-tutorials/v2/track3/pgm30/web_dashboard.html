@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Twin Platform - Industry 4.0 Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
+            color: #ffffff;
+            overflow-x: auto;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 2px solid #00d4ff;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #00d4ff;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        
+        .header .subtitle {
+            color: #a0a0a0;
+            font-size: 1rem;
+            margin-top: 0.3rem;
+        }
+        
+        .system-status {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            font-size: 0.9rem;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-online { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+        .status-warning { background: #ffaa00; box-shadow: 0 0 10px #ffaa00; }
+        .status-error { background: #ff3366; box-shadow: 0 0 10px #ff3366; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        
+        .main-container {
+            margin-top: 100px;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-gap: 2rem;
+            max-width: 2400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .overview-panel {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+            margin-bottom: 1rem;
+        }
+        
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .overview-item {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .overview-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .overview-item:hover::before {
+            left: 100%;
+        }
+        
+        .overview-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.4);
+        }
+        
+        .overview-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px currentColor;
+        }
+        
+        .overview-label {
+            color: #b0b0b0;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .overview-unit {
+            font-size: 1.3rem;
+            color: #00d4ff;
+            margin-left: 0.3rem;
+        }
+        
+        .overview-trend {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .trend-up { color: #00ff88; }
+        .trend-down { color: #ff3366; }
+        .trend-stable { color: #ffaa00; }
+        
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00d4ff, #667eea, #764ba2);
+        }
+        
+        .panel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 50px rgba(0,0,0,0.4);
+        }
+        
+        .panel h3 {
+            color: #00d4ff;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .panel-icon {
+            font-size: 1.8rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin-top: 1rem;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .half-width {
+            grid-column: span 2;
+        }
+        
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .process-item {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .process-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .process-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .process-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+        
+        .process-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: #00ff88;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+        
+        .status-idle {
+            background: #ffaa00;
+            color: #000;
+        }
+        
+        .status-error {
+            background: #ff3366;
+            color: #fff;
+        }
+        
+        .process-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .metric {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        .metric-label {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+            margin-top: 0.2rem;
+        }
+        
+        .progress-ring {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+        }
+        
+        .progress-ring-circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 4;
+        }
+        
+        .progress-ring-progress {
+            fill: none;
+            stroke: #00d4ff;
+            stroke-width: 4;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dasharray 0.5s ease;
+            filter: drop-shadow(0 0 10px #00d4ff);
+        }
+        
+        .alerts-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+        
+        .alert {
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            border-radius: 10px;
+            border-left: 4px solid;
+            background: rgba(255, 255, 255, 0.05);
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .alert.critical {
+            border-left-color: #ff3366;
+            background: rgba(255, 51, 102, 0.1);
+        }
+        
+        .alert.warning {
+            border-left-color: #ffaa00;
+            background: rgba(255, 170, 0, 0.1);
+        }
+        
+        .alert.info {
+            border-left-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .alert-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .alert-time {
+            font-size: 0.8rem;
+            color: #a0a0a0;
+        }
+        
+        .alert-message {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .controls-section {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+            margin-top: 2rem;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .control-group {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .control-group h4 {
+            color: #00d4ff;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #e0e0e0;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #00d4ff, #667eea);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.5);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(135deg, #ff3366, #ff6b9d);
+            box-shadow: 0 4px 20px rgba(255, 51, 102, 0.3);
+        }
+        
+        .btn.success {
+            background: linear-gradient(135deg, #00ff88, #00d4aa);
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
+        }
+        
+        .btn.warning {
+            background: linear-gradient(135deg, #ffaa00, #ff8800);
+            box-shadow: 0 4px 20px rgba(255, 170, 0, 0.3);
+        }
+        
+        .physics-container {
+            height: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin-top: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .ar-interface {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .ar-button {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 25px rgba(118, 75, 162, 0.4);
+        }
+        
+        .ar-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 35px rgba(118, 75, 162, 0.6);
+        }
+        
+        .prediction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .prediction-item {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .prediction-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .prediction-label {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+        }
+        
+        .confidence-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff3366, #ffaa00, #00ff88);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .connection-status {
+            position: fixed;
+            top: 110px;
+            right: 20px;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .connection-status.connected {
+            background: linear-gradient(135deg, #00ff88, #00d4aa);
+            color: #000;
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.4);
+        }
+        
+        .connection-status.disconnected {
+            background: linear-gradient(135deg, #ff3366, #ff6b9d);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(255, 51, 102, 0.4);
+        }
+        
+        .fps-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #00d4ff;
+            font-family: 'Courier New', monospace;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr 1fr;
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .overview-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .system-status {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .overview-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00d4ff, #667eea);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>🚀 Digital Twin Platform</h1>
+                <div class="subtitle">Industry 4.0 Manufacturing Intelligence & Real-Time Physics Simulation</div>
+            </div>
+            <div class="system-status">
+                <div class="status-indicator">
+                    <div class="status-dot status-online" id="systemStatus"></div>
+                    <span>System</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot status-online" id="syncStatus"></div>
+                    <span>Sync</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot status-online" id="aiStatus"></div>
+                    <span>AI Engine</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot status-online" id="cloudStatus"></div>
+                    <span>Cloud</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="connection-status" id="connectionStatus">
+        <div class="status-dot status-online"></div>
+        Connecting...
+    </div>
+    
+    <div class="fps-counter" id="fpsCounter">FPS: --</div>
+    
+    <div class="main-container">
+        <!-- System Overview Panel -->
+        <div class="overview-panel">
+            <h3><span class="panel-icon">📊</span> Digital Twin Overview</h3>
+            <div class="overview-grid">
+                <div class="overview-item">
+                    <div class="overview-value" id="activeProcesses">--</div>
+                    <div class="overview-label">Active Processes</div>
+                    <div class="overview-trend trend-stable" id="processeTrend">● Stable</div>
+                </div>
+                <div class="overview-item">
+                    <div class="overview-value" id="syncLatency">--</div>
+                    <div class="overview-label">Sync Latency</div>
+                    <span class="overview-unit">ms</span>
+                    <div class="overview-trend trend-up" id="latencyTrend">▲ Target: <100ms</div>
+                </div>
+                <div class="overview-item">
+                    <div class="overview-value" id="dataPoints">--</div>
+                    <div class="overview-label">Data Points/sec</div>
+                    <span class="overview-unit">Hz</span>
+                    <div class="overview-trend trend-up" id="dataTrend">▲ High throughput</div>
+                </div>
+                <div class="overview-item">
+                    <div class="overview-value" id="modelAccuracy">--</div>
+                    <div class="overview-label">Model Accuracy</div>
+                    <span class="overview-unit">%</span>
+                    <div class="overview-trend trend-up" id="accuracyTrend">▲ >95% target</div>
+                </div>
+                <div class="overview-item">
+                    <div class="overview-value" id="systemEfficiency">--</div>
+                    <div class="overview-label">System Efficiency</div>
+                    <span class="overview-unit">%</span>
+                    <div class="overview-trend trend-stable" id="efficiencyTrend">● Optimized</div>
+                </div>
+                <div class="overview-item">
+                    <div class="overview-value" id="energyConsumption">--</div>
+                    <div class="overview-label">Energy Usage</div>
+                    <span class="overview-unit">kW</span>
+                    <div class="overview-trend trend-down" id="energyTrend">▼ Efficient</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Real-time Sensor Data -->
+        <div class="panel">
+            <h3><span class="panel-icon">🌡️</span> Multi-Sensor Monitoring</h3>
+            <div class="chart-container">
+                <canvas id="sensorChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Physics Simulation -->
+        <div class="panel">
+            <h3><span class="panel-icon">⚛️</span> Physics Simulation</h3>
+            <div class="physics-container" id="physicsContainer">
+                <!-- 3D visualization will be inserted here -->
+            </div>
+        </div>
+        
+        <!-- Process Monitoring -->
+        <div class="panel">
+            <h3><span class="panel-icon">🏭</span> Manufacturing Processes</h3>
+            <div class="process-grid" id="processGrid">
+                <!-- Process items will be populated dynamically -->
+            </div>
+        </div>
+        
+        <!-- AI Predictions -->
+        <div class="panel">
+            <h3><span class="panel-icon">🤖</span> AI Predictions & Analytics</h3>
+            <div class="prediction-grid" id="predictionGrid">
+                <div class="prediction-item">
+                    <div class="prediction-value" id="qualityPrediction">--</div>
+                    <div class="prediction-label">Quality Score</div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" id="qualityConfidence" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="prediction-item">
+                    <div class="prediction-value" id="maintenancePrediction">--</div>
+                    <div class="prediction-label">Maintenance Risk</div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" id="maintenanceConfidence" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="prediction-item">
+                    <div class="prediction-value" id="cycleTimePrediction">--</div>
+                    <div class="prediction-label">Cycle Time</div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" id="cycleTimeConfidence" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="prediction-item">
+                    <div class="prediction-value" id="energyPrediction">--</div>
+                    <div class="prediction-label">Energy Forecast</div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" id="energyConfidence" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="predictionChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Digital Twin Synchronization -->
+        <div class="panel">
+            <h3><span class="panel-icon">🔄</span> Digital Twin Sync</h3>
+            <div class="chart-container">
+                <canvas id="syncChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- System Alerts -->
+        <div class="panel">
+            <h3><span class="panel-icon">⚠️</span> Intelligent Alerts</h3>
+            <div class="alerts-container" id="alertsContainer">
+                <!-- Alerts will be populated dynamically -->
+            </div>
+        </div>
+        
+        <!-- Performance Analytics -->
+        <div class="panel full-width">
+            <h3><span class="panel-icon">📈</span> System Performance Analytics</h3>
+            <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Augmented Reality Interface -->
+        <div class="panel">
+            <h3><span class="panel-icon">🥽</span> AR/VR Interface</h3>
+            <div class="ar-interface">
+                <h4>Immersive Digital Twin Experience</h4>
+                <p>Connect your AR headset to visualize real-time manufacturing processes in augmented reality.</p>
+                <a href="#" class="ar-button" onclick="launchARInterface()">🚀 Launch AR Mode</a>
+                <div style="margin-top: 1rem;">
+                    <small>Compatible with HoloLens 2, Magic Leap 2, and WebXR browsers</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Control Panel -->
+        <div class="controls-section">
+            <h3><span class="panel-icon">🎛️</span> Digital Twin Control Center</h3>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h4>Process Control</h4>
+                    <div class="input-group">
+                        <label for="processSelect">Select Process</label>
+                        <select id="processSelect">
+                            <option value="CNC_001">CNC Machining</option>
+                            <option value="3DP_001">3D Printing</option>
+                            <option value="INJ_001">Injection Molding</option>
+                            <option value="ASM_001">Assembly Station</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="speedOverride">Speed Override (%)</label>
+                        <input type="range" id="speedOverride" min="50" max="150" value="100">
+                        <span id="speedValue">100%</span>
+                    </div>
+                    <button class="btn success" onclick="startProcess()">▶️ Start Process</button>
+                    <button class="btn warning" onclick="pauseProcess()">⏸️ Pause Process</button>
+                    <button class="btn danger" onclick="emergencyStop()">🛑 Emergency Stop</button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>Physics Simulation</h4>
+                    <div class="input-group">
+                        <label for="simulationSpeed">Simulation Speed</label>
+                        <input type="range" id="simulationSpeed" min="0.1" max="10" step="0.1" value="1.0">
+                        <span id="simSpeedValue">1.0x</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="physicsMode">Physics Mode</label>
+                        <select id="physicsMode">
+                            <option value="realtime">Real-time</option>
+                            <option value="predictive">Predictive</option>
+                            <option value="whatif">What-if Analysis</option>
+                            <option value="optimization">Optimization</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="resetSimulation()">🔄 Reset Simulation</button>
+                    <button class="btn" onclick="exportSimulation()">💾 Export Data</button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>AI & Machine Learning</h4>
+                    <div class="input-group">
+                        <label for="predictionHorizon">Prediction Horizon</label>
+                        <select id="predictionHorizon">
+                            <option value="1">1 Hour</option>
+                            <option value="4">4 Hours</option>
+                            <option value="8">8 Hours</option>
+                            <option value="24">24 Hours</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="confidenceThreshold">Confidence Threshold (%)</label>
+                        <input type="range" id="confidenceThreshold" min="50" max="99" value="85">
+                        <span id="confidenceValue">85%</span>
+                    </div>
+                    <button class="btn" onclick="retrainModels()">🧠 Retrain Models</button>
+                    <button class="btn" onclick="runOptimization()">⚡ Optimize Process</button>
+                </div>
+                
+                <div class="control-group">
+                    <h4>Data Management</h4>
+                    <div class="input-group">
+                        <label for="samplingRate">Sampling Rate (Hz)</label>
+                        <input type="range" id="samplingRate" min="1" max="1000" value="20">
+                        <span id="samplingValue">20 Hz</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="dataRetention">Data Retention (days)</label>
+                        <input type="number" id="dataRetention" min="1" max="365" value="90">
+                    </div>
+                    <button class="btn" onclick="exportData()">📊 Export Analytics</button>
+                    <button class="btn" onclick="generateReport()">📄 Generate Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let socket;
+        let charts = {};
+        let scene, camera, renderer;
+        let isConnected = false;
+        let frameCount = 0;
+        let lastTime = performance.now();
+        
+        // Data storage
+        let sensorData = [];
+        let processStates = {};
+        let predictions = {};
+        let alerts = [];
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            initializePhysicsVisualization();
+            connectWebSocket();
+            initializeControls();
+            startFPSMonitoring();
+            loadProcessStates();
+        });
+        
+        function initializeCharts() {
+            // Multi-sensor monitoring chart
+            const sensorCtx = document.getElementById('sensorChart').getContext('2d');
+            charts.sensor = new Chart(sensorCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Temperature (°C)',
+                            data: [],
+                            borderColor: '#ff6b6b',
+                            backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Pressure (bar)',
+                            data: [],
+                            borderColor: '#4ecdc4',
+                            backgroundColor: 'rgba(78, 205, 196, 0.1)',
+                            yAxisID: 'y1'
+                        },
+                        {
+                            label: 'Vibration (g)',
+                            data: [],
+                            borderColor: '#45b7d1',
+                            backgroundColor: 'rgba(69, 183, 209, 0.1)',
+                            yAxisID: 'y2'
+                        },
+                        {
+                            label: 'Power (kW)',
+                            data: [],
+                            borderColor: '#f9ca24',
+                            backgroundColor: 'rgba(249, 202, 36, 0.1)',
+                            yAxisID: 'y3'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 750,
+                        easing: 'easeInOutQuart'
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                color: '#ffffff'
+                            },
+                            ticks: { color: '#ffffff' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)',
+                                color: '#ff6b6b'
+                            },
+                            ticks: { color: '#ff6b6b' },
+                            grid: { color: 'rgba(255, 107, 107, 0.1)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Pressure (bar)',
+                                color: '#4ecdc4'
+                            },
+                            ticks: { color: '#4ecdc4' },
+                            grid: { drawOnChartArea: false }
+                        },
+                        y2: {
+                            type: 'linear',
+                            display: false,
+                            position: 'right'
+                        },
+                        y3: {
+                            type: 'linear',
+                            display: false,
+                            position: 'right'
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: { color: '#ffffff' }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#00d4ff',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+            
+            // AI Predictions chart
+            const predictionCtx = document.getElementById('predictionChart').getContext('2d');
+            charts.prediction = new Chart(predictionCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Quality', 'Efficiency', 'Maintenance', 'Energy', 'Cycle Time', 'Safety'],
+                    datasets: [{
+                        label: 'Current Performance',
+                        data: [85, 92, 15, 78, 88, 95],
+                        borderColor: '#00d4ff',
+                        backgroundColor: 'rgba(0, 212, 255, 0.2)',
+                        pointBackgroundColor: '#00d4ff',
+                        pointBorderColor: '#ffffff',
+                        pointHoverBackgroundColor: '#ffffff',
+                        pointHoverBorderColor: '#00d4ff'
+                    }, {
+                        label: 'Predicted Performance',
+                        data: [90, 95, 10, 82, 85, 98],
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.2)',
+                        pointBackgroundColor: '#00ff88',
+                        pointBorderColor: '#ffffff',
+                        pointHoverBackgroundColor: '#ffffff',
+                        pointHoverBorderColor: '#00ff88'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeInOutCubic'
+                    },
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            ticks: {
+                                color: '#ffffff',
+                                backdropColor: 'transparent'
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                            angleLines: { color: 'rgba(255, 255, 255, 0.2)' },
+                            pointLabels: { color: '#ffffff', font: { size: 12 } }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: { color: '#ffffff' }
+                        }
+                    }
+                }
+            });
+            
+            // Digital Twin Sync chart
+            const syncCtx = document.getElementById('syncChart').getContext('2d');
+            charts.sync = new Chart(syncCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Sync Latency (ms)',
+                            data: [],
+                            borderColor: '#ff9ff3',
+                            backgroundColor: 'rgba(255, 159, 243, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Model Accuracy (%)',
+                            data: [],
+                            borderColor: '#54a0ff',
+                            backgroundColor: 'rgba(84, 160, 255, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 500
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            ticks: { color: '#ffffff' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            display: true,
+                            ticks: { color: '#ffffff' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: { color: '#ffffff' }
+                        }
+                    }
+                }
+            });
+            
+            // Performance analytics chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            charts.performance = new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'CPU Usage (%)',
+                            data: [],
+                            borderColor: '#ff6b6b',
+                            backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Memory Usage (%)',
+                            data: [],
+                            borderColor: '#4ecdc4',
+                            backgroundColor: 'rgba(78, 205, 196, 0.1)',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Network Throughput (KB/s)',
+                            data: [],
+                            borderColor: '#45b7d1',
+                            backgroundColor: 'rgba(69, 183, 209, 0.1)',
+                            yAxisID: 'y1'
+                        },
+                        {
+                            label: 'Inference Time (ms)',
+                            data: [],
+                            borderColor: '#f9ca24',
+                            backgroundColor: 'rgba(249, 202, 36, 0.1)',
+                            yAxisID: 'y2'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 300
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                color: '#ffffff'
+                            },
+                            ticks: { color: '#ffffff' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            min: 0,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Usage (%)',
+                                color: '#ffffff'
+                            },
+                            ticks: { color: '#ffffff' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Throughput (KB/s)',
+                                color: '#45b7d1'
+                            },
+                            ticks: { color: '#45b7d1' },
+                            grid: { drawOnChartArea: false }
+                        },
+                        y2: {
+                            type: 'linear',
+                            display: false,
+                            position: 'right'
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: { color: '#ffffff' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function initializePhysicsVisualization() {
+            const container = document.getElementById('physicsContainer');
+            
+            // Create Three.js scene
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setClearColor(0x000000, 0.3);
+            container.appendChild(renderer.domElement);
+            
+            // Add controls
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // Create physics visualization objects
+            createPhysicsObjects();
+            
+            // Position camera
+            camera.position.set(5, 5, 5);
+            camera.lookAt(0, 0, 0);
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                updatePhysicsVisualization();
+                renderer.render(scene, camera);
+                
+                // Update FPS counter
+                frameCount++;
+                const currentTime = performance.now();
+                if (currentTime - lastTime >= 1000) {
+                    const fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+                    document.getElementById('fpsCounter').textContent = `FPS: ${fps}`;
+                    frameCount = 0;
+                    lastTime = currentTime;
+                }
+            }
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+        
+        function createPhysicsObjects() {
+            // Create temperature visualization (heat map cube)
+            const tempGeometry = new THREE.BoxGeometry(2, 2, 2, 10, 10, 10);
+            const tempMaterial = new THREE.MeshBasicMaterial({
+                color: 0x4444ff,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.6
+            });
+            const tempMesh = new THREE.Mesh(tempGeometry, tempMaterial);
+            tempMesh.userData = { type: 'temperature' };
+            scene.add(tempMesh);
+            
+            // Create stress visualization (arrow field)
+            const arrowGroup = new THREE.Group();
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 5; j++) {
+                    const arrowGeometry = new THREE.ConeGeometry(0.05, 0.3, 8);
+                    const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0xff4444 });
+                    const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
+                    arrow.position.set((i - 2) * 0.8, (j - 2) * 0.8, 2);
+                    arrowGroup.add(arrow);
+                }
+            }
+            arrowGroup.userData = { type: 'stress' };
+            scene.add(arrowGroup);
+            
+            // Create vibration visualization (particles)
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1000;
+            const positions = new Float32Array(particlesCount * 3);
+            const colors = new Float32Array(particlesCount * 3);
+            
+            for (let i = 0; i < particlesCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 4;
+                positions[i + 1] = (Math.random() - 0.5) * 4;
+                positions[i + 2] = (Math.random() - 0.5) * 4;
+                
+                colors[i] = Math.random();
+                colors[i + 1] = Math.random();
+                colors[i + 2] = Math.random();
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.05,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+            particles.userData = { type: 'vibration' };
+            scene.add(particles);
+            
+            // Add ambient lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+            
+            // Add directional lighting
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+        }
+        
+        function updatePhysicsVisualization() {
+            const time = Date.now() * 0.001;
+            
+            scene.children.forEach(object => {
+                if (object.userData.type === 'temperature') {
+                    // Animate temperature visualization
+                    object.material.color.setHSL(0.7 - Math.sin(time) * 0.2, 1, 0.5);
+                    object.rotation.y += 0.01;
+                } else if (object.userData.type === 'stress') {
+                    // Animate stress arrows
+                    object.children.forEach((arrow, index) => {
+                        arrow.rotation.z = Math.sin(time + index * 0.1) * 0.5;
+                        arrow.material.color.setHSL(0, 1, 0.5 + Math.sin(time + index * 0.1) * 0.3);
+                    });
+                } else if (object.userData.type === 'vibration') {
+                    // Animate vibration particles
+                    const positions = object.geometry.attributes.position.array;
+                    for (let i = 0; i < positions.length; i += 3) {
+                        positions[i] += Math.sin(time + i) * 0.01;
+                        positions[i + 1] += Math.cos(time + i) * 0.01;
+                        positions[i + 2] += Math.sin(time + i * 0.5) * 0.01;
+                    }
+                    object.geometry.attributes.position.needsUpdate = true;
+                }
+            });
+        }
+        
+        function connectWebSocket() {
+            try {
+                socket = io('ws://192.168.1.100:5000', {
+                    transports: ['websocket'],
+                    timeout: 5000
+                });
+                
+                socket.on('connect', function() {
+                    console.log('WebSocket connected');
+                    isConnected = true;
+                    updateConnectionStatus('connected');
+                    
+                    // Request initial data
+                    socket.emit('request_data', { type: 'all' });
+                });
+                
+                socket.on('disconnect', function() {
+                    console.log('WebSocket disconnected');
+                    isConnected = false;
+                    updateConnectionStatus('disconnected');
+                });
+                
+                socket.on('sensor_data', function(data) {
+                    handleSensorData(data);
+                });
+                
+                socket.on('process_data', function(data) {
+                    handleProcessData(data);
+                });
+                
+                socket.on('prediction_data', function(data) {
+                    handlePredictionData(data);
+                });
+                
+                socket.on('alert', function(data) {
+                    handleAlert(data);
+                });
+                
+                socket.on('system_status', function(data) {
+                    handleSystemStatus(data);
+                });
+                
+            } catch (error) {
+                console.error('WebSocket connection failed:', error);
+                updateConnectionStatus('disconnected');
+                // Start simulation mode
+                startSimulationMode();
+            }
+        }
+        
+        function updateConnectionStatus(status) {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.className = `connection-status ${status}`;
+            
+            if (status === 'connected') {
+                statusElement.innerHTML = '<div class="status-dot status-online"></div> Connected to Digital Twin';
+            } else {
+                statusElement.innerHTML = '<div class="status-dot status-error"></div> Disconnected - Simulation Mode';
+            }
+        }
+        
+        function handleSensorData(data) {
+            // Update sensor charts
+            const now = new Date().toLocaleTimeString();
+            
+            // Add new data point
+            charts.sensor.data.labels.push(now);
+            charts.sensor.data.datasets[0].data.push(data.temperatures ? data.temperatures[0] : Math.random() * 50 + 100);
+            charts.sensor.data.datasets[1].data.push(data.pressures ? data.pressures[0] : Math.random() * 10 + 80);
+            charts.sensor.data.datasets[2].data.push(data.vibrations ? data.vibrations[0] : Math.random() * 2);
+            charts.sensor.data.datasets[3].data.push(data.power ? data.power.active : Math.random() * 20 + 30);
+            
+            // Keep only last 50 data points
+            if (charts.sensor.data.labels.length > 50) {
+                charts.sensor.data.labels.shift();
+                charts.sensor.data.datasets.forEach(dataset => dataset.data.shift());
+            }
+            
+            charts.sensor.update('none');
+            
+            // Update overview metrics
+            document.getElementById('dataPoints').textContent = Math.floor(Math.random() * 1000 + 8000);
+            document.getElementById('syncLatency').textContent = Math.floor(Math.random() * 50 + 25);
+        }
+        
+        function handleProcessData(data) {
+            processStates = data;
+            updateProcessDisplay();
+            
+            // Update active processes count
+            const activeCount = data.filter(p => p.active).length;
+            document.getElementById('activeProcesses').textContent = activeCount;
+        }
+        
+        function handlePredictionData(data) {
+            predictions = data;
+            updatePredictionDisplay();
+        }
+        
+        function handleAlert(data) {
+            addAlert(data);
+        }
+        
+        function handleSystemStatus(data) {
+            updateSystemStatus(data);
+        }
+        
+        function startSimulationMode() {
+            console.log('Starting simulation mode...');
+            
+            // Generate simulated data
+            setInterval(() => {
+                if (!isConnected) {
+                    // Simulate sensor data
+                    const simulatedSensorData = {
+                        temperatures: [Math.random() * 50 + 100, Math.random() * 50 + 120],
+                        pressures: [Math.random() * 10 + 80, Math.random() * 15 + 75],
+                        vibrations: [Math.random() * 2, Math.random() * 1.5],
+                        power: { active: Math.random() * 20 + 30 },
+                        data_quality: 0.95 + Math.random() * 0.05
+                    };
+                    
+                    handleSensorData(simulatedSensorData);
+                    
+                    // Simulate process data
+                    const simulatedProcesses = [
+                        {
+                            process_id: 'CNC_001',
+                            process_type: 'CNC_MACHINING',
+                            active: Math.random() > 0.3,
+                            cycle_time: Math.random() * 180 + 120,
+                            efficiency: Math.random() * 20 + 80,
+                            quality_score: Math.random() * 20 + 80
+                        },
+                        {
+                            process_id: '3DP_001',
+                            process_type: '3D_PRINTING',
+                            active: Math.random() > 0.5,
+                            cycle_time: Math.random() * 1800 + 3000,
+                            efficiency: Math.random() * 15 + 75,
+                            quality_score: Math.random() * 15 + 85
+                        },
+                        {
+                            process_id: 'INJ_001',
+                            process_type: 'INJECTION_MOLDING',
+                            active: Math.random() > 0.4,
+                            cycle_time: Math.random() * 30 + 30,
+                            efficiency: Math.random() * 25 + 85,
+                            quality_score: Math.random() * 10 + 90
+                        },
+                        {
+                            process_id: 'ASM_001',
+                            process_type: 'ASSEMBLY',
+                            active: Math.random() > 0.6,
+                            cycle_time: Math.random() * 60 + 90,
+                            efficiency: Math.random() * 20 + 75,
+                            quality_score: Math.random() * 20 + 80
+                        }
+                    ];
+                    
+                    handleProcessData(simulatedProcesses);
+                    
+                    // Simulate predictions
+                    const simulatedPredictions = simulatedProcesses.map(process => ({
+                        process_id: process.process_id,
+                        predicted_quality: Math.random() * 20 + 80,
+                        predicted_cycle_time: process.cycle_time * (0.9 + Math.random() * 0.2),
+                        maintenance_probability: Math.random() * 0.3,
+                        confidence: Math.random() * 0.3 + 0.7
+                    }));
+                    
+                    handlePredictionData(simulatedPredictions);
+                    
+                    // Simulate system status
+                    handleSystemStatus({
+                        model_accuracy: 0.95 + Math.random() * 0.04,
+                        system_efficiency: 85 + Math.random() * 10,
+                        energy_consumption: 45 + Math.random() * 15
+                    });
+                    
+                    // Occasional alerts
+                    if (Math.random() < 0.05) {
+                        const alertTypes = ['info', 'warning', 'critical'];
+                        const alertType = alertTypes[Math.floor(Math.random() * alertTypes.length)];
+                        const alerts = {
+                            info: ['System optimization completed', 'Model retrained successfully', 'Process efficiency improved'],
+                            warning: ['Temperature variance detected', 'Vibration levels elevated', 'Cycle time extended'],
+                            critical: ['Process anomaly detected', 'Safety threshold exceeded', 'Emergency maintenance required']
+                        };
+                        
+                        addAlert({
+                            type: alertType,
+                            title: alertType.toUpperCase(),
+                            message: alerts[alertType][Math.floor(Math.random() * alerts[alertType].length)]
+                        });
+                    }
+                }
+            }, 2000);
+        }
+        
+        function updateProcessDisplay() {
+            const processGrid = document.getElementById('processGrid');
+            processGrid.innerHTML = '';
+            
+            processStates.forEach(process => {
+                const processItem = document.createElement('div');
+                processItem.className = 'process-item';
+                
+                const statusClass = process.active ? 'status-active' : 'status-idle';
+                const statusText = process.active ? 'ACTIVE' : 'IDLE';
+                
+                processItem.innerHTML = `
+                    <div class="process-header">
+                        <div class="process-name">${process.process_type.replace('_', ' ')}</div>
+                        <div class="process-status ${statusClass}">${statusText}</div>
+                    </div>
+                    <div class="progress-ring">
+                        <svg width="80" height="80">
+                            <circle class="progress-ring-circle" cx="40" cy="40" r="30"></circle>
+                            <circle class="progress-ring-progress" cx="40" cy="40" r="30" 
+                                    style="stroke-dasharray: ${2 * Math.PI * 30}; 
+                                           stroke-dashoffset: ${2 * Math.PI * 30 * (1 - process.efficiency / 100)}">
+                            </circle>
+                        </svg>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                    font-size: 0.9rem; font-weight: bold;">${Math.round(process.efficiency)}%</div>
+                    </div>
+                    <div class="process-metrics">
+                        <div class="metric">
+                            <div class="metric-value">${Math.round(process.cycle_time)}</div>
+                            <div class="metric-label">Cycle Time (s)</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">${Math.round(process.quality_score)}</div>
+                            <div class="metric-label">Quality (%)</div>
+                        </div>
+                    </div>
+                `;
+                
+                processGrid.appendChild(processItem);
+            });
+        }
+        
+        function updatePredictionDisplay() {
+            if (predictions.length === 0) return;
+            
+            const avgQuality = predictions.reduce((sum, p) => sum + p.predicted_quality, 0) / predictions.length;
+            const avgMaintenance = predictions.reduce((sum, p) => sum + p.maintenance_probability, 0) / predictions.length;
+            const avgCycleTime = predictions.reduce((sum, p) => sum + p.predicted_cycle_time, 0) / predictions.length;
+            const avgEnergy = 25 + Math.random() * 15; // Simulated energy prediction
+            const avgConfidence = predictions.reduce((sum, p) => sum + p.confidence, 0) / predictions.length;
+            
+            document.getElementById('qualityPrediction').textContent = Math.round(avgQuality) + '%';
+            document.getElementById('maintenancePrediction').textContent = Math.round(avgMaintenance * 100) + '%';
+            document.getElementById('cycleTimePrediction').textContent = Math.round(avgCycleTime) + 's';
+            document.getElementById('energyPrediction').textContent = Math.round(avgEnergy) + 'kW';
+            
+            // Update confidence bars
+            document.getElementById('qualityConfidence').style.width = (avgConfidence * 100) + '%';
+            document.getElementById('maintenanceConfidence').style.width = (avgConfidence * 100) + '%';
+            document.getElementById('cycleTimeConfidence').style.width = (avgConfidence * 100) + '%';
+            document.getElementById('energyConfidence').style.width = (avgConfidence * 100) + '%';
+        }
+        
+        function updateSystemStatus(data) {
+            document.getElementById('modelAccuracy').textContent = Math.round(data.model_accuracy * 100);
+            document.getElementById('systemEfficiency').textContent = Math.round(data.system_efficiency);
+            document.getElementById('energyConsumption').textContent = Math.round(data.energy_consumption);
+            
+            // Update status indicators
+            updateStatusIndicator('systemStatus', data.system_efficiency > 80 ? 'online' : 'warning');
+            updateStatusIndicator('syncStatus', data.model_accuracy > 0.9 ? 'online' : 'warning');
+            updateStatusIndicator('aiStatus', 'online');
+            updateStatusIndicator('cloudStatus', isConnected ? 'online' : 'error');
+        }
+        
+        function updateStatusIndicator(elementId, status) {
+            const element = document.getElementById(elementId);
+            element.className = `status-dot status-${status}`;
+        }
+        
+        function addAlert(alert) {
+            const alertsContainer = document.getElementById('alertsContainer');
+            const alertElement = document.createElement('div');
+            alertElement.className = `alert ${alert.type}`;
+            
+            alertElement.innerHTML = `
+                <div class="alert-header">
+                    <div class="alert-title">${alert.title}</div>
+                    <div class="alert-time">${new Date().toLocaleTimeString()}</div>
+                </div>
+                <div class="alert-message">${alert.message}</div>
+            `;
+            
+            alertsContainer.insertBefore(alertElement, alertsContainer.firstChild);
+            
+            // Keep only last 10 alerts
+            while (alertsContainer.children.length > 10) {
+                alertsContainer.removeChild(alertsContainer.lastChild);
+            }
+            
+            // Auto-remove after 30 seconds
+            setTimeout(() => {
+                if (alertElement.parentNode) {
+                    alertElement.remove();
+                }
+            }, 30000);
+        }
+        
+        function initializeControls() {
+            // Speed override control
+            const speedOverride = document.getElementById('speedOverride');
+            const speedValue = document.getElementById('speedValue');
+            speedOverride.addEventListener('input', function() {
+                speedValue.textContent = this.value + '%';
+            });
+            
+            // Simulation speed control
+            const simulationSpeed = document.getElementById('simulationSpeed');
+            const simSpeedValue = document.getElementById('simSpeedValue');
+            simulationSpeed.addEventListener('input', function() {
+                simSpeedValue.textContent = parseFloat(this.value).toFixed(1) + 'x';
+            });
+            
+            // Confidence threshold control
+            const confidenceThreshold = document.getElementById('confidenceThreshold');
+            const confidenceValue = document.getElementById('confidenceValue');
+            confidenceThreshold.addEventListener('input', function() {
+                confidenceValue.textContent = this.value + '%';
+            });
+            
+            // Sampling rate control
+            const samplingRate = document.getElementById('samplingRate');
+            const samplingValue = document.getElementById('samplingValue');
+            samplingRate.addEventListener('input', function() {
+                samplingValue.textContent = this.value + ' Hz';
+            });
+        }
+        
+        function startFPSMonitoring() {
+            setInterval(() => {
+                // Update sync chart
+                const now = new Date().toLocaleTimeString();
+                charts.sync.data.labels.push(now);
+                charts.sync.data.datasets[0].data.push(Math.random() * 30 + 40); // Sync latency
+                charts.sync.data.datasets[1].data.push(Math.random() * 5 + 95); // Model accuracy
+                
+                if (charts.sync.data.labels.length > 30) {
+                    charts.sync.data.labels.shift();
+                    charts.sync.data.datasets.forEach(dataset => dataset.data.shift());
+                }
+                charts.sync.update('none');
+                
+                // Update performance chart
+                charts.performance.data.labels.push(now);
+                charts.performance.data.datasets[0].data.push(Math.random() * 20 + 30); // CPU
+                charts.performance.data.datasets[1].data.push(Math.random() * 15 + 45); // Memory
+                charts.performance.data.datasets[2].data.push(Math.random() * 100 + 200); // Network
+                charts.performance.data.datasets[3].data.push(Math.random() * 50 + 25); // Inference time
+                
+                if (charts.performance.data.labels.length > 50) {
+                    charts.performance.data.labels.shift();
+                    charts.performance.data.datasets.forEach(dataset => dataset.data.shift());
+                }
+                charts.performance.update('none');
+                
+            }, 5000);
+        }
+        
+        function loadProcessStates() {
+            // Initialize with default process states
+            processStates = [
+                {
+                    process_id: 'CNC_001',
+                    process_type: 'CNC_MACHINING',
+                    active: false,
+                    cycle_time: 0,
+                    efficiency: 100,
+                    quality_score: 95
+                },
+                {
+                    process_id: '3DP_001',
+                    process_type: '3D_PRINTING',
+                    active: false,
+                    cycle_time: 0,
+                    efficiency: 100,
+                    quality_score: 90
+                },
+                {
+                    process_id: 'INJ_001',
+                    process_type: 'INJECTION_MOLDING',
+                    active: false,
+                    cycle_time: 0,
+                    efficiency: 100,
+                    quality_score: 98
+                },
+                {
+                    process_id: 'ASM_001',
+                    process_type: 'ASSEMBLY',
+                    active: false,
+                    cycle_time: 0,
+                    efficiency: 100,
+                    quality_score: 92
+                }
+            ];
+            
+            updateProcessDisplay();
+        }
+        
+        // Control panel functions
+        function startProcess() {
+            const processSelect = document.getElementById('processSelect');
+            const selectedProcess = processSelect.value;
+            
+            if (socket && isConnected) {
+                socket.emit('control_command', {
+                    action: 'start_process',
+                    process_id: selectedProcess
+                });
+            }
+            
+            addAlert({
+                type: 'info',
+                title: 'PROCESS STARTED',
+                message: `Process ${selectedProcess} has been started successfully`
+            });
+        }
+        
+        function pauseProcess() {
+            const processSelect = document.getElementById('processSelect');
+            const selectedProcess = processSelect.value;
+            
+            if (socket && isConnected) {
+                socket.emit('control_command', {
+                    action: 'pause_process',
+                    process_id: selectedProcess
+                });
+            }
+            
+            addAlert({
+                type: 'warning',
+                title: 'PROCESS PAUSED',
+                message: `Process ${selectedProcess} has been paused`
+            });
+        }
+        
+        function emergencyStop() {
+            if (confirm('Are you sure you want to trigger an emergency stop? This will halt all active processes immediately.')) {
+                if (socket && isConnected) {
+                    socket.emit('control_command', {
+                        action: 'emergency_stop'
+                    });
+                }
+                
+                addAlert({
+                    type: 'critical',
+                    title: 'EMERGENCY STOP',
+                    message: 'Emergency stop activated - All processes have been halted'
+                });
+            }
+        }
+        
+        function resetSimulation() {
+            if (socket && isConnected) {
+                socket.emit('control_command', {
+                    action: 'reset_simulation'
+                });
+            }
+            
+            // Reset local charts
+            Object.values(charts).forEach(chart => {
+                chart.data.labels = [];
+                chart.data.datasets.forEach(dataset => {
+                    dataset.data = [];
+                });
+                chart.update();
+            });
+            
+            addAlert({
+                type: 'info',
+                title: 'SIMULATION RESET',
+                message: 'Physics simulation and data have been reset'
+            });
+        }
+        
+        function exportSimulation() {
+            // Generate simulation data export
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                sensor_data: sensorData,
+                process_states: processStates,
+                predictions: predictions,
+                performance_metrics: {
+                    charts: Object.keys(charts).reduce((acc, key) => {
+                        acc[key] = {
+                            labels: charts[key].data.labels,
+                            datasets: charts[key].data.datasets.map(dataset => ({
+                                label: dataset.label,
+                                data: dataset.data
+                            }))
+                        };
+                        return acc;
+                    }, {})
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `digital_twin_export_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            addAlert({
+                type: 'info',
+                title: 'DATA EXPORTED',
+                message: 'Digital twin data exported successfully'
+            });
+        }
+        
+        function retrainModels() {
+            if (socket && isConnected) {
+                socket.emit('control_command', {
+                    action: 'retrain_models'
+                });
+            }
+            
+            addAlert({
+                type: 'info',
+                title: 'MODEL RETRAINING',
+                message: 'AI models are being retrained with latest data'
+            });
+        }
+        
+        function runOptimization() {
+            if (socket && isConnected) {
+                socket.emit('control_command', {
+                    action: 'run_optimization'
+                });
+            }
+            
+            addAlert({
+                type: 'info',
+                title: 'OPTIMIZATION STARTED',
+                message: 'Process optimization algorithm is running'
+            });
+        }
+        
+        function exportData() {
+            // Export current dashboard data
+            const csvData = generateCSVData();
+            const blob = new Blob([csvData], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `digital_twin_analytics_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            addAlert({
+                type: 'info',
+                title: 'ANALYTICS EXPORTED',
+                message: 'Analytics data exported to CSV format'
+            });
+        }
+        
+        function generateReport() {
+            // Generate comprehensive system report
+            const reportData = {
+                report_date: new Date().toISOString(),
+                system_overview: {
+                    active_processes: document.getElementById('activeProcesses').textContent,
+                    sync_latency: document.getElementById('syncLatency').textContent,
+                    model_accuracy: document.getElementById('modelAccuracy').textContent,
+                    system_efficiency: document.getElementById('systemEfficiency').textContent
+                },
+                process_performance: processStates,
+                predictions: predictions,
+                alerts: alerts.slice(-20) // Last 20 alerts
+            };
+            
+            const reportHTML = generateReportHTML(reportData);
+            const blob = new Blob([reportHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+            
+            addAlert({
+                type: 'info',
+                title: 'REPORT GENERATED',
+                message: 'Comprehensive system report generated successfully'
+            });
+        }
+        
+        function generateCSVData() {
+            let csv = 'Timestamp,Process_ID,Process_Type,Active,Cycle_Time,Efficiency,Quality_Score,Predicted_Quality,Predicted_Maintenance\n';
+            
+            processStates.forEach((process, index) => {
+                const prediction = predictions[index] || {};
+                csv += `${new Date().toISOString()},${process.process_id},${process.process_type},${process.active},${process.cycle_time},${process.efficiency},${process.quality_score},${prediction.predicted_quality || ''},${prediction.maintenance_probability || ''}\n`;
+            });
+            
+            return csv;
+        }
+        
+        function generateReportHTML(data) {
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Digital Twin System Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 2rem; }
+                        .header { color: #2c3e50; border-bottom: 2px solid #3498db; }
+                        .section { margin: 2rem 0; }
+                        .metric { display: inline-block; margin: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; }
+                        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+                        th, td { padding: 0.5rem; border: 1px solid #ddd; text-align: left; }
+                        th { background: #3498db; color: white; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>Digital Twin Platform Report</h1>
+                        <p>Generated: ${data.report_date}</p>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>System Overview</h2>
+                        <div class="metric">
+                            <strong>Active Processes:</strong> ${data.system_overview.active_processes}
+                        </div>
+                        <div class="metric">
+                            <strong>Sync Latency:</strong> ${data.system_overview.sync_latency}ms
+                        </div>
+                        <div class="metric">
+                            <strong>Model Accuracy:</strong> ${data.system_overview.model_accuracy}%
+                        </div>
+                        <div class="metric">
+                            <strong>System Efficiency:</strong> ${data.system_overview.system_efficiency}%
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>Process Performance</h2>
+                        <table>
+                            <tr>
+                                <th>Process ID</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Efficiency (%)</th>
+                                <th>Quality Score (%)</th>
+                            </tr>
+                            ${data.process_performance.map(process => `
+                                <tr>
+                                    <td>${process.process_id}</td>
+                                    <td>${process.process_type}</td>
+                                    <td>${process.active ? 'Active' : 'Idle'}</td>
+                                    <td>${Math.round(process.efficiency)}</td>
+                                    <td>${Math.round(process.quality_score)}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+        
+        function launchARInterface() {
+            if ('xr' in navigator) {
+                navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+                    if (supported) {
+                        // Launch WebXR AR session
+                        navigator.xr.requestSession('immersive-ar').then((session) => {
+                            addAlert({
+                                type: 'info',
+                                title: 'AR MODE ACTIVE',
+                                message: 'Augmented reality interface launched successfully'
+                            });
+                        });
+                    } else {
+                        alert('AR not supported on this device. Please use a compatible AR headset or WebXR browser.');
+                    }
+                });
+            } else {
+                alert('WebXR not supported. Please use a compatible browser or AR device.');
+            }
+        }
+    </script>
+</body>
+</html>
