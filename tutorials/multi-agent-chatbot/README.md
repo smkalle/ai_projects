@@ -1,4 +1,4 @@
-# Multi-Agent Chatbot with Streamlit Interface
+# Multi-Agent Chatbot with Kimi K2
 
 A sophisticated multi-agent chatbot system built with LangGraph, Context Engineering, and Kimi K2, featuring a beautiful Streamlit web interface.
 
