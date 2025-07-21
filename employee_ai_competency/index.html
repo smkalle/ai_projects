@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Competency Assessment | Professional Development</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo">AI</div>
+                <h1>AI Competency Assessment</h1>
+            </div>
+            <div class="header-subtitle">Evaluate your AI skills and identify growth opportunities</div>
+        </header>
+
+        <main class="main-content">
+            <div class="assessment-card">
+                <!-- Progress indicator -->
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progress-text">Step 1 of 3: Select Role</span>
+                    </div>
+                </div>
+
+                <!-- Role selection section -->
+                <div class="section role-selection" id="role-section">
+                    <h2>What's your primary role?</h2>
+                    <p class="section-description">Select the role that best describes your current position to get tailored assessment questions.</p>
+                    
+                    <div class="role-grid" id="role-grid">
+                        <!-- Role cards will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Survey questions section -->
+                <div class="section survey-section" id="survey-section" style="display: none;">
+                    <div class="role-context" id="role-context">
+                        <!-- Role-specific context will be inserted here -->
+                    </div>
+                    <div id="survey-questions"></div>
+                </div>
+
+                <!-- Results section -->
+                <div class="section results-section" id="results-section" style="display: none;">
+                    <div id="result" class="result-container"></div>
+                    <div class="action-buttons">
+                        <button id="retake-btn" class="secondary-btn">Take Again</button>
+                        <button id="share-btn" class="primary-btn">Share Results</button>
+                    </div>
+                </div>
+
+                <!-- Navigation buttons -->
+                <div class="nav-buttons">
+                    <button id="back-btn" class="secondary-btn" style="display: none;">Back</button>
+                    <button id="continue-btn" class="primary-btn" style="display: none;">Continue</button>
+                    <button id="submit-btn" class="primary-btn" style="display: none;">Complete Assessment</button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>© 2024 AI Competency Framework. Built for professional development.</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

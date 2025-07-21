@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Web server logs
+server.log
+server.pid
+*.log
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Project specific
+*.bak
+*.tmp
+node_modules/
+dist/
+build/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Documentation build
+docs/_build/
+site/
