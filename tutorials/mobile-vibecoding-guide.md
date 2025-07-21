@@ -1,12 +1,13 @@
-# Mobile Vibecoding with Termux & tmux: The Ultimate AI Engineer's Guide
+# Mobile Vibecoding with Alpine & tmux: The Ultimate AI Engineer's Guide
 
-> Transform your Android device into a powerful AI development environment with Claude Code, Gemini CLI, and tmux for seamless mobile coding sessions.
+> Transform your Android device into a powerful AI development environment using Alpine Linux in Termux with Claude Code, Gemini CLI, and tmux for seamless mobile coding sessions.
 
 ## Table of Contents
 
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
 - [Initial Termux Setup](#initial-termux-setup)
+- [Alpine Linux Setup](#alpine-linux-setup)
 - [Storage Configuration](#storage-configuration)
 - [tmux Configuration](#tmux-configuration)
 - [Node.js & Package Manager Setup](#nodejs--package-manager-setup)
@@ -22,7 +23,8 @@
 
 **Vibecoding** is the art of coding with AI assistance in a flow state. This guide sets up the ultimate mobile development environment using:
 
-- **Termux**: Linux environment on Android
+- **Termux**: Android terminal emulator and Linux environment
+- **Alpine Linux**: Lightweight Linux distribution via proot-distro
 - **tmux**: Terminal multiplexer for session management
 - **Claude Code**: Anthropic's AI coding assistant
 - **Gemini CLI**: Google's AI assistant
@@ -85,11 +87,113 @@ ssh-keygen -t ed25519 -C "your.email@example.com"
 cat ~/.ssh/id_ed25519.pub
 ```
 
+## Alpine Linux Setup
+
+### 1. Install Alpine Linux Distribution
+```bash
+# Install Alpine Linux using proot-distro
+proot-distro install alpine
+
+# List available distributions (verify installation)
+proot-distro list
+
+# Login to Alpine Linux
+proot-distro login alpine
+```
+
+### 2. Alpine Linux Initial Setup
+```bash
+# Inside Alpine Linux environment
+# Update package index
+apk update
+
+# Install essential packages
+apk add \
+    bash \
+    curl \
+    wget \
+    git \
+    vim \
+    nano \
+    openssh \
+    tmux \
+    htop \
+    tree \
+    nodejs \
+    npm \
+    python3 \
+    py3-pip \
+    build-base \
+    linux-headers
+
+# Set bash as default shell
+chsh -s /bin/bash
+
+# Create user directory structure
+mkdir -p ~/dev/{projects,scripts,configs}
+```
+
+### 3. Configure Alpine for Development
+```bash
+# Add community repository for more packages
+echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+apk update
+
+# Install additional development tools
+apk add \
+    gcc \
+    g++ \
+    make \
+    cmake \
+    docker \
+    docker-compose
+
+# Setup Git in Alpine
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+
+# Copy SSH keys from Termux to Alpine (if needed)
+# Run this from Termux, not Alpine:
+# cp ~/.ssh/id_ed25519* /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/alpine/home/
+```
+
+### 4. Alpine Login Script
+Create a convenient login script in Termux `~/alpine-login.sh`:
+
+```bash
+#!/bin/bash
+# Alpine Linux login script for vibecoding
+
+echo "🏔️ Entering Alpine Linux environment..."
+echo "🎯 Ready for vibecoding with AI!"
+
+# Login to Alpine with proper environment
+proot-distro login alpine --bind /sdcard:/mnt/sdcard --bind /storage:/mnt/storage
+```
+
+Make it executable:
+```bash
+chmod +x ~/alpine-login.sh
+echo 'alias alpine="~/alpine-login.sh"' >> ~/.bashrc
+```
+
+### 5. Shared Storage Setup Between Termux and Alpine
+```bash
+# From within Alpine Linux
+# Create symlinks to access Android storage
+ln -sf /mnt/sdcard ~/android-storage
+ln -sf /mnt/storage ~/termux-storage
+
+# Create shared development directory
+mkdir -p /mnt/sdcard/alpine-dev
+ln -sf /mnt/sdcard/alpine-dev ~/shared-dev
+```
+
 ## Storage Configuration
 
-### 1. Enable Shared Storage Access
+### 1. Enable Shared Storage Access (Termux)
 ```bash
-# Request storage permissions
+# Request storage permissions in Termux
 termux-setup-storage
 
 # This creates symlinks in ~/storage/
@@ -97,45 +201,50 @@ termux-setup-storage
 # ~/storage/external-1 -> SD card (if available)
 ```
 
-### 2. Create Development Directory Structure
+### 2. Create Development Directory Structure (Alpine)
 ```bash
-# Create organized workspace
-mkdir -p ~/storage/shared/dev/{projects,scripts,configs,ai-sessions}
-mkdir -p ~/workspace
-ln -sf ~/storage/shared/dev ~/workspace/dev
+# Inside Alpine Linux
+# Create organized workspace in shared storage
+mkdir -p /mnt/sdcard/alpine-dev/{projects,scripts,configs,ai-sessions}
+mkdir -p ~/dev
+ln -sf /mnt/sdcard/alpine-dev ~/dev
 
-# Create quick access aliases
-echo 'alias dev="cd ~/workspace/dev"' >> ~/.bashrc
-echo 'alias projects="cd ~/workspace/dev/projects"' >> ~/.bashrc
-echo 'alias scripts="cd ~/workspace/dev/scripts"' >> ~/.bashrc
+# Create quick access aliases for Alpine
+echo 'alias dev="cd ~/dev"' >> ~/.bashrc
+echo 'alias projects="cd ~/dev/projects"' >> ~/.bashrc
+echo 'alias scripts="cd ~/dev/scripts"' >> ~/.bashrc
+
+# Also create Termux aliases for accessing Alpine projects
+# Run this in Termux:
+echo 'alias alpine-dev="cd /storage/emulated/0/alpine-dev"' >> ~/.bashrc
 ```
 
-### 3. Storage Management Script
-Create `~/workspace/dev/scripts/storage-check.sh`:
+### 3. Storage Management Script (Alpine)
+Create `~/dev/scripts/storage-check.sh` in Alpine:
 
 ```bash
 #!/bin/bash
 # Storage monitoring script for mobile development
 
-echo "=== Termux Storage Status ==="
+echo "=== Alpine Storage Status ==="
 df -h $HOME
 echo ""
 
 echo "=== Shared Storage ==="
-df -h ~/storage/shared 2>/dev/null || echo "Shared storage not accessible"
+df -h /mnt/sdcard 2>/dev/null || echo "Shared storage not accessible"
 echo ""
 
 echo "=== Development Directory Sizes ==="
-du -sh ~/workspace/dev/* 2>/dev/null
+du -sh ~/dev/* 2>/dev/null
 echo ""
 
 echo "=== Package Cache Size ==="
-du -sh $PREFIX/var/cache/apt/archives/ 2>/dev/null
+du -sh /var/cache/apk/* 2>/dev/null
 echo ""
 
 echo "=== Cleanup Suggestions ==="
-if [ $(du -s $PREFIX/var/cache/apt/archives/ | cut -f1) -gt 100000 ]; then
-    echo "📦 Run 'pkg clean' to free up package cache space"
+if [ $(du -s /var/cache/apk/* 2>/dev/null | cut -f1) -gt 100000 ]; then
+    echo "📦 Run 'apk cache clean' to free up package cache space"
 fi
 
 if [ $(du -s ~/.npm/_cacache 2>/dev/null | cut -f1) -gt 50000 ]; then
@@ -145,15 +254,17 @@ fi
 
 Make it executable:
 ```bash
-chmod +x ~/workspace/dev/scripts/storage-check.sh
-echo 'alias storage="~/workspace/dev/scripts/storage-check.sh"' >> ~/.bashrc
+chmod +x ~/dev/scripts/storage-check.sh
+echo 'alias storage="~/dev/scripts/storage-check.sh"' >> ~/.bashrc
 ```
 
 ## tmux Configuration
 
-### 1. Install tmux
+### 1. Install tmux (Already installed in Alpine setup)
 ```bash
-pkg install tmux
+# tmux is already installed in Alpine Linux from previous steps
+# Verify installation
+tmux -V
 ```
 
 ### 2. Mobile-Optimized tmux Configuration
@@ -249,7 +360,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 ### 4. Essential tmux Scripts
 
-Create `~/workspace/dev/scripts/tmux-ai-session.sh`:
+Create `~/dev/scripts/tmux-ai-session.sh` in Alpine:
 ```bash
 #!/bin/bash
 # AI-focused tmux session setup for vibecoding
@@ -261,23 +372,23 @@ tmux has-session -t $SESSION_NAME 2>/dev/null
 
 if [ $? != 0 ]; then
     # Create new session
-    tmux new-session -d -s $SESSION_NAME -n "claude" -c "~/workspace/dev/projects"
+    tmux new-session -d -s $SESSION_NAME -n "claude" -c "~/dev/projects"
     
     # Window 1: Claude Code
     tmux send-keys -t $SESSION_NAME:claude "clear && echo 'Claude Code Ready - Happy Vibecoding! 🚀'" C-m
     
     # Window 2: Gemini CLI
-    tmux new-window -t $SESSION_NAME -n "gemini" -c "~/workspace/dev/projects"
+    tmux new-window -t $SESSION_NAME -n "gemini" -c "~/dev/projects"
     tmux send-keys -t $SESSION_NAME:gemini "clear && echo 'Gemini CLI Ready 🤖'" C-m
     
     # Window 3: Development
-    tmux new-window -t $SESSION_NAME -n "dev" -c "~/workspace/dev/projects"
-    tmux split-window -t $SESSION_NAME:dev -h -c "~/workspace/dev/projects"
+    tmux new-window -t $SESSION_NAME -n "dev" -c "~/dev/projects"
+    tmux split-window -t $SESSION_NAME:dev -h -c "~/dev/projects"
     tmux send-keys -t $SESSION_NAME:dev.0 "clear && echo 'Main development pane'" C-m
     tmux send-keys -t $SESSION_NAME:dev.1 "clear && htop" C-m
     
     # Window 4: Files & Scripts
-    tmux new-window -t $SESSION_NAME -n "files" -c "~/workspace/dev"
+    tmux new-window -t $SESSION_NAME -n "files" -c "~/dev"
     tmux send-keys -t $SESSION_NAME:files "clear && tree -L 2" C-m
     
     # Select Claude window by default
@@ -290,17 +401,15 @@ tmux attach-session -t $SESSION_NAME
 
 Make it executable:
 ```bash
-chmod +x ~/workspace/dev/scripts/tmux-ai-session.sh
-echo 'alias ai-session="~/workspace/dev/scripts/tmux-ai-session.sh"' >> ~/.bashrc
+chmod +x ~/dev/scripts/tmux-ai-session.sh
+echo 'alias ai-session="~/dev/scripts/tmux-ai-session.sh"' >> ~/.bashrc
 ```
 
 ## Node.js & Package Manager Setup
 
-### 1. Install Node.js
+### 1. Verify Node.js Installation (Already installed in Alpine)
 ```bash
-# Install Node.js (current version)
-pkg install nodejs npm
-
+# Node.js and npm are already installed in Alpine Linux
 # Verify installation
 node --version
 npm --version
@@ -385,10 +494,10 @@ Create `~/.claude/config.json`:
 ```
 
 ### 5. Simple Claude Example
-Create `~/workspace/dev/projects/claude-test/`:
+Create `~/dev/projects/claude-test/` in Alpine:
 ```bash
-mkdir -p ~/workspace/dev/projects/claude-test
-cd ~/workspace/dev/projects/claude-test
+mkdir -p ~/dev/projects/claude-test
+cd ~/dev/projects/claude-test
 
 # Create a simple project
 echo "# Claude Test Project" > README.md
@@ -412,13 +521,13 @@ Since there's no official Gemini CLI, we'll create a wrapper using the API:
 # Install required packages
 npm install -g google-auth-library axios dotenv commander
 
-# Create Gemini CLI directory
-mkdir -p ~/workspace/dev/scripts/gemini-cli
-cd ~/workspace/dev/scripts/gemini-cli
+# Create Gemini CLI directory in Alpine
+mkdir -p ~/dev/scripts/gemini-cli
+cd ~/dev/scripts/gemini-cli
 ```
 
 ### 2. Create Gemini CLI Script
-Create `~/workspace/dev/scripts/gemini-cli/gemini.js`:
+Create `~/dev/scripts/gemini-cli/gemini.js` in Alpine:
 
 ```javascript
 #!/usr/bin/env node
@@ -655,10 +764,10 @@ program.parse();
 
 ### 3. Make Gemini CLI Executable
 ```bash
-chmod +x ~/workspace/dev/scripts/gemini-cli/gemini.js
+chmod +x ~/dev/scripts/gemini-cli/gemini.js
 
 # Create symlink for global access
-ln -sf ~/workspace/dev/scripts/gemini-cli/gemini.js ~/.npm-global/bin/gemini
+ln -sf ~/dev/scripts/gemini-cli/gemini.js ~/.npm-global/bin/gemini
 
 # Test installation
 gemini --version
@@ -692,7 +801,7 @@ gemini code "Create a REST API with Express.js for user management"
 gemini debug "TypeError: Cannot read property 'length' of undefined"
 
 # Code review
-cd ~/workspace/dev/projects/your-project
+cd ~/dev/projects/your-project
 gemini review
 
 # Explain concepts
@@ -702,7 +811,7 @@ gemini explain "What is event loop in Node.js"
 ## Essential Scripts
 
 ### 1. Development Environment Launcher
-Create `~/workspace/dev/scripts/dev-env.sh`:
+Create `~/dev/scripts/dev-env.sh` in Alpine:
 
 ```bash
 #!/bin/bash
@@ -732,16 +841,16 @@ echo ""
 
 # Check storage
 echo "💾 Storage Status:"
-~/workspace/dev/scripts/storage-check.sh
+~/dev/scripts/storage-check.sh
 echo ""
 
 # Start AI session
 echo "🤖 Starting AI coding session..."
-~/workspace/dev/scripts/tmux-ai-session.sh
+~/dev/scripts/tmux-ai-session.sh
 ```
 
 ### 2. Project Creator Script
-Create `~/workspace/dev/scripts/new-project.sh`:
+Create `~/dev/scripts/new-project.sh` in Alpine:
 
 ```bash
 #!/bin/bash
@@ -755,7 +864,7 @@ fi
 
 PROJECT_NAME="$1"
 PROJECT_TYPE="${2:-node}"
-PROJECT_DIR="~/workspace/dev/projects/$PROJECT_NAME"
+PROJECT_DIR="~/dev/projects/$PROJECT_NAME"
 
 echo "🆕 Creating new $PROJECT_TYPE project: $PROJECT_NAME"
 
@@ -804,7 +913,7 @@ claude
 ```
 
 ### 3. AI Assistant Switcher
-Create `~/workspace/dev/scripts/ai-switch.sh`:
+Create `~/dev/scripts/ai-switch.sh` in Alpine:
 
 ```bash
 #!/bin/bash
@@ -852,13 +961,13 @@ done
 ```
 
 ### 4. Quick Backup Script
-Create `~/workspace/dev/scripts/backup-dev.sh`:
+Create `~/dev/scripts/backup-dev.sh` in Alpine:
 
 ```bash
 #!/bin/bash
 # Backup development environment
 
-BACKUP_DIR="~/storage/shared/dev-backup"
+BACKUP_DIR="/mnt/sdcard/alpine-dev-backup"
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_NAME="dev_backup_$DATE"
 
@@ -883,12 +992,12 @@ tar -czf "$BACKUP_DIR/${BACKUP_NAME}_projects.tar.gz" \
     --exclude="node_modules" \
     --exclude=".git" \
     --exclude="*.log" \
-    ~/workspace/dev/projects/
+    ~/dev/projects/
 
 # Backup scripts
 echo "📁 Backing up scripts..."
 tar -czf "$BACKUP_DIR/${BACKUP_NAME}_scripts.tar.gz" \
-    ~/workspace/dev/scripts/
+    ~/dev/scripts/
 
 echo "✅ Backup completed: $BACKUP_DIR/$BACKUP_NAME"
 echo "📊 Backup sizes:"
@@ -897,15 +1006,15 @@ ls -lh "$BACKUP_DIR"/*"$DATE"*
 
 Make all scripts executable:
 ```bash
-chmod +x ~/workspace/dev/scripts/*.sh
+chmod +x ~/dev/scripts/*.sh
 ```
 
 Add aliases to `~/.bashrc`:
 ```bash
-echo 'alias dev-env="~/workspace/dev/scripts/dev-env.sh"' >> ~/.bashrc
-echo 'alias new-project="~/workspace/dev/scripts/new-project.sh"' >> ~/.bashrc
-echo 'alias ai-switch="~/workspace/dev/scripts/ai-switch.sh"' >> ~/.bashrc
-echo 'alias backup-dev="~/workspace/dev/scripts/backup-dev.sh"' >> ~/.bashrc
+echo 'alias dev-env="~/dev/scripts/dev-env.sh"' >> ~/.bashrc
+echo 'alias new-project="~/dev/scripts/new-project.sh"' >> ~/.bashrc
+echo 'alias ai-switch="~/dev/scripts/ai-switch.sh"' >> ~/.bashrc
+echo 'alias backup-dev="~/dev/scripts/backup-dev.sh"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
@@ -921,7 +1030,7 @@ dev-env
 ai-session
 
 # 2. Check project status
-cd ~/workspace/dev/projects/current-project
+cd ~/dev/projects/current-project
 git status
 
 # 3. Start AI assistant
@@ -1144,7 +1253,7 @@ alias status='dev_status'
 ```
 
 ### 3. Package.json Template for Mobile Development
-Create `~/workspace/dev/templates/package.json`:
+Create `~/dev/templates/package.json` in Alpine:
 
 ```json
 {
@@ -1242,8 +1351,8 @@ termux-setup-storage
 ls -la ~/storage/
 
 # Fix symlinks if broken
-rm ~/workspace/dev
-ln -sf ~/storage/shared/dev ~/workspace/dev
+rm ~/dev
+ln -sf /mnt/sdcard/alpine-dev ~/dev
 ```
 
 **5. Node.js memory issues**
@@ -1325,7 +1434,7 @@ chmod +x ~/workspace/dev/scripts/battery-check.sh
 ### 4. Project Organization
 ```bash
 # Create project templates
-mkdir -p ~/workspace/dev/templates/{node,react,python,static}
+mkdir -p ~/dev/templates/{node,react,python,static}
 
 # Use consistent naming conventions
 # project-name (kebab-case)
@@ -1337,13 +1446,13 @@ mkdir -p ~/workspace/dev/templates/{node,react,python,static}
 ```bash
 # Weekly backup script
 echo '#!/bin/bash
-cd ~/workspace/dev
-tar -czf ~/storage/shared/weekly-backup-$(date +%Y%m%d).tar.gz \
+cd ~/dev
+tar -czf /mnt/sdcard/weekly-backup-$(date +%Y%m%d).tar.gz \
     --exclude="node_modules" \
     --exclude=".git" \
-    projects/ scripts/ configs/' > ~/workspace/dev/scripts/weekly-backup.sh
+    projects/ scripts/ configs/' > ~/dev/scripts/weekly-backup.sh
 
-chmod +x ~/workspace/dev/scripts/weekly-backup.sh
+chmod +x ~/dev/scripts/weekly-backup.sh
 ```
 
 ### 6. Collaborative Development
@@ -1358,7 +1467,7 @@ tmux new-session -s shared-session
 ```
 
 ### 7. Learning Resources
-- Keep a learning log in `~/workspace/dev/learning.md`
+- Keep a learning log in `~/dev/learning.md`
 - Save useful AI conversations
 - Document common patterns and solutions
 - Create code snippets library
@@ -1376,10 +1485,10 @@ echo '.env' >> ~/.gitignore_global
 
 ## Conclusion
 
-This guide provides a complete mobile vibecoding setup with AI assistance. The combination of Termux, tmux, Claude Code, and Gemini CLI creates a powerful development environment that rivals desktop setups.
+This guide provides a complete mobile vibecoding setup with AI assistance. The combination of Termux, Alpine Linux, tmux, Claude Code, and Gemini CLI creates a powerful development environment that rivals desktop setups.
 
 Key benefits:
-- ✅ Full Linux development environment on mobile
+- ✅ Full Alpine Linux development environment on mobile
 - ✅ AI-powered coding assistance
 - ✅ Session persistence with tmux
 - ✅ Efficient mobile-optimized workflows
