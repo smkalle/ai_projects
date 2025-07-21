@@ -26,8 +26,8 @@
 - **Termux**: Android terminal emulator and Linux environment
 - **Alpine Linux**: Lightweight Linux distribution via proot-distro
 - **tmux**: Terminal multiplexer for session management
-- **Claude Code**: Anthropic's AI coding assistant
-- **Gemini CLI**: Google's AI assistant
+- **Claude Code**: Anthropic's AI coding assistant (primary focus)
+- **Gemini API**: Google's AI assistant (simple integration)
 - **Mobile-optimized workflows** for coding on the go
 
 ## Prerequisites
@@ -124,7 +124,8 @@ apk add \
     python3 \
     py3-pip \
     build-base \
-    linux-headers
+    linux-headers \
+    jq
 
 # Set bash as default shell
 chsh -s /bin/bash
@@ -377,9 +378,9 @@ if [ $? != 0 ]; then
     # Window 1: Claude Code
     tmux send-keys -t $SESSION_NAME:claude "clear && echo 'Claude Code Ready - Happy Vibecoding! 🚀'" C-m
     
-    # Window 2: Gemini CLI
+    # Window 2: Gemini API
     tmux new-window -t $SESSION_NAME -n "gemini" -c "~/dev/projects"
-    tmux send-keys -t $SESSION_NAME:gemini "clear && echo 'Gemini CLI Ready 🤖'" C-m
+    tmux send-keys -t $SESSION_NAME:gemini "clear && echo 'Gemini API Ready 🤖'" C-m
     
     # Window 3: Development
     tmux new-window -t $SESSION_NAME -n "dev" -c "~/dev/projects"
@@ -493,7 +494,65 @@ Create `~/.claude/config.json`:
 }
 ```
 
-### 5. Simple Claude Example
+### 5. Claude CLI Basic Usage
+```bash
+# Interactive coding session
+claude
+
+# Start with a specific project
+cd ~/dev/projects/your-project
+claude
+
+# Quick one-shot commands
+claude --prompt "Create a Python function to calculate fibonacci numbers"
+claude --file script.js --prompt "Add error handling to this code"
+```
+
+### 6. Essential Claude Commands and Workflows
+
+**Project Setup:**
+```bash
+# Create new project with Claude assistance
+mkdir ~/dev/projects/my-app && cd ~/dev/projects/my-app
+claude
+# In Claude: "Set up a new Node.js project with Express and TypeScript"
+```
+
+**Code Review:**
+```bash
+# Review existing code
+claude --prompt "Review this codebase for best practices and potential improvements"
+```
+
+**Debugging:**
+```bash
+# Debug issues
+claude --prompt "I'm getting this error: [paste error message]. Help me debug and fix it."
+```
+
+**Learning:**
+```bash
+# Explain concepts
+claude --prompt "Explain how async/await works in JavaScript with examples"
+```
+
+### 7. Mobile-Optimized Claude Settings
+Add to `~/.bashrc` for better mobile experience:
+
+```bash
+# Claude aliases for mobile
+alias c='claude'
+alias code-review='claude --prompt "Review this code for best practices"'
+alias debug='claude --prompt "Help debug this error:"'
+alias explain='claude --prompt "Explain this concept:"'
+
+# Quick project setup
+alias new-node='claude --prompt "Create a new Node.js project structure"'
+alias new-react='claude --prompt "Set up a new React project with TypeScript"'
+alias new-python='claude --prompt "Create a Python project with proper structure"'
+```
+
+### 8. Simple Claude Example
 Create `~/dev/projects/claude-test/` in Alpine:
 ```bash
 mkdir -p ~/dev/projects/claude-test
@@ -506,306 +565,56 @@ echo "console.log('Hello from Claude!');" > index.js
 # Start Claude Code
 claude
 
-# In Claude, try:
+# Try these prompts:
 # "Create a simple Express.js server with a hello world endpoint"
 # "Add error handling and logging to this server"
 # "Write tests for this API using Jest"
+# "Optimize this code for mobile performance"
 ```
 
 ## Gemini CLI Installation & Setup
 
-### 1. Install Gemini CLI
-Since there's no official Gemini CLI, we'll create a wrapper using the API:
+### 1. Simple Gemini API Integration
+Since there's no official Gemini CLI, we'll use a simple curl wrapper:
 
 ```bash
-# Install required packages
-npm install -g google-auth-library axios dotenv commander
+# Install a simple Gemini CLI wrapper
+npm install -g @google/generative-ai-cli
 
-# Create Gemini CLI directory in Alpine
-mkdir -p ~/dev/scripts/gemini-cli
-cd ~/dev/scripts/gemini-cli
+# Alternative: Use curl directly for API calls
+# Create simple Gemini function
+echo 'gemini() {
+    curl -X POST \
+        -H "Content-Type: application/json" \
+        -d "{\"contents\":[{\"parts\":[{\"text\":\"$1\"}]}]}" \
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$GEMINI_API_KEY" \
+        | jq -r ".candidates[0].content.parts[0].text"
+}' >> ~/.bashrc
 ```
 
-### 2. Create Gemini CLI Script
-Create `~/dev/scripts/gemini-cli/gemini.js` in Alpine:
-
-```javascript
-#!/usr/bin/env node
-
-const { Command } = require('commander');
-const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
-
-const program = new Command();
-
-// Configuration
-const CONFIG_FILE = path.join(process.env.HOME, '.gemini-cli-config.json');
-
-class GeminiCLI {
-    constructor() {
-        this.config = this.loadConfig();
-    }
-
-    loadConfig() {
-        try {
-            if (fs.existsSync(CONFIG_FILE)) {
-                return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
-            }
-        } catch (error) {
-            console.error('Error loading config:', error.message);
-        }
-        return {};
-    }
-
-    saveConfig(config) {
-        try {
-            fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
-            console.log('✅ Configuration saved');
-        } catch (error) {
-            console.error('❌ Error saving config:', error.message);
-        }
-    }
-
-    async setupAuth(apiKey) {
-        this.config.apiKey = apiKey;
-        this.config.baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
-        this.saveConfig(this.config);
-    }
-
-    async chat(prompt, model = 'gemini-pro') {
-        if (!this.config.apiKey) {
-            console.error('❌ API key not configured. Run: gemini auth setup');
-            return;
-        }
-
-        try {
-            console.log('🤖 Gemini is thinking...\n');
-            
-            const response = await axios.post(
-                `${this.config.baseUrl}/models/${model}:generateContent?key=${this.config.apiKey}`,
-                {
-                    contents: [{
-                        parts: [{ text: prompt }]
-                    }]
-                },
-                {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-
-            const result = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (result) {
-                console.log('📝 Gemini Response:\n');
-                console.log(result);
-                
-                // Save to history
-                this.saveToHistory(prompt, result);
-            } else {
-                console.error('❌ No response from Gemini');
-            }
-        } catch (error) {
-            console.error('❌ Error:', error.response?.data?.error?.message || error.message);
-        }
-    }
-
-    saveToHistory(prompt, response) {
-        const historyFile = path.join(process.env.HOME, '.gemini-cli-history.json');
-        let history = [];
-        
-        try {
-            if (fs.existsSync(historyFile)) {
-                history = JSON.parse(fs.readFileSync(historyFile, 'utf8'));
-            }
-        } catch (error) {
-            // Ignore errors, start fresh
-        }
-
-        history.push({
-            timestamp: new Date().toISOString(),
-            prompt,
-            response
-        });
-
-        // Keep only last 50 entries
-        if (history.length > 50) {
-            history = history.slice(-50);
-        }
-
-        try {
-            fs.writeFileSync(historyFile, JSON.stringify(history, null, 2));
-        } catch (error) {
-            // Ignore save errors
-        }
-    }
-
-    async interactiveMode() {
-        console.log('🚀 Gemini Interactive Mode (type "exit" to quit)\n');
-        
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
-
-        const askQuestion = () => {
-            rl.question('You: ', async (input) => {
-                if (input.toLowerCase() === 'exit') {
-                    console.log('👋 Goodbye!');
-                    rl.close();
-                    return;
-                }
-
-                if (input.trim()) {
-                    await this.chat(input);
-                    console.log('\n' + '─'.repeat(50) + '\n');
-                }
-                askQuestion();
-            });
-        };
-
-        askQuestion();
-    }
-}
-
-const gemini = new GeminiCLI();
-
-// CLI Commands
-program
-    .name('gemini')
-    .description('Gemini CLI for mobile AI development')
-    .version('1.0.0');
-
-program
-    .command('auth')
-    .description('Configure Gemini API authentication')
-    .action(async () => {
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
-
-        rl.question('Enter your Gemini API key: ', (apiKey) => {
-            gemini.setupAuth(apiKey.trim());
-            rl.close();
-        });
-    });
-
-program
-    .command('chat [prompt]')
-    .description('Chat with Gemini')
-    .option('-m, --model <model>', 'Model to use', 'gemini-pro')
-    .action(async (prompt, options) => {
-        if (prompt) {
-            await gemini.chat(prompt, options.model);
-        } else {
-            await gemini.interactiveMode();
-        }
-    });
-
-program
-    .command('code <prompt>')
-    .description('Ask Gemini for coding help')
-    .action(async (prompt) => {
-        const codePrompt = `As an expert programmer, help me with this coding task. Provide clear, well-commented code with explanations:\n\n${prompt}`;
-        await gemini.chat(codePrompt);
-    });
-
-program
-    .command('debug <error>')
-    .description('Debug an error with Gemini')
-    .action(async (error) => {
-        const debugPrompt = `Help me debug this error. Provide possible causes and solutions:\n\n${error}`;
-        await gemini.chat(debugPrompt);
-    });
-
-program
-    .command('explain <concept>')
-    .description('Explain a concept')
-    .action(async (concept) => {
-        const explainPrompt = `Explain this concept clearly and concisely for a developer:\n\n${concept}`;
-        await gemini.chat(explainPrompt);
-    });
-
-program
-    .command('review')
-    .description('Review code in current directory')
-    .action(async () => {
-        const files = fs.readdirSync('.').filter(f => 
-            f.endsWith('.js') || f.endsWith('.ts') || f.endsWith('.py') || 
-            f.endsWith('.java') || f.endsWith('.cpp') || f.endsWith('.c')
-        );
-        
-        if (files.length === 0) {
-            console.log('❌ No code files found in current directory');
-            return;
-        }
-
-        console.log(`📁 Found ${files.length} code file(s): ${files.join(', ')}`);
-        
-        let codeContent = '';
-        for (const file of files.slice(0, 3)) { // Limit to 3 files
-            try {
-                const content = fs.readFileSync(file, 'utf8');
-                codeContent += `\n--- ${file} ---\n${content}\n`;
-            } catch (error) {
-                console.log(`⚠️  Could not read ${file}`);
-            }
-        }
-
-        const reviewPrompt = `Please review this code for best practices, potential bugs, and improvements:\n${codeContent}`;
-        await gemini.chat(reviewPrompt);
-    });
-
-program.parse();
-```
-
-### 3. Make Gemini CLI Executable
-```bash
-chmod +x ~/dev/scripts/gemini-cli/gemini.js
-
-# Create symlink for global access
-ln -sf ~/dev/scripts/gemini-cli/gemini.js ~/.npm-global/bin/gemini
-
-# Test installation
-gemini --version
-```
-
-### 4. Get Gemini API Key
+### 2. Get Gemini API Key
 1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
 2. Sign in with your Google account
 3. Create a new API key
-4. Copy the key
+4. Add to your environment:
 
-### 5. Setup Gemini Authentication
 ```bash
-# Configure API key
-gemini auth
-# Enter your API key when prompted
+# Add API key to environment
+export GEMINI_API_KEY="your-api-key-here"
+echo 'export GEMINI_API_KEY="your-api-key-here"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
-### 6. Simple Gemini Examples
+### 3. Basic Gemini Usage
 ```bash
-# Basic chat
-gemini chat "Explain async/await in JavaScript"
+# Using the function
+gemini "Explain async/await in JavaScript"
 
-# Interactive mode
-gemini chat
-
-# Coding help
-gemini code "Create a REST API with Express.js for user management"
-
-# Debug assistance
-gemini debug "TypeError: Cannot read property 'length' of undefined"
-
-# Code review
-cd ~/dev/projects/your-project
-gemini review
-
-# Explain concepts
-gemini explain "What is event loop in Node.js"
+# Using curl directly
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"contents":[{"parts":[{"text":"Create a Python function for fibonacci"}]}]}' \
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$GEMINI_API_KEY"
 ```
 
 ## Essential Scripts
@@ -835,7 +644,7 @@ echo "📋 Environment Status:"
 echo "Node.js: $(node --version 2>/dev/null || echo 'Not installed')"
 echo "npm: $(npm --version 2>/dev/null || echo 'Not installed')"
 echo "Claude: $(claude --version 2>/dev/null || echo 'Not installed')"
-echo "Gemini: $(gemini --version 2>/dev/null || echo 'Not installed')"
+echo "Gemini API: $(curl -s -o /dev/null -w "%{http_code}" "https://generativelanguage.googleapis.com" && echo 'Available' || echo 'Check connection')"
 echo "tmux: $(tmux -V 2>/dev/null || echo 'Not installed')"
 echo ""
 
@@ -922,7 +731,7 @@ Create `~/dev/scripts/ai-switch.sh` in Alpine:
 show_menu() {
     echo "🤖 AI Assistant Selector"
     echo "1) Claude Code (Anthropic)"
-    echo "2) Gemini CLI (Google)"
+    echo "2) Gemini API (Google)"
     echo "3) Both (Split tmux panes)"
     echo "4) Exit"
     echo -n "Choose an option: "
@@ -938,14 +747,14 @@ while true; do
             break
             ;;
         2)
-            echo "🎯 Starting Gemini CLI..."
-            gemini chat
+            echo "🎯 Starting Gemini API session..."
+            echo "Use: gemini 'your prompt here'"
             break
             ;;
         3)
             echo "🎯 Starting both AIs in tmux..."
             tmux new-session -d -s "dual-ai" "claude"
-            tmux split-window -h "gemini chat"
+            tmux split-window -h "bash"
             tmux attach-session -s "dual-ai"
             break
             ;;
@@ -1056,7 +865,7 @@ add proper error handling, and include mobile-optimized responses"
 **Step 3: Validation with Gemini**
 ```bash
 # Switch to Gemini pane (Ctrl+a + arrow keys)
-gemini code "Review this Express.js API structure for best practices"
+gemini "Review this Express.js API structure for best practices"
 ```
 
 **Step 4: Testing & Iteration**
@@ -1085,7 +894,7 @@ claude> "Add a new endpoint for file uploads with progress tracking"
 npm test
 
 # Review with Gemini
-gemini review
+gemini "Review this code for best practices and improvements"
 
 # Commit
 git add .
@@ -1103,7 +912,7 @@ claude> "I'm getting this error: [paste error].
 Can you help me understand and fix it?"
 
 # Or use Gemini for second opinion
-gemini debug "TypeError: Cannot read property 'user' of undefined"
+gemini "Help me debug this error: TypeError: Cannot read property 'user' of undefined"
 ```
 
 ### 4. Mobile-Specific Optimizations
@@ -1200,12 +1009,12 @@ alias gd='git diff'
 
 # AI shortcuts
 alias c='claude'
-alias g='gemini chat'
+alias g='gemini'
 alias ai='ai-switch'
 
 # Project navigation
-alias proj='cd ~/workspace/dev/projects'
-alias scripts='cd ~/workspace/dev/scripts'
+alias proj='cd ~/dev/projects'
+alias scripts='cd ~/dev/scripts'
 
 # System monitoring
 alias top='htop'
@@ -1485,7 +1294,7 @@ echo '.env' >> ~/.gitignore_global
 
 ## Conclusion
 
-This guide provides a complete mobile vibecoding setup with AI assistance. The combination of Termux, Alpine Linux, tmux, Claude Code, and Gemini CLI creates a powerful development environment that rivals desktop setups.
+This guide provides a complete mobile vibecoding setup with AI assistance. The combination of Termux, Alpine Linux, tmux, Claude Code, and Gemini API creates a powerful development environment that rivals desktop setups.
 
 Key benefits:
 - ✅ Full Alpine Linux development environment on mobile
