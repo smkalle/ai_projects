@@ -1,0 +1,97 @@
+patterns:
+  # SQL Injection patterns
+  - id: sql-injection-string-format
+    lang: python
+    regex: "cursor\\.execute\\(f[\"'].*\\{.*\\}[\"'].*\\)"
+    severity: high
+    description: "Interpolated user input in raw SQL string (possible SQLi)"
+  
+  - id: sql-injection-fstring
+    lang: python
+    regex: "f\".*SELECT.*\\{.*\\}.*\""
+    severity: high
+    description: "F-string SQL query with interpolation (SQLi risk)"
+  
+  - id: sql-injection-concat
+    lang: python
+    regex: "cursor\\.execute\\([^,]+\\+[^,]+\\)"
+    severity: high
+    description: "String concatenation in SQL query (possible SQLi)"
+
+  # Hardcoded secrets
+  - id: hardcoded-aws-key
+    regex: "AKIA[0-9A-Z]{16}"
+    severity: critical
+    description: "Possible hardcoded AWS access key"
+  
+  - id: hardcoded-api-key
+    regex: "(api_key|apikey|API_KEY)\\s*=\\s*[\"'][^\"']{10,}[\"']"
+    severity: high
+    description: "Possible hardcoded API key"
+  
+  - id: hardcoded-password
+    regex: "(password|passwd|pwd|secret)\\s*=\\s*[\"'][^\"']+[\"']"
+    severity: high
+    description: "Possible hardcoded password"
+
+  # Command injection
+  - id: command-injection-subprocess
+    lang: python
+    regex: "subprocess\\.(check_output|run|call|Popen)\\([^)]*shell\\s*=\\s*True"
+    severity: critical
+    description: "Shell injection vulnerability via subprocess"
+  
+  - id: command-injection-os-system
+    lang: python
+    regex: "os\\.(system|popen)\\([^)]*\\{.*\\}"
+    severity: critical
+    description: "Command injection via os.system/popen"
+
+  # Insecure deserialization
+  - id: pickle-loads
+    lang: python
+    regex: "pickle\\.loads\\("
+    severity: high
+    description: "Insecure deserialization with pickle.loads()"
+  
+  - id: yaml-load
+    lang: python
+    regex: "yaml\\.load\\([^,)]+\\)"
+    severity: high
+    description: "Insecure YAML deserialization (use safe_load)"
+
+  # Path traversal
+  - id: path-traversal-join
+    lang: python
+    regex: "os\\.path\\.join\\([^,]+,\\s*(request|input|param|filename)"
+    severity: high
+    description: "Potential path traversal vulnerability"
+  
+  - id: path-traversal-open
+    lang: python
+    regex: "open\\([^)]*os\\.path\\.join\\([^)]*request"
+    severity: high
+    description: "Path traversal in file open operation"
+
+  # Weak cryptography
+  - id: weak-crypto-md5
+    regex: "hashlib\\.md5\\("
+    severity: medium
+    description: "MD5 is cryptographically broken, use SHA256+"
+  
+  - id: weak-crypto-sha1
+    regex: "hashlib\\.sha1\\("
+    severity: medium
+    description: "SHA1 is weak, use SHA256+"
+
+  # CORS misconfiguration
+  - id: cors-wildcard
+    regex: "Access-Control-Allow-Origin.*\\*"
+    severity: medium
+    description: "CORS wildcard allows any origin"
+  
+  # Sensitive data logging
+  - id: password-logging
+    regex: "(log|print).*password"
+    severity: medium
+    description: "Potential password logging"

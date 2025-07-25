@@ -1,0 +1,22 @@
+{
+  "name": "security-auditor",
+  "description": "Performs OWASP-style secure code reviews, outputs structured findings with severities and remediations.",
+  "system_prompt_file": "audit/prompts/security-auditor.system.md",
+  "tools": {
+    "allow_shell": false,
+    "allow_network": false,
+    "allow_code_execution": true,
+    "extra": []
+  },
+  "context": {
+    "include": ["src/**/*", "requirements.txt", "pyproject.toml", "package.json", "*.yml", "*.yaml"],
+    "exclude": ["**/node_modules/**", "**/.git/**", "**/venv/**", "**/__pycache__/**"]
+  },
+  "output": {
+    "format": ["markdown", "json"],
+    "json_block_label": "SECURITY_AUDIT_JSON"
+  },
+  "limits": {
+    "max_tokens": 100000
+  }
+}

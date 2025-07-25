@@ -1,0 +1,60 @@
+name: Security Audit
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Install jq for JSON parsing
+        run: sudo apt-get install -y jq
+      
+      - name: Run pattern-based security scan
+        run: |
+          mkdir -p audit/reports
+          python3 audit/runners/pattern_scanner.py src > audit/reports/pattern_scan.json
+          
+      - name: Check for critical/high issues
+        run: |
+          criticals=$(jq '.summary.critical' audit/reports/pattern_scan.json)
+          highs=$(jq '.summary.high' audit/reports/pattern_scan.json)
+          
+          echo "Critical issues: $criticals"
+          echo "High issues: $highs"
+          
+          if [ "$criticals" -gt 0 ] || [ "$highs" -gt 0 ]; then
+            echo "Security audit failed! Found $criticals critical and $highs high severity issues."
+            jq '.findings[] | select(.severity == "critical" or .severity == "high")' audit/reports/pattern_scan.json
+            exit 1
+          fi
+          
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-audit-report
+          path: audit/reports/
+          
+      - name: Run evaluation (optional)
+        if: always()
+        run: |
+          python3 scripts/eval_seeded_vulns.py || true
