@@ -1,5 +1,4 @@
 # Build a **Security-Audit Subagent** in **Claude Code v1.0.60**  
-_A hands-on, SDE3-level tutorial for AI engineers_
 
 > **TL;DR**: You’ll create a **custom Claude Code subagent** called `security-auditor` that runs secure code reviews (OWASP Top 10 focus), integrates with your Git workflow (e.g., pre-commit), and produces structured, severity-tagged findings. You’ll also learn how to extend it into a **multi-subagent swarm** (e.g., `secrets-hunter`, `license-checker`, `sbom-auditor`) and how to continuously evaluate its quality.
 
