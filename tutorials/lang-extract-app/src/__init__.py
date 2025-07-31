@@ -1,0 +1,1 @@
+"""LangExtract Medical Research Assistant application modules."""

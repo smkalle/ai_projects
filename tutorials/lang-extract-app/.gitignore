@@ -1,0 +1,175 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Application Generated
+uploads/
+exports/
+cache/
+logs/
+*.log
+
+# Streamlit
+.streamlit/
+!.streamlit/config.toml
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Testing
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+
+# Documentation
+docs/_build/
+docs/_static/
+docs/_templates/
+site/
+mkdocs.yml
+
+# Temporary Files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+tmp/
+temp/
+
+# Data Files (exclude from repo)
+data/
+*.csv
+*.xlsx
+*.xls
+*.json
+*.pdf
+*.docx
+*.doc
+*.txt
+*.html
+*.htm
+*.xml
+
+# Keep specific files
+!requirements.txt
+!requirements-dev.txt
+!README.md
+!DESIGN_SPEC.md
+!QUICKSTART.md
+!LICENSE
+!.gitignore
+!Dockerfile
+!docker-compose.yml
+!app.py
+
+# Keep example and template directories but not their contents
+!examples/.gitkeep
+!templates/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Security
+*.pem
+*.key
+*.cert
+*.crt
+secrets/
+
+# Package files
+*.tar
+*.tar.gz
+*.zip
+*.gz
+*.tgz
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# macOS
+*.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
