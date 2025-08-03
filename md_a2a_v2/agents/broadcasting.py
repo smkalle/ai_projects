@@ -2,6 +2,9 @@ from langgraph.prebuilt import create_react_agent
 from langchain_openai import ChatOpenAI
 from .tools import search_tv, handoff
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 model_name = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 model = ChatOpenAI(model=model_name)

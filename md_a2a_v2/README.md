@@ -1,38 +1,53 @@
-# Bertelsmann‑Style Multi‑Agent Content Search with LangGraph (A2A Edition)
+# Project Name
 
-Production‑grade, hands‑on tutorial and reference project for building a decentralized, agent‑to‑agent (A2A) content search system across Books, TV, and News.
+A brief description of your project.
 
-## Quickstart
+## Installation
 
 ```bash
-python -m venv .venv && source .venv/bin/activate   # (Windows: .venv\Scripts\activate)
+# Clone the repository
+git clone https://github.com/yourusername/your-project-name.git
+cd your-project-name
+
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
-cp .env.example .env  # add your keys
-python app.py
+
+# For development
+pip install -r requirements-dev.txt
 ```
 
-Try queries:
-- What documentaries exist on renewable energy?
-- Find books on renewable energy and related news articles
+## Usage
 
+```python
+# Example usage
+from your_module import your_function
 
----
+result = your_function()
+```
 
-## Run as a service + UI
+## Development
 
-**Backend (FastAPI + Uvicorn)**
 ```bash
-uvicorn server.main:app --reload --port 8000
+# Run tests
+pytest
+
+# Run tests with coverage
+pytest --cov=src
+
+# Format code
+black src tests
+
+# Lint code
+flake8 src tests
+
+# Type checking
+mypy src
 ```
 
-**Frontend (Streamlit)**
-```bash
-streamlit run streamlit_app.py
-```
-Open the app (usually http://localhost:8501), set Backend URL if needed.
+## License
 
-**API**
-- `GET /health` → health check
-- `POST /query` with body `{ "query": "..." }` → invokes LangGraph network and returns result.
-
-See FastAPI docs on first steps, request bodies, and CORS if customizing further.
+MIT License

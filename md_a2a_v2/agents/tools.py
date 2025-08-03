@@ -20,4 +20,4 @@ def search_news(query: str) -> list[str]:
 def handoff(next_agent: str):
     """Hand off control to another agent by name (A2A).
     Valid names: 'publishing', 'broadcasting', 'news'."""
-    return Command(goto=next_agent)
+    return f"Handing off to {next_agent} agent."
