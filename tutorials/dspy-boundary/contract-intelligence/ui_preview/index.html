@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contract Intelligence - UI Preview</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f8fafc;
+        }
+        h1 { color: #1e3a8a; }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .preview-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .preview-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .preview-card-content {
+            padding: 20px;
+        }
+        .preview-card h3 {
+            margin: 0 0 10px 0;
+            color: #1e3a8a;
+        }
+        .preview-card a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #1e3a8a;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .metadata {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Contract Intelligence Platform - Stage 1 UI Preview</h1>
+    <p class="metadata">Generated: 2025-08-03 13:50:04</p>
+    
+    <p>This is a static HTML preview of the UI. Click on each page to view the full layout:</p>
+    
+    <div class="preview-grid">
+        <div class="preview-card">
+            <div class="preview-card-content">
+                <h3>🏠 Home Page</h3>
+                <p>Main landing page with feature cards and navigation</p>
+                <a href="home.html" target="_blank">View Page →</a>
+            </div>
+        </div>
+        
+        <div class="preview-card">
+            <div class="preview-card-content">
+                <h3>📄 Upload Contract</h3>
+                <p>File upload interface with drag & drop support</p>
+                <a href="upload.html" target="_blank">View Page →</a>
+            </div>
+        </div>
+        
+        <div class="preview-card">
+            <div class="preview-card-content">
+                <h3>📊 Analysis Dashboard</h3>
+                <p>Contract analysis results and metrics</p>
+                <a href="dashboard.html" target="_blank">View Page →</a>
+            </div>
+        </div>
+    </div>
+    
+    <h2 style="margin-top: 40px;">📋 Stage 1 Sign-off Checklist</h2>
+    <ul style="line-height: 2;">
+        <li>✅ Professional legal theme with blue color scheme</li>
+        <li>✅ Responsive layout with sidebar navigation</li>
+        <li>✅ 6 feature cards on home page</li>
+        <li>✅ File upload interface with clear instructions</li>
+        <li>✅ Dashboard with tabs and metrics</li>
+        <li>✅ Consistent styling across all pages</li>
+        <li>✅ Clear call-to-action buttons</li>
+        <li>✅ Informative placeholder content</li>
+    </ul>
+    
+    <p style="margin-top: 30px; padding: 20px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px;">
+        <strong>Note:</strong> This is a static preview. For full interactivity, run the actual Streamlit app with:
+        <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 3px;">streamlit run app/main.py</code>
+    </p>
+</body>
+</html>

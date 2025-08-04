@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Contract - Contract Intelligence</title>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8fafc;
+            color: #1f2937;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .main {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+        .app-header {
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .feature-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .button {
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 0;
+            display: inline-block;
+        }
+        .button:hover {
+            background: #3b82f6;
+        }
+        .metric {
+            text-align: center;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+        .metric-label {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e5e7eb;
+            margin: 20px 0;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+        .tab.active {
+            border-bottom-color: #1e3a8a;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+        .file-upload {
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            margin: 20px 0;
+        }
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 0 5px 5px 0;
+            margin: 1rem 0;
+        }
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            border-radius: 0 5px 5px 0;
+            margin: 1rem 0;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        h2 { font-size: 2rem; margin: 20px 0 10px; }
+        h3 { font-size: 1.5rem; margin: 15px 0 10px; }
+        p { line-height: 1.6; margin: 10px 0; }
+    </style>
+    
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h3>🏠 Navigation</h3>
+            <p><a href="home.html">← Back to Home</a></p>
+            <hr style="margin: 20px 0;">
+            <h4>📊 File Limits</h4>
+            <p>Max size: 50MB</p>
+            <p>Max pages: 500</p>
+            <p>Timeout: 300s</p>
+        </div>
+        <div class="main">
+            <h1>📄 Upload & Analyze Contract</h1>
+            <p>Upload your contract documents for AI-powered analysis</p>
+            
+            <h3>📁 Document Upload</h3>
+            <div class="file-upload">
+                <p style="font-size: 48px;">📁</p>
+                <p>Drag and drop files here</p>
+                <p>or</p>
+                <button class="button">Browse Files</button>
+                <p style="color: #6b7280; font-size: 14px; margin-top: 10px;">
+                    Supported formats: PDF, DOCX, DOC, TXT • Max size: 50MB
+                </p>
+            </div>
+            
+            <div class="info-box">
+                <h4>How to upload contracts:</h4>
+                <ol style="margin-left: 20px;">
+                    <li>Click the "Browse files" button above</li>
+                    <li>Select one or more contract files (PDF, DOCX, DOC, TXT)</li>
+                    <li>Files will be automatically uploaded and ready for analysis</li>
+                    <li>Click "Analyze" to start AI-powered contract review</li>
+                </ol>
+            </div>
+            
+            <h3>📋 Try Sample Contracts</h3>
+            <p>Don't have a contract ready? Try our sample documents:</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="button">📄 Service Agreement Sample</button>
+                <button class="button">🤝 NDA Template</button>
+                <button class="button">💼 Employment Contract</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

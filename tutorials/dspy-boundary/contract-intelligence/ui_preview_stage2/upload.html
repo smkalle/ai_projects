@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Contract - Stage 2 Demo</title>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8fafc;
+            color: #1f2937;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .main {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+        .button {
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .button:hover { background: #3b82f6; }
+        .button.primary { background: #059669; }
+        .button.secondary { background: #6b7280; }
+        
+        .file-upload {
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            margin: 20px 0;
+            transition: border-color 0.2s;
+        }
+        .file-upload:hover { border-color: #3b82f6; }
+        
+        .file-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #dbeafe;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .file-details h4 {
+            margin: 0 0 5px 0;
+            color: #1f2937;
+        }
+        
+        .file-details p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-valid { background: #d1fae5; color: #065f46; }
+        .status-processing { background: #fef3c7; color: #92400e; }
+        .status-completed { background: #dbeafe; color: #1e40af; }
+        .status-error { background: #fee2e2; color: #991b1b; }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #059669;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metadata-item {
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .metadata-item h5 {
+            margin: 0 0 5px 0;
+            color: #374151;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metadata-item p {
+            margin: 0;
+            color: #1f2937;
+            font-weight: 500;
+        }
+        
+        .preview-area {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        h1 { color: #1e3a8a; margin-bottom: 10px; }
+        h2 { color: #374151; margin: 20px 0 10px; }
+        h3 { color: #4b5563; margin: 15px 0 10px; }
+    </style>
+    
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h3>🏠 Navigation</h3>
+            <a href="index.html" class="button" style="width: 90%;">← Back to Overview</a>
+            <hr style="margin: 20px 0;">
+            
+            <h4>📊 Upload Stats</h4>
+            <div class="metadata-item">
+                <h5>Files Uploaded</h5>
+                <p>3 documents</p>
+            </div>
+            <div class="metadata-item">
+                <h5>Total Size</h5>
+                <p>2.4 MB</p>
+            </div>
+            <div class="metadata-item">
+                <h5>Success Rate</h5>
+                <p>100%</p>
+            </div>
+        </div>
+        
+        <div class="main">
+            <h1>📄 Upload & Analyze Contract</h1>
+            <p>Upload your contract documents for AI-powered analysis</p>
+            
+            <h2>📁 Document Upload</h2>
+            <div class="file-upload">
+                <p style="font-size: 48px; margin-bottom: 10px;">📁</p>
+                <h3>Drag and drop files here</h3>
+                <p style="margin: 10px 0;">or</p>
+                <button class="button primary">Browse Files</button>
+                <p style="color: #6b7280; margin-top: 15px;">
+                    Supported: PDF, DOCX, DOC, TXT • Max size: 50MB
+                </p>
+            </div>
+            
+            <h2>📋 Processing Queue</h2>
+            <div class="file-card">
+                <div class="file-info">
+                    <div class="file-icon">📄</div>
+                    <div class="file-details">
+                        <h4>service_agreement.pdf</h4>
+                        <p>2.1 MB • PDF Document</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <span class="status-badge status-completed">✅ Completed</span>
+                    <button class="button secondary">👁️ View</button>
+                </div>
+            </div>
+            
+            <div class="file-card">
+                <div class="file-info">
+                    <div class="file-icon">📄</div>
+                    <div class="file-details">
+                        <h4>nda_template.docx</h4>
+                        <p>245 KB • Word Document</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <span class="status-badge status-processing">⏳ Processing</span>
+                    <button class="button secondary">⏹️ Cancel</button>
+                </div>
+            </div>
+            
+            <div class="file-card">
+                <div class="file-info">
+                    <div class="file-icon">📄</div>
+                    <div class="file-details">
+                        <h4>employment_contract.txt</h4>
+                        <p>89 KB • Text Document</p>
+                    </div>
+                </div>
+                <div>
+                    <span class="status-badge status-valid">📋 Queued</span>
+                    <button class="button">🚀 Process</button>
+                </div>
+            </div>
+            
+            <h2>📊 Document Analysis</h2>
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
+                <h3>📄 service_agreement.pdf - Analysis Complete</h3>
+                
+                <div class="metadata-grid">
+                    <div class="metadata-item">
+                        <h5>Document Type</h5>
+                        <p>Service Agreement</p>
+                    </div>
+                    <div class="metadata-item">
+                        <h5>Pages</h5>
+                        <p>8 pages</p>
+                    </div>
+                    <div class="metadata-item">
+                        <h5>Confidence</h5>
+                        <p>98.5%</p>
+                    </div>
+                    <div class="metadata-item">
+                        <h5>Parsing Method</h5>
+                        <p>Direct Text</p>
+                    </div>
+                    <div class="metadata-item">
+                        <h5>Parties Detected</h5>
+                        <p>2 parties</p>
+                    </div>
+                    <div class="metadata-item">
+                        <h5>Processing Time</h5>
+                        <p>2.3 seconds</p>
+                    </div>
+                </div>
+                
+                <h4>📖 Content Preview:</h4>
+                <div class="preview-area">
+SERVICE AGREEMENT
+
+This Service Agreement ("Agreement") is entered into on August 3, 2025,
+between Contract Intelligence Platform Inc. ("Company") and Test Client Corp. ("Client").
+
+ARTICLE 1 - PARTIES
+
+1.1 Company Information:
+    Name: Contract Intelligence Platform Inc.
+    Address: 123 AI Street, Tech City, TC 12345
+    Email: legal@contractintelligence.com
+
+1.2 Client Information:
+    Name: Test Client Corp.
+    Address: 456 Business Ave, Commerce City, CC 67890
+    Email: contracts@testclient.com
+
+ARTICLE 2 - SERVICES
+
+2.1 Service Description:
+The Company agrees to provide AI-powered contract analysis services including:
+a) Document parsing and content extraction
+b) Risk assessment and compliance checking
+c) Contract comparison and change detection...
+
+[Content continues...]
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="button primary">📊 Full Analysis</button>
+                    <button class="button">⚖️ Compliance Check</button>
+                    <button class="button">📥 Download</button>
+                    <button class="button secondary">🗑️ Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

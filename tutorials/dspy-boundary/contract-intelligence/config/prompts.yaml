@@ -1,0 +1,109 @@
+# DSPy Prompts Configuration
+
+contract_analysis:
+  structure_analysis: |
+    You are a legal document analyst. Analyze the contract structure and identify key sections.
+    Extract the main components including parties, definitions, terms, obligations, and special clauses.
+    
+  party_identification: |
+    Identify all parties mentioned in this contract. For each party, extract:
+    - Full legal name
+    - Role in the contract (buyer, seller, service provider, etc.)
+    - Jurisdiction/location
+    - Key contact information if available
+    
+  obligation_extraction: |
+    Extract all contractual obligations from this document. For each obligation:
+    - Identify which party is responsible
+    - Describe the specific obligation or requirement
+    - Note any deadlines or timeframes
+    - Identify conditions or triggers
+    - Assess criticality (high/medium/low)
+
+risk_assessment:
+  liability_analysis: |
+    Analyze this contract for liability risks. Consider:
+    - Limitation of liability clauses
+    - Indemnification provisions
+    - Insurance requirements
+    - Force majeure clauses
+    - Termination penalties
+    
+  compliance_check: |
+    Review this contract for compliance with standard legal requirements:
+    - Data protection regulations (GDPR, CCPA)
+    - Industry-specific regulations
+    - Jurisdictional requirements
+    - Corporate governance standards
+    
+  financial_risk: |
+    Assess financial risks in this contract:
+    - Payment terms and conditions
+    - Late payment penalties
+    - Currency and exchange rate risks
+    - Price adjustment mechanisms
+    - Financial guarantees required
+
+comparison:
+  section_alignment: |
+    Compare these two contract sections and identify:
+    - Key differences in language
+    - Changes in obligations or rights
+    - Added or removed clauses
+    - Impact of changes on risk profile
+    
+  change_analysis: |
+    Analyze the changes between contract versions:
+    - Categorize changes (substantive, minor, formatting)
+    - Assess business impact of each change
+    - Identify potential negotiation points
+    - Recommend approval or further review
+
+redlining:
+  clause_improvement: |
+    Review this clause and suggest improvements:
+    - Identify unfavorable terms
+    - Propose alternative language
+    - Explain the rationale for changes
+    - Consider enforceability and clarity
+    
+  risk_mitigation: |
+    Suggest modifications to reduce risk:
+    - Add protective language
+    - Include appropriate limitations
+    - Ensure mutual obligations
+    - Clarify ambiguous terms
+
+compliance:
+  gdpr_check: |
+    Review this contract for GDPR compliance:
+    - Data processing clauses
+    - Controller/processor definitions
+    - Individual rights provisions
+    - Cross-border transfer protections
+    - Breach notification requirements
+    
+  standard_clauses: |
+    Check for presence of standard protective clauses:
+    - Intellectual property protection
+    - Confidentiality provisions
+    - Non-disclosure agreements
+    - Non-compete restrictions
+    - Dispute resolution mechanisms
+
+reporting:
+  executive_summary: |
+    Create an executive summary of this contract analysis:
+    - Key business terms
+    - Major risks identified
+    - Critical action items
+    - Approval recommendations
+    - Timeline for review/execution
+    
+  detailed_analysis: |
+    Provide a comprehensive analysis report including:
+    - Complete contract breakdown
+    - Risk assessment matrix
+    - Compliance checklist
+    - Obligation tracking
+    - Recommended next steps
