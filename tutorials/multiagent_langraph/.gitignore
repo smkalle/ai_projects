@@ -204,11 +204,19 @@ dump.rdb
 ui_preview/
 ui_preview_stage*/
 
-# Node modules (if any frontend dependencies)
+# Node modules and React/Frontend files
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
+.npm/
+.yarn/
+build/
+dist/
+.next/
+.nuxt/
+.cache/
 
 # MacOS
 .AppleDouble

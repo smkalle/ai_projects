@@ -13,3 +13,5 @@ sentence-transformers
 requests
 beautifulsoup4
 redis
+pytest
+httpx
