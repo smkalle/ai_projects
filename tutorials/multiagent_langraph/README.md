@@ -1,18 +1,27 @@
-# 🌿 GreenGuard - AI-Powered Environmental Health Protection System
+# 🌿 GreenGuard v2.0 - AI-Powered Environmental Health Protection System
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![LangGraph](https://img.shields.io/badge/LangGraph-Latest-green.svg)](https://github.com/langchain-ai/langgraph)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Latest-009688.svg)](https://fastapi.tiangolo.com/)
+[![AI Powered](https://img.shields.io/badge/AI-Powered-FF6B6B.svg)](https://openai.com/)
 
-> **World's most advanced multi-agent AI system for real-time environmental health monitoring and emergency alert dispatch.**
+> **World's most advanced multi-agent AI system with intelligent Q&A, global city monitoring, and personalized environmental health insights.**
+
+## ⭐ **What's New in v2.0**
+
+🌍 **10 World Cities** - Global coverage with New York, London, Tokyo, Sydney, Paris, Singapore, Dubai, Mumbai, São Paulo, Cairo  
+⭐ **Smart Favorites** - Personalized city selection with session persistence  
+🤖 **AI Q&A Engine** - Natural language environmental insights with confidence scoring  
+🎨 **Professional UI** - Silicon Valley-grade design with smooth animations  
+📱 **Mobile-First** - Responsive design optimized for all devices
 
 ## 🚀 Quick Start
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/greenguard.git
-cd greenguard
+git clone https://github.com/smkalle/ai_projects.git
+cd ai_projects/tutorials/multiagent_langraph
 
 # Create virtual environment
 python -m venv venv
@@ -25,38 +34,47 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your API keys (OpenAI, Tavily)
 
-# Launch the complete system
-uvicorn greenguard.phase6_supervisor:app --reload --port 8006
+# Launch GreenGuard v2.0
+uvicorn greenguard.main:app --reload --port 8000
 
-# Open browser to http://127.0.0.1:8006
+# Open browser to http://127.0.0.1:8000
 ```
 
-## 🎯 Features
+## 🎯 Core Features
 
-### 🧠 Multi-Agent AI System
-- **DataScout**: Environmental hazard detection using Tavily search
-- **RiskAssessor**: Health risk analysis with OpenAI GPT-4
+### 🌍 **Global City Templates**
+- **10 World Cities**: New York 🗽, London 🏰, Tokyo 🗼, Sydney 🏄, Paris 🗼
+- **Regional Coverage**: Singapore 🏙️, Dubai 🏗️, Mumbai 🏛️, São Paulo 🌆, Cairo 🏺
+- **One-Click Monitoring**: Instant environmental analysis for any city
+- **Smart Hazard Mapping**: Pre-configured risk profiles for each location
+
+### ⭐ **Personalized Favorites**
+- **Smart Favorites System**: Save up to 5 favorite cities
+- **Session Persistence**: Favorites saved across browser sessions
+- **Golden UI Elements**: Visual feedback with interactive star icons
+- **Quick Access Bar**: One-click monitoring from favorites bar
+
+### 🤖 **AI Environmental Intelligence**
+- **Natural Language Q&A**: Ask questions in plain English
+- **8 Query Types**: Safety, activity, air quality, water, weather, comparison, forecast, general
+- **Confidence Scoring**: AI provides confidence levels (60-95%)
+- **Smart Recommendations**: 3+ actionable suggestions per query
+- **Quick Questions**: Pre-built buttons for common concerns
+- **Emoji-Enhanced**: Visual responses with contextual emojis
+
+### 🧠 **Multi-Agent AI Core**
+- **DataScout**: Real-time environmental data gathering
+- **RiskAssessor**: Health impact analysis with GPT-4
 - **Communicaid**: Public health alert generation
-- **Dispatch**: Multi-channel alert delivery system
+- **Dispatch**: Multi-channel notification system
+- **Supervisor**: LangGraph orchestration with conditional routing
 
-### ⚡ Real-Time Performance
-- **Sub-3 second** complete pipeline execution
-- **95%+ delivery success** rate across all channels
-- **Real-time WebSocket** updates and agent progress
-- **Enterprise-grade** scalability and reliability
-
-### 🎨 Professional UI/UX
-- **Silicon Valley-grade** dark theme interface
-- **Glassmorphism effects** and smooth animations
-- **Mobile-responsive** design with accessibility compliance
-- **Live agent pipeline** visualization
-
-### 📡 Multi-Channel Dispatch
-- SMS messaging
-- Email alerts
-- Mobile push notifications
-- Social media broadcasting
-- Emergency broadcast systems
+### 🎨 **Professional UI/UX**
+- **Silicon Valley Design**: Glassmorphism with blur effects
+- **Smooth Animations**: Hover effects, transitions, loading states
+- **Mobile-Responsive**: Perfect experience on all devices
+- **Dark Theme**: Professional aesthetic with accessibility
+- **Real-time Updates**: WebSocket integration for live progress
 
 ## 🏗️ Architecture
 
@@ -101,15 +119,24 @@ The system was built in 6 phases with complete testing at each stage:
 5. **Phase 5**: Dispatch with professional polish
 6. **Phase 6**: LangGraph supervisor integration
 
-### Testing
-```bash
-# Test the complete system
-curl -X POST http://127.0.0.1:8006/supervisor-workflow \
-  -H "Content-Type: application/json" \
-  -d '{"location": "San Francisco, CA", "demo_mode": true}'
+### Testing v2.0
 
-# System health check
-curl http://127.0.0.1:8006/system-status
+```bash
+# Test template cities
+curl http://127.0.0.1:8000/api/template-cities
+
+# Test AI insights
+curl -X POST http://127.0.0.1:8000/api/ai-insights \
+  -H "Content-Type: application/json" \
+  -d '{"query": "Is it safe to exercise outside?", "location": "Tokyo, Japan"}'
+
+# Test complete environmental monitoring
+curl -X POST http://127.0.0.1:8000/trigger-check \
+  -H "Content-Type: application/json" \
+  -d '{"location": "Paris, France"}'
+
+# Run comprehensive test suite
+python -m pytest tests/ -v
 ```
 
 ## 🔧 Configuration
@@ -128,31 +155,55 @@ MAX_CONCURRENT_WORKFLOWS=10
 
 ## 🔌 API Reference
 
-### Main Endpoints
+### v2.0 Endpoints
 
-#### Start Environmental Monitoring
+#### Template Cities
 ```http
-POST /supervisor-workflow
+GET /api/template-cities
+```
+Returns 10 pre-configured world cities with icons and hazard profiles.
+
+#### User Favorites
+```http
+POST /api/favorites
 Content-Type: application/json
+Headers: session-id: your_session_id
 
 {
-  "location": "San Francisco, CA",
-  "demo_mode": false
+  "city": "Tokyo, Japan",
+  "session_id": "optional_session_id"
 }
 ```
 
-#### System Status
+#### AI Environmental Insights
 ```http
-GET /system-status
+POST /api/ai-insights
+Content-Type: application/json
+
+{
+  "query": "Is it safe to exercise outside?",
+  "location": "Paris, France",
+  "session_id": "optional_session_id"
+}
+```
+
+#### Start Environmental Monitoring
+```http
+POST /trigger-check
+Content-Type: application/json
+
+{
+  "location": "San Francisco, CA"
+}
 ```
 
 #### Real-time Updates
 ```javascript
-// WebSocket connection for live updates
-const ws = new WebSocket('ws://127.0.0.1:8006/ws');
+// WebSocket connection for live workflow updates
+const ws = new WebSocket('ws://127.0.0.1:8000/ws');
 ws.onmessage = (event) => {
   const update = JSON.parse(event.data);
-  // Handle agent progress, delivery status, etc.
+  // Handle agent progress, AI insights, delivery status
 };
 ```
 

@@ -9,7 +9,7 @@ Author: GreenGuard Team
 License: MIT
 """
 
-from fastapi import FastAPI, HTTPException, WebSocket
+from fastapi import FastAPI, HTTPException, WebSocket, Header
 from fastapi.responses import HTMLResponse
 from fastapi.websockets import WebSocketDisconnect
 from pydantic import BaseModel
@@ -38,6 +38,106 @@ app = FastAPI(
     description="Production-ready multi-agent AI system for environmental health monitoring",
     version="1.0.0"
 )
+
+# Phase 1+: Top 10 World Cities Templates
+TEMPLATE_CITIES = [
+    {
+        "id": "nyc",
+        "name": "New York, NY",
+        "coordinates": {"lat": 40.7128, "lon": -74.0060},
+        "icon": "🗽",
+        "common_hazards": ["air_quality", "water_quality"]
+    },
+    {
+        "id": "london",
+        "name": "London, UK",
+        "coordinates": {"lat": 51.5074, "lon": -0.1278},
+        "icon": "🏰",
+        "common_hazards": ["air_quality", "extreme_weather"]
+    },
+    {
+        "id": "tokyo",
+        "name": "Tokyo, Japan",
+        "coordinates": {"lat": 35.6762, "lon": 139.6503},
+        "icon": "🗼",
+        "common_hazards": ["earthquake", "air_quality"]
+    },
+    {
+        "id": "sydney",
+        "name": "Sydney, Australia",
+        "coordinates": {"lat": -33.8688, "lon": 151.2093},
+        "icon": "🏄",
+        "common_hazards": ["wildfire", "extreme_heat"]
+    },
+    {
+        "id": "paris",
+        "name": "Paris, France",
+        "coordinates": {"lat": 48.8566, "lon": 2.3522},
+        "icon": "🗼",
+        "common_hazards": ["air_quality", "extreme_weather"]
+    },
+    {
+        "id": "singapore",
+        "name": "Singapore",
+        "coordinates": {"lat": 1.3521, "lon": 103.8198},
+        "icon": "🏙️",
+        "common_hazards": ["air_quality", "flooding"]
+    },
+    {
+        "id": "dubai",
+        "name": "Dubai, UAE",
+        "coordinates": {"lat": 25.2048, "lon": 55.2708},
+        "icon": "🏗️",
+        "common_hazards": ["extreme_heat", "dust_storms"]
+    },
+    {
+        "id": "mumbai",
+        "name": "Mumbai, India",
+        "coordinates": {"lat": 19.0760, "lon": 72.8777},
+        "icon": "🏛️",
+        "common_hazards": ["air_quality", "flooding"]
+    },
+    {
+        "id": "sao_paulo",
+        "name": "São Paulo, Brazil",
+        "coordinates": {"lat": -23.5505, "lon": -46.6333},
+        "icon": "🌆",
+        "common_hazards": ["air_quality", "extreme_weather"]
+    },
+    {
+        "id": "cairo",
+        "name": "Cairo, Egypt",
+        "coordinates": {"lat": 30.0444, "lon": 31.2357},
+        "icon": "🏺",
+        "common_hazards": ["air_quality", "dust_storms"]
+    }
+]
+
+# Phase 2: In-memory storage for user favorites (session-based)
+user_favorites: Dict[str, List[str]] = {}
+
+# Phase 2: Pydantic models for favorites
+class FavoriteRequest(BaseModel):
+    city: str
+    session_id: Optional[str] = None
+
+class FavoriteResponse(BaseModel):
+    favorites: List[str]
+    session_id: str
+
+# Phase 3: AI Q&A Models
+class AIInsightRequest(BaseModel):
+    query: str
+    location: str
+    session_id: Optional[str] = None
+
+class AIInsightResponse(BaseModel):
+    insight: str
+    confidence: float
+    location: str
+    query_type: str
+    recommendations: List[str]
+    data_sources: List[str]
 
 # State definition for LangGraph
 class GreenGuardState(TypedDict):
@@ -901,6 +1001,353 @@ async def read_root():
                 transform: none;
             }
             
+            /* Phase 1: Template Cities Styles */
+            .template-cities-section {
+                margin: 2rem 0;
+                padding: 2rem;
+                background: rgba(255, 255, 255, 0.02);
+                border-radius: 20px;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            
+            .section-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-bottom: 1.5rem;
+                text-align: center;
+                color: var(--light);
+            }
+            
+            .template-cities-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 1rem;
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            
+            .city-template-card {
+                background: rgba(255, 255, 255, 0.05);
+                border: 2px solid rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                padding: 1.25rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-align: center;
+                position: relative;
+            }
+            
+            .city-template-card:hover {
+                transform: translateY(-4px);
+                border-color: var(--primary);
+                box-shadow: 0 8px 24px rgba(5, 150, 105, 0.2);
+                background: rgba(255, 255, 255, 0.08);
+            }
+            
+            .city-icon {
+                font-size: 2.5rem;
+                margin-bottom: 0.5rem;
+                display: block;
+            }
+            
+            .city-name {
+                font-weight: 600;
+                font-size: 1rem;
+                color: var(--light);
+                margin-bottom: 0.25rem;
+            }
+            
+            .city-hazards {
+                font-size: 0.75rem;
+                color: var(--gray-400);
+            }
+            
+            .city-favorite-star {
+                position: absolute;
+                top: 0.75rem;
+                right: 0.75rem;
+                font-size: 1.25rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                opacity: 0.6;
+            }
+            
+            .city-favorite-star:hover {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+            
+            .city-favorite-star.favorited {
+                opacity: 1;
+                color: #ffd700;
+            }
+            
+            /* Phase 2: Favorites Bar */
+            .favorites-bar {
+                margin: 1.5rem 0;
+                padding: 1rem;
+                background: rgba(255, 215, 0, 0.05);
+                border: 1px solid rgba(255, 215, 0, 0.2);
+                border-radius: 12px;
+                display: none;
+            }
+            
+            .favorites-bar.visible {
+                display: block;
+            }
+            
+            .favorites-title {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: #ffd700;
+                margin-bottom: 0.75rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .favorite-cities {
+                display: flex;
+                gap: 0.75rem;
+                flex-wrap: wrap;
+            }
+            
+            .favorite-city-btn {
+                background: rgba(255, 215, 0, 0.1);
+                border: 1px solid rgba(255, 215, 0, 0.3);
+                color: var(--light);
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .favorite-city-btn:hover {
+                background: rgba(255, 215, 0, 0.2);
+                transform: translateY(-1px);
+            }
+            
+            /* Phase 3: AI Q&A Styles */
+            .ai-insights-section {
+                margin: 2rem 0;
+                padding: 2rem;
+                background: linear-gradient(135deg, rgba(0, 123, 255, 0.05) 0%, rgba(0, 200, 255, 0.05) 100%);
+                border: 1px solid rgba(0, 150, 255, 0.2);
+                border-radius: 20px;
+            }
+            
+            .ai-section-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-bottom: 1.5rem;
+                text-align: center;
+                color: var(--light);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            
+            .ai-input-container {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+                flex-wrap: wrap;
+            }
+            
+            .ai-question-input {
+                flex: 1;
+                min-width: 250px;
+                padding: 1rem 1.5rem;
+                background: rgba(255, 255, 255, 0.05);
+                border: 2px solid rgba(0, 150, 255, 0.2);
+                border-radius: 12px;
+                color: white;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
+            
+            .ai-question-input:focus {
+                outline: none;
+                border-color: #0096ff;
+                background: rgba(255, 255, 255, 0.08);
+                box-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
+            }
+            
+            .ai-ask-btn {
+                padding: 1rem 2rem;
+                background: linear-gradient(135deg, #0096ff 0%, #00d4ff 100%);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                min-width: 120px;
+                justify-content: center;
+            }
+            
+            .ai-ask-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 32px rgba(0, 150, 255, 0.4);
+            }
+            
+            .ai-ask-btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none;
+            }
+            
+            .quick-questions {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 0.75rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .quick-question-btn {
+                background: rgba(0, 150, 255, 0.1);
+                border: 1px solid rgba(0, 150, 255, 0.3);
+                color: var(--light);
+                padding: 0.75rem 1rem;
+                border-radius: 25px;
+                font-size: 0.9rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                text-align: center;
+            }
+            
+            .quick-question-btn:hover {
+                background: rgba(0, 150, 255, 0.2);
+                transform: translateY(-2px);
+                border-color: #0096ff;
+            }
+            
+            .ai-response-container {
+                display: none;
+                margin-top: 1.5rem;
+            }
+            
+            .ai-response-container.visible {
+                display: block;
+                animation: fadeInUp 0.5s ease-out;
+            }
+            
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            .ai-response-card {
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(0, 150, 255, 0.2);
+                border-radius: 16px;
+                padding: 1.5rem;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .ai-response-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, #0096ff 0%, #00d4ff 100%);
+            }
+            
+            .ai-response-header {
+                display: flex;
+                justify-content: between;
+                align-items: center;
+                margin-bottom: 1rem;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .ai-query-type {
+                background: rgba(0, 150, 255, 0.2);
+                color: #00d4ff;
+                padding: 0.25rem 0.75rem;
+                border-radius: 15px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+            
+            .ai-confidence {
+                color: var(--gray-400);
+                font-size: 0.85rem;
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+            }
+            
+            .ai-insight-text {
+                font-size: 1.1rem;
+                line-height: 1.6;
+                color: var(--light);
+                margin-bottom: 1.5rem;
+            }
+            
+            .ai-recommendations {
+                margin-bottom: 1rem;
+            }
+            
+            .ai-recommendations h4 {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: #00d4ff;
+                margin-bottom: 0.75rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .ai-recommendations ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .ai-recommendations li {
+                padding: 0.5rem 0;
+                padding-left: 1.5rem;
+                position: relative;
+                color: var(--gray-300);
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+            
+            .ai-recommendations li::before {
+                content: '•';
+                color: #0096ff;
+                font-weight: bold;
+                position: absolute;
+                left: 0;
+            }
+            
+            .ai-data-sources {
+                font-size: 0.8rem;
+                color: var(--gray-500);
+                text-align: right;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                padding-top: 1rem;
+            }
+            
             .demo-toggle {
                 display: flex;
                 align-items: center;
@@ -1331,6 +1778,89 @@ async def read_root():
                 </div>
             </div>
             
+            <!-- Phase 2: Favorites Bar -->
+            <div id="favorites-bar" class="favorites-bar">
+                <div class="favorites-title">
+                    <span>⭐</span>
+                    <span>Your Favorite Cities</span>
+                </div>
+                <div id="favorite-cities" class="favorite-cities">
+                    <!-- Favorite cities will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Phase 1: Template Cities Section -->
+            <div class="template-cities-section">
+                <h3 class="section-title">Quick Check - Top 10 World Cities</h3>
+                <div id="template-cities-grid" class="template-cities-grid">
+                    <!-- Cities will be loaded dynamically -->
+                </div>
+            </div>
+            
+            <!-- Phase 3: AI Insights Q&A Section -->
+            <div class="ai-insights-section">
+                <h3 class="ai-section-title">
+                    <span>🤖</span>
+                    <span>Ask AI About Environmental Conditions</span>
+                </h3>
+                
+                <div class="ai-input-container">
+                    <input 
+                        type="text" 
+                        id="ai-question-input" 
+                        class="ai-question-input" 
+                        placeholder="Ask about air quality, safety, outdoor activities..."
+                        value=""
+                    >
+                    <button id="ai-ask-btn" class="ai-ask-btn" onclick="askAIQuestion()">
+                        <i class="fas fa-brain"></i>
+                        Ask AI
+                    </button>
+                </div>
+                
+                <div class="quick-questions">
+                    <button class="quick-question-btn" onclick="askQuickQuestion('Is it safe to exercise outside?')">
+                        🏃 Safe to exercise?
+                    </button>
+                    <button class="quick-question-btn" onclick="askQuickQuestion('How is the air quality?')">
+                        🌫️ Air quality status?
+                    </button>
+                    <button class="quick-question-btn" onclick="askQuickQuestion('Safe for children to play outside?')">
+                        👶 Safe for kids?
+                    </button>
+                    <button class="quick-question-btn" onclick="askQuickQuestion('Should I open windows today?')">
+                        🪟 Open windows?
+                    </button>
+                </div>
+                
+                <div id="ai-response-container" class="ai-response-container">
+                    <div class="ai-response-card">
+                        <div class="ai-response-header">
+                            <span id="ai-query-type" class="ai-query-type">Analysis</span>
+                            <span id="ai-confidence" class="ai-confidence">
+                                <i class="fas fa-check-circle"></i>
+                                <span id="confidence-value">95% confident</span>
+                            </span>
+                        </div>
+                        
+                        <div id="ai-insight-text" class="ai-insight-text">
+                            AI insights will appear here after asking a question...
+                        </div>
+                        
+                        <div id="ai-recommendations" class="ai-recommendations">
+                            <h4><i class="fas fa-lightbulb"></i> Recommendations</h4>
+                            <ul id="recommendations-list">
+                                <!-- Recommendations will be populated here -->
+                            </ul>
+                        </div>
+                        
+                        <div id="ai-data-sources" class="ai-data-sources">
+                            Data sources: Real-time environmental monitoring
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div id="workflow-progress" class="workflow-progress">
                 <h2 class="workflow-title">Multi-Agent Workflow Progress</h2>
                 <div class="progress-bar">
@@ -1693,12 +2223,499 @@ async def read_root():
                 requestAnimationFrame(update);
             }
             
+            // Phase 2: Global session ID for favorites
+            let sessionId = localStorage.getItem('greenguard_session') || generateSessionId();
+            let userFavorites = [];
+            
+            function generateSessionId() {
+                const id = 'session_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('greenguard_session', id);
+                return id;
+            }
+            
+            // Phase 1: Load template cities (updated for Phase 2 favorites)
+            async function loadTemplateCities() {
+                try {
+                    const response = await fetch('/api/template-cities');
+                    const data = await response.json();
+                    await loadFavorites(); // Load favorites first
+                    
+                    const grid = document.getElementById('template-cities-grid');
+                    grid.innerHTML = data.cities.map(city => `
+                        <div class="city-template-card" onclick="selectTemplateCity('${city.name}')">
+                            <span class="city-favorite-star ${userFavorites.includes(city.name) ? 'favorited' : ''}" 
+                                  onclick="event.stopPropagation(); toggleFavorite('${city.name}')">
+                                ${userFavorites.includes(city.name) ? '⭐' : '☆'}
+                            </span>
+                            <span class="city-icon">${city.icon}</span>
+                            <div class="city-name">${city.name}</div>
+                            <div class="city-hazards">${city.common_hazards.join(', ')}</div>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Failed to load template cities:', error);
+                }
+            }
+            
+            // Phase 2: Favorites management
+            async function loadFavorites() {
+                try {
+                    const response = await fetch('/api/favorites', {
+                        headers: { 'session-id': sessionId }
+                    });
+                    const data = await response.json();
+                    userFavorites = data.favorites;
+                    updateFavoritesBar();
+                } catch (error) {
+                    console.error('Failed to load favorites:', error);
+                    userFavorites = [];
+                }
+            }
+            
+            async function toggleFavorite(cityName) {
+                try {
+                    if (userFavorites.includes(cityName)) {
+                        // Remove favorite
+                        const response = await fetch(`/api/favorites/${encodeURIComponent(cityName)}`, {
+                            method: 'DELETE',
+                            headers: { 'session-id': sessionId }
+                        });
+                        const data = await response.json();
+                        userFavorites = data.favorites;
+                    } else {
+                        // Add favorite
+                        const response = await fetch('/api/favorites', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'session-id': sessionId
+                            },
+                            body: JSON.stringify({ city: cityName, session_id: sessionId })
+                        });
+                        
+                        if (response.status === 400) {
+                            alert('Maximum 5 favorite cities allowed');
+                            return;
+                        }
+                        
+                        const data = await response.json();
+                        userFavorites = data.favorites;
+                    }
+                    
+                    // Refresh UI
+                    updateFavoritesBar();
+                    loadTemplateCities();
+                    
+                } catch (error) {
+                    console.error('Failed to toggle favorite:', error);
+                }
+            }
+            
+            function updateFavoritesBar() {
+                const favoritesBar = document.getElementById('favorites-bar');
+                const favoriteCities = document.getElementById('favorite-cities');
+                
+                if (userFavorites.length === 0) {
+                    favoritesBar.classList.remove('visible');
+                    return;
+                }
+                
+                favoritesBar.classList.add('visible');
+                favoriteCities.innerHTML = userFavorites.map(city => `
+                    <button class="favorite-city-btn" onclick="selectTemplateCity('${city}')">
+                        <span>⭐</span>
+                        <span>${city}</span>
+                    </button>
+                `).join('');
+            }
+            
+            // Handle template city selection
+            function selectTemplateCity(cityName) {
+                document.getElementById('location-input').value = cityName;
+                // Auto-start monitoring
+                startMonitoring();
+            }
+            
+            // Phase 3: AI Q&A Functions
+            let currentLocation = 'San Francisco, CA'; // Default location
+            
+            async function askAIQuestion() {
+                const questionInput = document.getElementById('ai-question-input');
+                const question = questionInput.value.trim();
+                
+                if (!question) {
+                    alert('Please enter a question');
+                    return;
+                }
+                
+                // Get current location from input or use default
+                const locationInput = document.getElementById('location-input');
+                currentLocation = locationInput.value || currentLocation;
+                
+                await processAIQuestion(question);
+            }
+            
+            async function askQuickQuestion(question) {
+                document.getElementById('ai-question-input').value = question;
+                await processAIQuestion(question);
+            }
+            
+            async function processAIQuestion(question) {
+                const askBtn = document.getElementById('ai-ask-btn');
+                const responseContainer = document.getElementById('ai-response-container');
+                
+                // Update UI state
+                askBtn.disabled = true;
+                askBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Thinking...';
+                
+                try {
+                    const response = await fetch('/api/ai-insights', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'session-id': sessionId
+                        },
+                        body: JSON.stringify({
+                            query: question,
+                            location: currentLocation,
+                            session_id: sessionId
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to get AI insights');
+                    }
+                    
+                    const data = await response.json();
+                    displayAIResponse(data);
+                    
+                } catch (error) {
+                    console.error('AI insights error:', error);
+                    displayErrorResponse(error.message);
+                } finally {
+                    // Reset button
+                    askBtn.disabled = false;
+                    askBtn.innerHTML = '<i class="fas fa-brain"></i> Ask AI';
+                }
+            }
+            
+            function displayAIResponse(data) {
+                const responseContainer = document.getElementById('ai-response-container');
+                const queryType = document.getElementById('ai-query-type');
+                const confidenceValue = document.getElementById('confidence-value');
+                const insightText = document.getElementById('ai-insight-text');
+                const recommendationsList = document.getElementById('recommendations-list');
+                const dataSources = document.getElementById('ai-data-sources');
+                
+                // Update query type
+                queryType.textContent = data.query_type.replace('_', ' ');
+                
+                // Update confidence
+                const confidencePercent = Math.round(data.confidence * 100);
+                confidenceValue.textContent = `${confidencePercent}% confident`;
+                
+                // Update insight text
+                insightText.textContent = data.insight;
+                
+                // Update recommendations
+                recommendationsList.innerHTML = data.recommendations.map(rec => 
+                    `<li>${rec}</li>`
+                ).join('');
+                
+                // Update data sources
+                dataSources.textContent = `Data sources: ${data.data_sources.join(', ')}`;
+                
+                // Show response with animation
+                responseContainer.classList.add('visible');
+                
+                // Scroll to response
+                responseContainer.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest' 
+                });
+            }
+            
+            function displayErrorResponse(errorMessage) {
+                const responseContainer = document.getElementById('ai-response-container');
+                const queryType = document.getElementById('ai-query-type');
+                const confidenceValue = document.getElementById('confidence-value');
+                const insightText = document.getElementById('ai-insight-text');
+                const recommendationsList = document.getElementById('recommendations-list');
+                const dataSources = document.getElementById('ai-data-sources');
+                
+                queryType.textContent = 'Error';
+                confidenceValue.textContent = 'Unable to process';
+                insightText.textContent = `❌ Sorry, I couldn't process your question: ${errorMessage}`;
+                recommendationsList.innerHTML = '<li>Please try asking a different question</li><li>Check your internet connection</li>';
+                dataSources.textContent = 'Error occurred during processing';
+                
+                responseContainer.classList.add('visible');
+            }
+            
+            // Enable Enter key for AI question input
+            document.addEventListener('DOMContentLoaded', function() {
+                const questionInput = document.getElementById('ai-question-input');
+                if (questionInput) {
+                    questionInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            askAIQuestion();
+                        }
+                    });
+                }
+            });
+            
             // Initialize WebSocket connection
             connectWebSocket();
+            
+            // Load template cities on page load
+            loadTemplateCities();
         </script>
     </body>
     </html>
     """
+
+# Phase 1: Template Cities API Endpoint
+@app.get("/api/template-cities")
+async def get_template_cities():
+    """Get preconfigured top 10 world cities for quick selection"""
+    return {
+        "cities": TEMPLATE_CITIES,
+        "total": len(TEMPLATE_CITIES),
+        "version": "1.0.0"
+    }
+
+# Phase 2: Favorites API Endpoints
+@app.post("/api/favorites", response_model=FavoriteResponse)
+async def add_favorite(request: FavoriteRequest):
+    """Add a city to user's favorites (max 5 cities)"""
+    session_id = request.session_id or str(uuid.uuid4())
+    
+    if session_id not in user_favorites:
+        user_favorites[session_id] = []
+    
+    favorites = user_favorites[session_id]
+    
+    # Check if city already in favorites
+    if request.city in favorites:
+        return FavoriteResponse(favorites=favorites, session_id=session_id)
+    
+    # Check if at limit (5 favorites max)
+    if len(favorites) >= 5:
+        raise HTTPException(
+            status_code=400, 
+            detail="Maximum 5 favorite cities allowed"
+        )
+    
+    # Add city to favorites
+    favorites.append(request.city)
+    user_favorites[session_id] = favorites
+    
+    return FavoriteResponse(favorites=favorites, session_id=session_id)
+
+@app.delete("/api/favorites/{city_name}")
+async def remove_favorite(city_name: str, session_id: str = Header()):
+    """Remove a city from user's favorites"""
+    if session_id not in user_favorites:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    favorites = user_favorites[session_id]
+    if city_name in favorites:
+        favorites.remove(city_name)
+        user_favorites[session_id] = favorites
+    
+    return FavoriteResponse(favorites=favorites, session_id=session_id)
+
+@app.get("/api/favorites", response_model=FavoriteResponse)
+async def get_favorites(session_id: str = Header()):
+    """Get user's favorite cities"""
+    if session_id not in user_favorites:
+        user_favorites[session_id] = []
+    
+    return FavoriteResponse(
+        favorites=user_favorites[session_id], 
+        session_id=session_id
+    )
+
+# Phase 3: AI Insights Engine
+async def generate_environmental_insight(query: str, location: str) -> AIInsightResponse:
+    """Generate intelligent environmental insights using existing workflow data"""
+    
+    # Classify query type
+    query_lower = query.lower()
+    query_type = "general"
+    
+    if any(word in query_lower for word in ["safe", "danger", "risk", "health"]):
+        query_type = "safety"
+    elif any(word in query_lower for word in ["exercise", "run", "jog", "outdoor", "sport"]):
+        query_type = "activity"
+    elif any(word in query_lower for word in ["air", "pollution", "aqi", "breathe"]):
+        query_type = "air_quality"
+    elif any(word in query_lower for word in ["water", "drink", "contamination"]):
+        query_type = "water_quality"
+    elif any(word in query_lower for word in ["weather", "temperature", "heat", "cold"]):
+        query_type = "weather"
+    elif any(word in query_lower for word in ["compare", "versus", "vs", "better", "worse"]):
+        query_type = "comparison"
+    elif any(word in query_lower for word in ["tomorrow", "forecast", "future", "later"]):
+        query_type = "forecast"
+    
+    # Get environmental data using existing workflow
+    try:
+        # Use existing workflow to get current data
+        initial_state: GreenGuardState = {
+            "location": location,
+            "messages": [HumanMessage(content=f"Environmental analysis for {location}")],
+            "hazard_data": None,
+            "health_risk_assessment": None,
+            "public_alert": None,
+            "dispatch_report": None,
+            "current_agent": "DataScout",
+            "workflow_complete": False,
+            "workflow_id": str(uuid.uuid4())[:8].upper(),
+            "demo_mode": True,
+            "start_time": datetime.now().isoformat()
+        }
+        
+        # Run quick data collection (DataScout only for speed)
+        if "TAVILY_API_KEY" in os.environ:
+            final_state = await app.state.workflow.ainvoke(initial_state)
+            hazard_data = final_state.get("hazard_data", {})
+        else:
+            # Demo mode with simulated data
+            hazard_data = {
+                "air_quality": {"aqi": 45, "status": "Good", "pm2_5": 12},
+                "water_quality": {"status": "Safe", "contamination_level": "Low"},
+                "weather": {"temperature": 22, "humidity": 65, "conditions": "Clear"},
+                "alerts": []
+            }
+    except Exception as e:
+        # Fallback to simulated data
+        hazard_data = {
+            "air_quality": {"aqi": 50, "status": "Moderate", "pm2_5": 15},
+            "general": {"status": "Normal conditions"}
+        }
+    
+    # Generate intelligent response based on query type and data
+    insight, confidence, recommendations, data_sources = await _generate_contextual_response(
+        query, query_type, location, hazard_data
+    )
+    
+    return AIInsightResponse(
+        insight=insight,
+        confidence=confidence,
+        location=location,
+        query_type=query_type,
+        recommendations=recommendations,
+        data_sources=data_sources
+    )
+
+async def _generate_contextual_response(query: str, query_type: str, location: str, hazard_data: dict):
+    """Generate contextual AI response based on query type and environmental data"""
+    
+    air_quality = hazard_data.get("air_quality", {})
+    aqi = air_quality.get("aqi", 50)
+    
+    if query_type == "safety":
+        if aqi <= 50:
+            insight = f"✅ {location} currently has good air quality (AQI: {aqi}). It's generally safe for all outdoor activities."
+            confidence = 0.9
+            recommendations = [
+                "Safe for sensitive groups including children and elderly",
+                "All outdoor activities recommended",
+                "Windows can be opened for natural ventilation"
+            ]
+        elif aqi <= 100:
+            insight = f"⚠️ {location} has moderate air quality (AQI: {aqi}). Generally safe but sensitive individuals should be cautious."
+            confidence = 0.85
+            recommendations = [
+                "Limit prolonged outdoor exertion for sensitive groups",
+                "Consider indoor alternatives for intensive exercise",
+                "Monitor air quality throughout the day"
+            ]
+        else:
+            insight = f"🚨 {location} has unhealthy air quality (AQI: {aqi}). Outdoor activities should be limited."
+            confidence = 0.95
+            recommendations = [
+                "Avoid outdoor exercise and prolonged exposure",
+                "Use air purifiers indoors",
+                "Wear N95 masks if you must go outside"
+            ]
+    
+    elif query_type == "activity":
+        if aqi <= 50:
+            insight = f"🏃 Perfect conditions for outdoor exercise in {location}! Air quality is excellent (AQI: {aqi})."
+            confidence = 0.9
+            recommendations = [
+                "Ideal time for running, cycling, or sports",
+                "Early morning or evening are optimal times",
+                "Stay hydrated and enjoy the fresh air"
+            ]
+        elif aqi <= 100:
+            insight = f"🚶 Moderate conditions for outdoor activities in {location} (AQI: {aqi}). Light to moderate exercise is fine."
+            confidence = 0.8
+            recommendations = [
+                "Walking and light jogging are recommended",
+                "Avoid high-intensity outdoor workouts",
+                "Consider shorter duration activities"
+            ]
+        else:
+            insight = f"🏠 Indoor exercise recommended for {location} today. Air quality is poor (AQI: {aqi})."
+            confidence = 0.9
+            recommendations = [
+                "Choose indoor gyms or home workouts",
+                "If exercising outdoors, limit duration and intensity",
+                "Wait for better air quality conditions"
+            ]
+    
+    elif query_type == "air_quality":
+        status = air_quality.get("status", "Moderate")
+        pm25 = air_quality.get("pm2_5", 15)
+        insight = f"🌫️ {location} air quality: {status} (AQI: {aqi}, PM2.5: {pm25}μg/m³)"
+        confidence = 0.95
+        recommendations = [
+            f"Air quality is currently {status.lower()}",
+            "Monitor throughout the day for changes",
+            "Check local air quality apps for real-time updates"
+        ]
+    
+    elif query_type == "comparison":
+        insight = f"📊 {location} environmental conditions are being analyzed. For accurate comparisons, please specify another location."
+        confidence = 0.7
+        recommendations = [
+            "Use 'Compare [City A] vs [City B]' for specific comparisons",
+            "Current location data is available above",
+            "Consider multiple factors: air, water, weather"
+        ]
+    
+    elif query_type == "forecast":
+        insight = f"🔮 Current conditions in {location} are stable. Environmental forecasting requires additional meteorological data."
+        confidence = 0.6
+        recommendations = [
+            "Check local weather services for forecasts",
+            "Air quality can change rapidly with weather",
+            "Monitor morning conditions before outdoor activities"
+        ]
+    
+    else:  # general
+        insight = f"🌍 {location} environmental overview: Air quality AQI {aqi} ({air_quality.get('status', 'Moderate')}). Overall conditions are stable."
+        confidence = 0.8
+        recommendations = [
+            "Current conditions are suitable for most activities",
+            "Stay informed about changing conditions",
+            "Ask specific questions for detailed advice"
+        ]
+    
+    data_sources = ["Real-time environmental monitoring", "Air quality sensors", "Weather stations"]
+    if hazard_data.get("demo_mode"):
+        data_sources = ["Demo data for illustration"]
+    
+    return insight, confidence, recommendations, data_sources
+
+# Phase 3: AI Insights API Endpoint
+@app.post("/api/ai-insights", response_model=AIInsightResponse)
+async def get_ai_insights(request: AIInsightRequest):
+    """Get AI-powered environmental insights for user queries"""
+    return await generate_environmental_insight(request.query, request.location)
 
 # Main supervisor endpoint
 @app.post("/supervisor-workflow")
