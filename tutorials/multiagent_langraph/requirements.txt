@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+langgraph
+langchain
+langchain_openai
+langchain_community
+tavily-python
+pydantic
+structlog
+langsmith
+sentence-transformers
+requests
+beautifulsoup4
+redis

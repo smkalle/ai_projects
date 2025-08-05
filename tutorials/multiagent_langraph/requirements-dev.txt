@@ -1,0 +1,54 @@
+# Development dependencies for GreenGuard
+
+# Code formatting and linting
+black==24.8.0
+flake8==7.1.1
+isort==5.13.2
+mypy==1.13.0
+
+# Testing
+pytest==8.4.1
+pytest-asyncio==0.25.0
+pytest-cov==6.0.0
+pytest-mock==3.14.0
+httpx==0.28.1  # For testing FastAPI endpoints
+
+# Development tools
+pre-commit==4.0.1
+jupyter==1.1.1
+ipython==8.33.0
+
+# Documentation
+mkdocs==1.6.1
+mkdocs-material==9.5.46
+mkdocs-mermaid2-plugin==1.1.1
+
+# Type checking
+types-requests==2.32.0.20250106
+types-python-dateutil==2.9.0.20250109
+
+# Performance profiling
+py-spy==0.4.0
+memory-profiler==0.61.0
+
+# API testing
+requests==2.32.4
+postman-collection==0.0.10
+
+# Database development
+alembic==1.14.0  # For database migrations
+sqlalchemy-utils==0.41.2
+
+# Security scanning
+bandit==1.7.10
+safety==3.2.11
+
+# Code coverage
+coverage==7.6.10
+
+# Environment management
+python-dotenv==1.0.1
+
+# Development utilities
+watchdog==6.0.0  # For file watching
+rich==13.9.4  # For beautiful terminal output
