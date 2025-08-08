@@ -1,0 +1,59 @@
+MEDICAL CENTER
+CLINICAL REPORT
+
+Patient Name: Jane Smith
+Patient ID: MRN-2025-001
+Date of Birth: March 22, 1985
+Gender: Female
+Visit Date: January 8, 2025
+
+CHIEF COMPLAINT:
+Routine diabetes follow-up
+
+HISTORY OF PRESENT ILLNESS:
+38-year-old female with Type 2 diabetes mellitus presents for routine follow-up. Patient reports good adherence to medication regimen. Blood sugar logs show values ranging 110-150 mg/dL. No recent episodes of hypoglycemia. Patient reports mild fatigue but otherwise feels well.
+
+PHYSICAL EXAMINATION:
+Vital Signs:
+- Blood Pressure: 125/82 mmHg
+- Heart Rate: 76 bpm
+- Temperature: 98.4°F
+- Respiratory Rate: 16/min
+- Oxygen Saturation: 99%
+- BMI: 26.8
+
+General: Well-appearing female in no acute distress
+HEENT: Pupils equal, reactive to light
+Cardiovascular: Regular rate and rhythm, no murmurs
+Pulmonary: Clear to auscultation bilaterally
+Extremities: No pedal edema
+
+LABORATORY RESULTS:
+Glucose: 128 mg/dL (Reference: 70-110)
+HbA1c: 7.2% (Reference: <7.0%)
+Creatinine: 0.8 mg/dL (Reference: 0.6-1.2)
+Total Cholesterol: 185 mg/dL (Reference: <200)
+
+CURRENT MEDICATIONS:
+1. Metformin 1000mg twice daily
+2. Lisinopril 5mg once daily
+3. Atorvastatin 20mg once daily
+
+ASSESSMENT AND PLAN:
+1. Type 2 Diabetes Mellitus - suboptimal control
+   - Increase Metformin to 1000mg three times daily
+   - Continue current diet and exercise regimen
+   - Repeat HbA1c in 3 months
+
+2. Hypertension - well controlled
+   - Continue Lisinopril 5mg daily
+   - Monitor blood pressure at home
+
+3. Dyslipidemia - well controlled
+   - Continue Atorvastatin 20mg daily
+
+Follow-up appointment in 3 months or sooner if concerns.
+
+Dr. Michael Johnson, MD
+Internal Medicine
+License: MD-12345

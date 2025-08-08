@@ -1,0 +1,134 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+dolphin_venv/
+venv/
+env/
+ENV/
+.env
+.venv
+
+# PyTorch and ML models
+*.pth
+*.pt
+*.bin
+*.safetensors
+models/dolphin/*.bin
+models/dolphin/*.pt
+models/dolphin/*.safetensors
+models/dolphin/pytorch_model.bin
+models/dolphin/model.safetensors
+
+# Hugging Face cache
+.cache/
+transformers_cache/
+huggingface_hub/
+
+# Data and databases
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+*.out
+*.err
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Processing directories (contain potentially sensitive data)
+input/
+output/
+archive/
+exports/
+results/
+
+# Configuration files with sensitive data
+.env.local
+.env.production
+config.local.json
+secrets.json
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Streamlit
+.streamlit/
+
+# Medical documents (NEVER commit real PHI)
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.tiff
+*.tif
+*.dcm
+*.dicom
+
+# Sample documents (keep only non-PHI examples)
+!sample_*.txt
+!example_*.txt
+!demo_*.txt
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Lock files
+*.lock
+Pipfile.lock

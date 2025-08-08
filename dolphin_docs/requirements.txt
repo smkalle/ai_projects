@@ -1,0 +1,66 @@
+# Core dependencies
+streamlit==1.32.0
+pandas==2.2.0
+numpy==1.26.3
+
+# PDF processing
+PyMuPDF==1.23.20
+pdf2image==1.17.0
+pdfplumber==0.10.3
+pypdf==4.0.1
+
+# OCR and image processing
+pytesseract==0.3.10
+Pillow==10.2.0
+opencv-python==4.9.0.80
+
+# Natural Language Processing
+transformers==4.38.0
+torch==2.2.0
+sentence-transformers==2.5.1
+spacy==3.7.2
+
+# Medical NLP (optional but useful)
+medspacy==1.1.2
+scispacy==0.5.3
+
+# Data processing and validation
+pydantic==2.6.0
+python-dateutil==2.8.2
+jsonschema==4.21.1
+
+# Database and storage
+sqlalchemy==2.0.27
+sqlite3-python==1.0.0
+
+# Visualization
+plotly==5.19.0
+matplotlib==3.8.2
+seaborn==0.13.2
+
+# Utilities
+python-dotenv==1.0.1
+tqdm==4.66.1
+colorama==0.4.6
+tabulate==0.9.0
+
+# File handling
+python-magic==0.4.27
+chardet==5.2.0
+
+# Additional dependencies for the full pipeline
+layoutlm==3.0.0  # For LayoutLM integration
+transformers-layout==0.1.0  # Layout-aware transformers
+
+# Logging and monitoring
+loguru==0.7.2
+rich==13.7.0
+
+# Testing (optional for development)
+pytest==8.0.0
+pytest-cov==4.1.0
+
+# API and async operations
+aiofiles==23.2.1
+httpx==0.26.0
+asyncio==3.4.3
