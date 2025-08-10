@@ -1,0 +1,33 @@
+{
+    "lonafarnib": {
+        "drugbank_id": "DB05294",
+        "name": "Lonafarnib",
+        "generic_name": "lonafarnib", 
+        "brand_names": ["Zokinvy"],
+        "atc_code": "L01XX52",
+        "mechanism": "Farnesyltransferase inhibitor",
+        "approval_status": "approved",
+        "indications": ["Hutchinson-Gilford Progeria Syndrome"],
+        "molecular_weight": 589.37
+    },
+    "ataluren": {
+        "drugbank_id": "DB05109",
+        "name": "Ataluren",
+        "generic_name": "ataluren",
+        "brand_names": ["Translarna"],
+        "mechanism": "Nonsense mutation readthrough agent",
+        "approval_status": "approved", 
+        "indications": ["Duchenne Muscular Dystrophy"],
+        "molecular_weight": 284.27
+    },
+    "nusinersen": {
+        "drugbank_id": "DB11559",
+        "name": "Nusinersen",
+        "generic_name": "nusinersen",
+        "brand_names": ["Spinraza"],
+        "mechanism": "Antisense oligonucleotide",
+        "approval_status": "approved",
+        "indications": ["Spinal Muscular Atrophy"],
+        "molecular_weight": 7501.0
+    }
+}

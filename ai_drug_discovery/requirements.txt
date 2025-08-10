@@ -1,0 +1,66 @@
+# FastAPI Backend
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+pydantic==2.5.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Streamlit Frontend
+streamlit==1.28.2
+streamlit-option-menu==0.3.6
+streamlit-agraph==0.0.45
+plotly==5.17.0
+pandas==2.1.4
+numpy==1.24.3
+
+# LangChain & LLMs
+langchain==0.0.348
+langchain-openai==0.0.2
+langchain-anthropic==0.0.1
+langchain-community==0.0.10
+openai==1.3.7
+anthropic==0.7.7
+
+# Vector Database & Embeddings
+qdrant-client==1.7.0
+sentence-transformers==2.2.2
+faiss-cpu==1.7.4
+chromadb==0.4.18
+
+# Biomedical APIs & Tools
+biopython==1.81
+pubchempy==1.0.4
+requests==2.31.0
+beautifulsoup4==4.12.2
+xmltodict==0.13.0
+
+# Database & Caching
+redis==5.0.1
+neo4j==5.13.0
+sqlalchemy==2.0.23
+alembic==1.12.1
+
+# Data Processing
+scipy==1.11.4
+scikit-learn==1.3.2
+networkx==3.2.1
+rdkit==2023.9.2
+
+# Utilities
+python-dotenv==1.0.0
+loguru==0.7.2
+typer==0.9.0
+rich==13.7.0
+httpx==0.25.2
+aiofiles==23.2.1
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.2
+
+# Development
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1

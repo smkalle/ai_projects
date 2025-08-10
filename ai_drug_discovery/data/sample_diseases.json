@@ -1,0 +1,46 @@
+{
+    "Hutchinson-Gilford Progeria Syndrome": {
+        "omim_id": "176670",
+        "orphanet_id": "740",
+        "description": "Rare genetic disorder causing accelerated aging in children",
+        "prevalence": "1 in 4-8 million births",
+        "associated_genes": ["LMNA"],
+        "inheritance_pattern": "autosomal_dominant",
+        "clinical_features": [
+            "Growth retardation",
+            "Cardiovascular disease", 
+            "Alopecia",
+            "Joint stiffness",
+            "Aged appearance"
+        ]
+    },
+    "Duchenne Muscular Dystrophy": {
+        "omim_id": "310200",
+        "orphanet_id": "98896", 
+        "description": "X-linked recessive muscle-wasting disease affecting boys",
+        "prevalence": "1 in 3,500-5,000 male births",
+        "associated_genes": ["DMD"],
+        "inheritance_pattern": "X-linked_recessive",
+        "clinical_features": [
+            "Progressive muscle weakness",
+            "Delayed motor milestones",
+            "Calf muscle pseudohypertrophy",
+            "Cardiomyopathy",
+            "Respiratory complications"
+        ]
+    },
+    "Spinal Muscular Atrophy": {
+        "omim_id": "253300",
+        "orphanet_id": "83330",
+        "description": "Genetic disorder affecting motor neurons",
+        "prevalence": "1 in 10,000 births",
+        "associated_genes": ["SMN1", "SMN2"],
+        "inheritance_pattern": "autosomal_recessive",
+        "clinical_features": [
+            "Muscle weakness",
+            "Hypotonia",
+            "Feeding difficulties",
+            "Respiratory problems"
+        ]
+    }
+}
