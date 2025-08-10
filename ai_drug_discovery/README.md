@@ -1,6 +1,12 @@
 # Rare Disease Drug Repurposing AI
 
-🧬 **AI-Powered Drug Repurposing for Rare Diseases**
+🧬 Accelerated Drug Repurposing for Rare Diseases
+
+## Mission & Top Priority
+
+Accelerated Drug Repurposing for Rare Diseases is the top priority. It is profoundly humanity‑saving: rare diseases often lack funding and timely treatment options, leading to avoidable mortality. This project focuses on rapidly identifying promising repurposing candidates among already FDA‑approved drugs and presenting transparent, fully cited evidence to help clinicians and regulators assess viability faster. With LangChain tooling, we can prototype a workflow that queries structured biomedical data, retrieves literature, generates testable hypotheses, and outputs cited, reproducible reports suitable for clinical and regulatory review.
+
+This repository contains a production‑minded, open‑source foundation to: ingest structured/biomedical sources, run retrieval‑augmented analysis, score/rank candidates, and generate auditable reports with claim‑evidence traceability.
 
 ## Quick Start
 
@@ -46,6 +52,13 @@ The system runs in demo mode by default with:
 - 🐋 **Docker Ready**: Full containerization support
 - 🧪 **Testing Suite**: Comprehensive test coverage
 
+## What We’re Building First (MVP)
+
+- Evidence‑grounded RAG pipeline for a single rare disease query
+- Candidate drug ranking with transparent scoring and contraindication flags
+- Auto‑generated report: summary, rationale, and inline citations (PubMed/ClinicalTrials/etc.)
+- Demonstration UI + REST API with downloadable, versioned report artifacts
+
 ## Architecture
 
 ```
@@ -55,7 +68,11 @@ Frontend (Streamlit) → Backend (FastAPI) → AI Agents → Databases
                                       Coordinator   Knowledge Graph
 ```
 
-For detailed documentation, see the `docs/` directory.
+For detailed documentation, see the `docs/` directory:
+- `docs/product-spec.md` — Product spec and requirements
+- `docs/architecture.md` — High‑level system architecture
+- `docs/system-architecture-rare-disease-drug-repurposing-ai.md` — Extended architecture
+- `docs/api-specification-rare-disease-drug-repurposing-ai.md` — API specification
 
 ## Developer Notes
 
@@ -69,4 +86,6 @@ For detailed documentation, see the `docs/` directory.
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License — see `LICENSE` for details.
+
+If you use this project in research or clinical contexts, ensure compliance with local regulations. Outputs are decision support only and not medical advice.
