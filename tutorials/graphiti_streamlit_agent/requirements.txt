@@ -1,0 +1,8 @@
+streamlit>=1.33
+python-dotenv>=1.0
+graphiti-core
+langchain>=0.2
+langgraph>=0.2
+langchain-community>=0.2
+langchain-openai>=0.1
+openai>=1.30
