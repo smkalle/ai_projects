@@ -1,0 +1,23 @@
+{
+  "name": "mcp-ai-agent-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm:tw:watch\" \"npm:serve\"",
+    "tw:watch": "tailwindcss -i src/styles.css -o dist/styles.css --watch",
+    "build": "tailwindcss -i src/styles.css -o dist/styles.css --minify",
+    "serve": "live-server --quiet --no-browser --port ${UI_PORT:-5173} --entry-file=index.html"
+  },
+  "devDependencies": {
+    "@preline/plugin": "^2.5.0",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.0.1",
+    "live-server": "^1.2.2",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14"
+  },
+  "dependencies": {
+    "preline": "^2.5.0"
+  }
+}

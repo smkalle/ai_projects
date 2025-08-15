@@ -8,8 +8,10 @@ import asyncio
 import httpx
 import json
 import time
+import os
 from datetime import datetime
 from typing import Dict, List, Optional, Any
+from dotenv import load_dotenv
 
 # Configure page
 st.set_page_config(
@@ -19,8 +21,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Load environment (.env) for configuration
+load_dotenv()
+
 # Constants
-API_BASE_URL = "http://localhost:8000"
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 TIMEOUT = 30.0
 
 # Initialize session state
@@ -50,12 +55,34 @@ async def make_request(method: str, endpoint: str, data: Dict = None) -> Dict:
         return response.json()
 
 
-def run_async(coro):
-    """Run async function in Streamlit."""
+def check_api_health() -> (bool, Optional[int]):
+    """Ping the API /health endpoint; return (online, latency_ms)."""
     try:
-        loop = asyncio.get_event_loop()
+        start = time.perf_counter()
+        resp = httpx.get(f"{API_BASE_URL}/health", timeout=2.0)
+        latency = int((time.perf_counter() - start) * 1000)
+        if resp.status_code == 200 and resp.json().get("status") == "healthy":
+            return True, latency
+        return False, latency
+    except Exception:
+        return False, None
+
+
+def run_async(coro):
+    """Run async function safely from Streamlit.
+
+    Handles cases where no event loop exists, or one is already running.
+    """
+    try:
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            # No current event loop in this thread; create one
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
         if loop.is_running():
-            # Create a new event loop for this thread
+            # Create a new loop in a worker thread
             import threading
             result = {}
 
@@ -74,7 +101,7 @@ def run_async(coro):
             thread.join()
 
             if "error" in result:
-                raise Exception(result["error"])
+                raise RuntimeError(result["error"])  # Surface error to UI
             return result.get("value")
         else:
             return loop.run_until_complete(coro)
@@ -90,6 +117,31 @@ def main():
 
     # Sidebar for agent management
     with st.sidebar:
+        # API status indicator with manual refresh
+        refresh = st.button("↻ Refresh status", key="refresh_status")
+        if refresh or "api_status" not in st.session_state:
+            ok, latency = check_api_health()
+            st.session_state.api_status = {
+                "ok": ok,
+                "latency": latency,
+                "checked": datetime.now().strftime("%H:%M:%S"),
+            }
+        status = st.session_state.get("api_status", {"ok": False, "latency": None, "checked": "-"})
+        icon = "🟢" if status["ok"] else "🔴"
+        if status["ok"] and status["latency"] is not None:
+            st.markdown(f"{icon} **API Online** ({status['latency']} ms)")
+        else:
+            st.markdown(f"{icon} **API Offline**")
+        st.caption(f"{API_BASE_URL}/health · checked {status['checked']}")
+
+        # Current configuration summary
+        st.subheader("⚙️ Config")
+        api_port = os.getenv("API_PORT", "8000")
+        ui_port = os.getenv("UI_PORT", "8501")
+        st.code(
+            f"API_BASE_URL={API_BASE_URL}\nAPI_PORT={api_port}\nUI_PORT={ui_port}",
+        )
+
         st.header("🔧 Agent Management")
 
         # Create new agent section
@@ -176,7 +228,18 @@ def create_agent(model: str, provider: str, api_key: str, temperature: float,
     }
 
     with st.spinner("Creating agent..."):
-        result = run_async(make_request("POST", "/agents/create", {"config": config}))
+        # API expects AgentConfig directly (not wrapped in {"config": ...}).
+        # Add simple exponential backoff in case API is warming up.
+        attempts = 0
+        delay = 0.8
+        result = None
+        while attempts < 3:
+            attempts += 1
+            result = run_async(make_request("POST", "/agents/create", config))
+            if result and "agent_id" in result:
+                break
+            time.sleep(delay)
+            delay *= 1.8
 
         if result and "agent_id" in result:
             agent_id = result["agent_id"]
@@ -191,7 +254,7 @@ def create_agent(model: str, provider: str, api_key: str, temperature: float,
             st.success(f"✅ Agent {agent_id} created successfully!")
             st.rerun()
         else:
-            st.error("Failed to create agent")
+            st.error("Failed to create agent after retries. Ensure API is online.")
 
 
 def list_agents():

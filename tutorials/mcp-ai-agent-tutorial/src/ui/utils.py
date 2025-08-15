@@ -6,11 +6,19 @@ import streamlit as st
 from typing import Any, Callable
 
 def run_async(coro) -> Any:
-    """Run async function in Streamlit."""
+    """Run async function safely from Streamlit.
+
+    Handles missing current loop and running-loop scenarios.
+    """
     try:
-        loop = asyncio.get_event_loop()
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
         if loop.is_running():
-            # Create new event loop in thread
+            # Create new event loop in a worker thread
             result = {}
 
             def run_in_thread():
@@ -18,7 +26,7 @@ def run_async(coro) -> Any:
                 asyncio.set_event_loop(new_loop)
                 try:
                     result["value"] = new_loop.run_until_complete(coro)
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     result["error"] = str(e)
                 finally:
                     new_loop.close()
@@ -28,11 +36,11 @@ def run_async(coro) -> Any:
             thread.join()
 
             if "error" in result:
-                raise Exception(result["error"])
+                raise RuntimeError(result["error"])  # Surface error
             return result.get("value")
         else:
             return loop.run_until_complete(coro)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         st.error(f"Async execution error: {e}")
         return None
 

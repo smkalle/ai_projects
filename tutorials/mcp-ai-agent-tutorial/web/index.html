@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MCP AI Agent Dashboard</title>
+    <link rel="icon" href="data:," />
+    <!-- Tailwind CSS via CDN for quick dev; replace with built CSS for production -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50 dark:bg-gray-900">
+    <!-- Topbar -->
+    <header class="sticky top-0 z-40 w-full border-b bg-white dark:bg-gray-800 dark:border-gray-700">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-14 items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">🤖</span>
+            <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">MCP AI Agent Dashboard</h1>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="hidden items-center gap-2 sm:flex">
+              <label class="text-xs text-gray-500 dark:text-gray-300">API</label>
+              <input id="api-url" class="hs-input w-56" placeholder="http://localhost:8000" />
+              <button id="save-api-url" class="rounded-md border px-2 py-1 text-xs hover:bg-gray-50 dark:hover:bg-gray-700">Save</button>
+            </div>
+            <button id="theme-toggle" class="rounded-md border px-2 py-1 text-xs hover:bg-gray-50 dark:hover:bg-gray-700">Dark</button>
+            <div id="api-health" class="text-sm text-gray-500 dark:text-gray-300">Health: <span class="font-medium">checking…</span></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <!-- Create Agent Card -->
+        <section class="lg:col-span-1">
+          <div class="rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            <h2 class="mb-3 text-base font-semibold text-gray-900 dark:text-gray-100">Create Agent</h2>
+            <form id="create-agent" class="space-y-3">
+              <div>
+                <label class="mb-1 block text-sm text-gray-700 dark:text-gray-300">Model</label>
+                <select name="model" class="hs-input" required>
+                  <option>gpt-4o</option>
+                  <option>gpt-4</option>
+                  <option>claude-3-sonnet-20240229</option>
+                </select>
+              </div>
+              <div>
+                <label class="mb-1 block text-sm text-gray-700 dark:text-gray-300">Provider</label>
+                <select name="provider" class="hs-input" required>
+                  <option value="openai">openai</option>
+                  <option value="anthropic">anthropic</option>
+                </select>
+              </div>
+              <div>
+                <label class="mb-1 block text-sm text-gray-700 dark:text-gray-300">API Key</label>
+                <input type="password" name="api_key" class="hs-input" placeholder="sk-..." required />
+              </div>
+              <div>
+                <label class="mb-1 block text-sm text-gray-700 dark:text-gray-300">MCP Servers (comma separated)</label>
+                <input type="text" name="mcp_servers" class="hs-input" placeholder="search,file-manager" />
+              </div>
+              <div class="flex items-center justify-between gap-3">
+                <button type="submit" class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500">Create</button>
+                <div id="create-status" class="text-xs text-gray-500"></div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- Chat + Agents -->
+        <section class="lg:col-span-2">
+          <div class="rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            <div class="mb-3 flex items-center justify-between">
+              <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Chat</h2>
+              <select id="agent-select" class="hs-input text-sm"></select>
+            </div>
+            <div id="chat-log" class="prose max-h-80 overflow-y-auto rounded-lg border bg-gray-50 p-3 dark:bg-gray-900 dark:border-gray-700 dark:prose-invert"></div>
+            <form id="chat-form" class="mt-3 flex gap-2">
+              <input id="chat-input" class="hs-input flex-1" placeholder="Type your message..." />
+              <button class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500">Send</button>
+            </form>
+          </div>
+        </section>
+      </div>
+      <!-- Tools -->
+      <section class="mt-6 rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700">
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Available Tools</h2>
+          <button id="refresh-tools" class="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50">Refresh</button>
+        </div>
+        <div id="tools" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+      </section>
+    </main>
+
+    <script type="module" src="src/main.js"></script>
+    <script src="https://unpkg.com/preline/dist/preline.js"></script>
+  </body>
+  </html>

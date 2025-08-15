@@ -4,6 +4,7 @@ Provides the main functionality for creating and managing MCP-enabled AI agents.
 """
 
 import asyncio
+import os
 import logging
 from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass
@@ -57,9 +58,13 @@ class MCPAgent:
     def _initialize_clients(self):
         """Initialize MCP and LLM clients."""
         try:
-            # Initialize MCP client
-            if self.config.mcp_servers:
-                self.mcp_client = MCPClient(servers=self.config.mcp_servers)
+            # Initialize MCP client (mcp_use>=1.3)
+            # Optional: load external config via MCP_CONFIG_PATH env
+            cfg_path = os.getenv("MCP_CONFIG_PATH")
+            if cfg_path and os.path.exists(cfg_path):
+                self.mcp_client = MCPClient(config=cfg_path)
+            else:
+                self.mcp_client = MCPClient()
 
             # Initialize LLM client based on provider
             if self.config.provider == LLMProvider.OPENAI:
@@ -112,15 +117,41 @@ class MCPAgent:
             raise
 
     async def _get_available_tools(self) -> List[Dict]:
-        """Get available tools from MCP servers."""
+        """Get available tools from MCP servers.
+
+        Supports both older client interface (list_tools on client) and
+        current mcp_use sessions API.
+        """
         if not self.mcp_client:
             return []
 
+        # Back-compat: some tests/mock setups expect list_tools at client level
+        if hasattr(self.mcp_client, "list_tools"):
+            try:
+                tools = await self.mcp_client.list_tools()  # type: ignore[attr-defined]
+                return tools  # already in expected shape by callers/tests
+            except Exception as e:
+                logger.error(f"Error getting tools via client.list_tools: {e}")
+
+        # Preferred path: enumerate sessions and aggregate tools
+        aggregated: List[Dict] = []
         try:
-            tools = await self.mcp_client.list_tools()
-            return tools
+            sessions = self.mcp_client.create_all_sessions(auto_initialize=True)
+            for server_name, session in sessions.items():
+                try:
+                    tool_list = await session.list_tools()
+                    for tool in tool_list:
+                        aggregated.append({
+                            "server": server_name,
+                            "name": getattr(tool, "name", None),
+                            "description": getattr(tool, "description", None),
+                            "meta": getattr(tool, "meta", None),
+                        })
+                except Exception as e:
+                    logger.error(f"Error listing tools for server {server_name}: {e}")
+            return aggregated
         except Exception as e:
-            logger.error(f"Error getting tools: {e}")
+            logger.error(f"Error creating sessions to list tools: {e}")
             return []
 
     def _build_system_prompt(self, tools: List[Dict]) -> str:
@@ -184,13 +215,32 @@ class MCPAgent:
             return response.content[0].text
 
     async def execute_tool(self, tool_name: str, parameters: Dict) -> Any:
-        """Execute a specific tool directly."""
+        """Execute a specific tool directly.
+
+        Tries all active sessions until one executes the tool.
+        """
         if not self.mcp_client:
             raise ValueError("No MCP client initialized")
 
+        # Back-compat: some mock setups expect call_tool at client level
+        if hasattr(self.mcp_client, "call_tool"):
+            try:
+                return await self.mcp_client.call_tool(tool_name, parameters)  # type: ignore[attr-defined]
+            except Exception as e:
+                logger.error(f"Fallback client.call_tool failed: {e}")
+
         try:
-            result = await self.mcp_client.call_tool(tool_name, parameters)
-            return result
+            sessions = self.mcp_client.create_all_sessions(auto_initialize=True)
+            last_err: Optional[Exception] = None
+            for server_name, session in sessions.items():
+                try:
+                    return await session.call_tool(tool_name, parameters)
+                except Exception as e:
+                    last_err = e
+                    logger.debug(f"Tool {tool_name} not available on {server_name}: {e}")
+            if last_err:
+                raise last_err
+            raise RuntimeError(f"Tool {tool_name} not available on any MCP session")
         except Exception as e:
             logger.error(f"Error executing tool {tool_name}: {e}")
             raise

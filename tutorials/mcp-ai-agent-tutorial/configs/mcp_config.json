@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "search": {
+      "url": "http://localhost:8765"
+    },
+    "file-manager": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        ".",
+        "--allow",
+        "read"
+      ],
+      "env": {}
+    }
+  }
+}

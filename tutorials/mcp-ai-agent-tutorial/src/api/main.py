@@ -6,11 +6,13 @@ Provides REST API endpoints for interacting with MCP-enabled AI agents.
 import logging
 import asyncio
 from contextlib import asynccontextmanager
+import os
 from typing import List, Dict, Optional, Any
 
 from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 import uvicorn
 
@@ -49,13 +51,36 @@ app = FastAPI(
 )
 
 # Add CORS middleware
+# Derive allowed origins from environment
+ui_port = os.getenv("UI_PORT", "8501")
+frontend_url = os.getenv("FRONTEND_URL")
+allow_origins = [
+    f"http://localhost:{ui_port}",
+    f"http://127.0.0.1:{ui_port}",
+]
+if frontend_url:
+    allow_origins.append(frontend_url)
+
+# Optional comma-separated override/additions, e.g. "http://localhost:3000,https://example.com"
+extra_origins = os.getenv("ALLOWED_ORIGINS")
+if extra_origins:
+    for origin in [o.strip() for o in extra_origins.split(",") if o.strip()]:
+        if origin not in allow_origins:
+            allow_origins.append(origin)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8501", "http://127.0.0.1:8501"],  # Streamlit default
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Serve static web UI (Tailwind/Preline) at /app (dev convenience)
+try:
+    app.mount("/app", StaticFiles(directory="web", html=True), name="app")
+except Exception:
+    pass
 
 
 @app.get("/")

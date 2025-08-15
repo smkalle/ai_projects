@@ -44,6 +44,7 @@ Thumbs.db
 # Logs
 *.log
 logs/
+.logs/
 
 # Database
 *.db
@@ -64,3 +65,8 @@ docker-compose.override.yml
 
 # Streamlit
 .streamlit/
+
+# Web UI
+web/node_modules/
+web/dist/
+web/.cache/
