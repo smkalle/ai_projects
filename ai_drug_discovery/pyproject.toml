@@ -2,6 +2,9 @@
 requires = ["hatchling>=1.18.0"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
 [project]
 name = "rare-disease-drug-repurposing-ai"
 version = "0.1.0"
@@ -26,15 +29,15 @@ dependencies = [
   "streamlit-agraph==0.0.45",
   "plotly==5.17.0",
   "pandas==2.1.4",
-  "numpy==1.24.3",
+  "numpy==1.26.0",
 
   # LangChain & LLMs
-  "langchain==0.0.348",
-  "langchain-openai==0.0.2",
-  "langchain-anthropic==0.0.1",
+  "langchain==0.1.0",
+  "langchain-openai==0.0.5",
+  "langchain-anthropic==0.1.1",
   "langchain-community==0.0.10",
-  "openai==1.3.7",
-  "anthropic==0.7.7",
+  "openai==1.12.0",
+  "anthropic==0.18.0",
 
   # Vector Database & Embeddings
   "qdrant-client==1.7.0",

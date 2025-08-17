@@ -93,28 +93,54 @@ This project adheres to a code of conduct. By participating, you are expected to
 - Add regression tests for fixed bugs
 
 ### New Features
-- Implement new document types (discharge summaries, etc.)
-- Add new extraction capabilities
-- Improve accuracy of existing extractions
+- Implement new medical document types (discharge summaries, pathology reports, etc.)
+- Add new extraction capabilities for medical fields
+- Improve accuracy of existing medical data extraction
+- Enhance review workflow and annotation systems
+- Add FHIR compliance features
 
 ### Documentation
 - Improve existing documentation
-- Add examples and tutorials
-- Fix typos and unclear explanations
+- Add medical workflow examples and tutorials
+- Document clinical use cases
+- Fix typos and unclear medical explanations
 
 ### Performance Improvements
-- Optimize processing speed
-- Reduce memory usage
-- Improve error handling
+- Optimize medical document processing speed
+- Reduce memory usage for large medical datasets
+- Improve error handling for malformed medical documents
+- Enhance batch processing capabilities
+
+## Medical AI Guidelines
+
+### Healthcare Data Handling
+- **Never commit real patient data** or PHI (Protected Health Information)
+- **Use synthetic/demo data** for all examples and tests
+- **Follow HIPAA guidelines** when applicable
+- **Implement proper data anonymization** in examples
+
+### Medical Domain Expertise
+- **Validate medical terminology** and ensure accuracy
+- **Consult healthcare professionals** for clinical workflows
+- **Include proper medical disclaimers** in documentation
+- **Test with realistic medical scenarios**
+
+### Clinical Accuracy
+- Ensure extracted data maintains medical context
+- Validate against standard medical references
+- Include confidence scoring for medical extractions
+- Handle medical abbreviations and terminology correctly
 
 ## Security Considerations
 
 When contributing to MediPulse, keep in mind:
 
-- Never commit real medical data or PHI
-- Use synthetic/fake data for testing
-- Consider HIPAA compliance in new features
-- Report security issues privately
+- **Never commit real medical data or PHI**
+- **Use synthetic/fake data for testing**
+- **Consider HIPAA compliance** in new features
+- **Report security issues privately**
+- **Follow medical data security best practices**
+- **Implement audit trails for medical operations**
 
 ## Pull Request Process
 
