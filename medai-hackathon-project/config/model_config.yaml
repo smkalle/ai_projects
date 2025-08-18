@@ -1,0 +1,46 @@
+# Model Configuration for NGO Medical AI Assistant
+
+# Primary multimodal model configuration
+primary_model:
+  type: "openai"  # Options: "openai", "huggingface", "local"
+  model_name: "gpt-4o"
+  max_tokens: 500
+  temperature: 0.3
+  top_p: 0.9
+
+# Fallback model for reliability
+fallback_model:
+  type: "huggingface"
+  model_name: "microsoft/llava-med-v1.5-mistral-7b"
+  device: "auto"
+  torch_dtype: "float16"
+
+# Local deployment options (for edge computing)
+local_model:
+  type: "llava"
+  model_path: "./models/llava-med-7b"
+  processor_path: "./models/llava-processor"
+  device: "cuda"  # or "cpu"
+  quantization: "4bit"  # For memory efficiency
+
+# Medical-specific model settings
+medical_settings:
+  confidence_threshold: 0.7
+  max_reasoning_steps: 10
+  enable_chain_of_thought: true
+  include_uncertainty: true
+  medical_domain_focus: true
+
+# Performance optimization
+performance:
+  batch_size: 1
+  max_image_size: [512, 512]
+  enable_caching: true
+  cache_ttl: 3600  # seconds
+
+# Safety and ethics
+safety:
+  enable_content_filtering: true
+  medical_disclaimer_required: true
+  audit_logging: true
+  bias_detection: true

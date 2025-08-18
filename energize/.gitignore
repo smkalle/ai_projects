@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+*.env.local
+*.env.development
+*.env.production
+
+# Dependencies
+node_modules/
+dist/
+build/
+*.egg-info/
+
+# Logs
+*.log
+logs/
+*.pid
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Documentation
+docs/_build/
+site/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# API Keys - NEVER commit these
+**/secrets.json
+**/credentials.json
+api_keys.txt

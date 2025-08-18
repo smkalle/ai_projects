@@ -1,0 +1,1 @@
+"""NGO Medical AI Assistant module"""

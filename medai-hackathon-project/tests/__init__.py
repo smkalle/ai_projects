@@ -1,0 +1,1 @@
+"""Test suite for NGO Medical AI Assistant"""

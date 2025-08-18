@@ -1,0 +1,18 @@
+[project]
+name = "energize-dashboard"
+version = "0.1.0"
+description = "Energize Streamlit Dashboard"
+requires-python = ">=3.11"
+dependencies = [
+    "streamlit>=1.29.0",
+    "pandas>=2.1.4",
+    "plotly>=5.18.0",
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
+    "altair>=5.2.0",
+    "numpy>=1.26.2",
+]
+
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
