@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmConnect - AI-Powered Agricultural Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .product-card:hover {
+            transform: translateY(-4px);
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 via-blue-50 to-orange-50 min-h-screen">
+    <!-- Enhanced Header with Navigation -->
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center space-x-3">
+                    <span class="material-icons text-green-600" style="font-size: 40px;">agriculture</span>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">FarmConnect</h1>
+                        <p class="text-sm text-gray-600">AI-Powered Direct Farm-to-Consumer Platform</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#marketplace" class="nav-link flex items-center text-gray-700 hover:text-green-600 font-medium">
+                        <span class="material-icons mr-1 text-sm">store</span>
+                        Marketplace
+                    </a>
+                    <a href="#analytics" class="nav-link flex items-center text-gray-700 hover:text-green-600 font-medium">
+                        <span class="material-icons mr-1 text-sm">analytics</span>
+                        Analytics
+                    </a>
+                    <a href="#farmers" class="nav-link flex items-center text-gray-700 hover:text-green-600 font-medium">
+                        <span class="material-icons mr-1 text-sm">groups</span>
+                        Farmers
+                    </a>
+                    <a href="#ai-tools" class="nav-link flex items-center text-gray-700 hover:text-green-600 font-medium">
+                        <span class="material-icons mr-1 text-sm">psychology</span>
+                        AI Tools
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section with Quick Actions -->
+    <section class="bg-gradient-to-r from-green-600 to-blue-600 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-4xl font-bold mb-4">Welcome to FarmConnect Platform</h2>
+                <p class="text-xl mb-8">Revolutionizing agriculture with AI-powered insights, direct farmer connections, and 30-40% consumer savings</p>
+                
+                <!-- Quick Access Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
+                    <a href="farmer-scoring.html" class="feature-card bg-white/20 backdrop-blur-lg rounded-xl p-6 hover:bg-white/30 cursor-pointer">
+                        <span class="material-icons text-4xl mb-2">assessment</span>
+                        <h3 class="font-bold text-lg">Farmer Scoring</h3>
+                        <p class="text-sm opacity-90">AI-powered onboarding</p>
+                    </a>
+                    
+                    <a href="revenue-insights.html" class="feature-card bg-white/20 backdrop-blur-lg rounded-xl p-6 hover:bg-white/30 cursor-pointer">
+                        <span class="material-icons text-4xl mb-2">insights</span>
+                        <h3 class="font-bold text-lg">Revenue Insights</h3>
+                        <p class="text-sm opacity-90">412% ROI projections</p>
+                    </a>
+                    
+                    <a href="#price-comparison" onclick="showTab('comparison')" class="feature-card bg-white/20 backdrop-blur-lg rounded-xl p-6 hover:bg-white/30 cursor-pointer">
+                        <span class="material-icons text-4xl mb-2">price_check</span>
+                        <h3 class="font-bold text-lg">Price Compare</h3>
+                        <p class="text-sm opacity-90">Real-time market prices</p>
+                    </a>
+                    
+                    <a href="#supply-chain" onclick="showSupplyChain()" class="feature-card bg-white/20 backdrop-blur-lg rounded-xl p-6 hover:bg-white/30 cursor-pointer">
+                        <span class="material-icons text-4xl mb-2">local_shipping</span>
+                        <h3 class="font-bold text-lg">Supply Chain</h3>
+                        <p class="text-sm opacity-90">AI logistics optimization</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Dashboard -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">
+                <span class="material-icons align-middle mr-2 text-green-600">dashboard</span>
+                Live Platform Metrics
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="stats">
+                <!-- Stats will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="container mx-auto px-4">
+        <div class="bg-white rounded-t-xl shadow-lg px-6 pt-6">
+            <div class="flex flex-wrap gap-2 border-b border-gray-200">
+                <button onclick="showTab('products')" id="products-tab" 
+                    class="px-6 py-3 font-semibold transition-all border-b-4 border-green-600 text-green-600">
+                    <span class="material-icons align-middle mr-2 text-sm">shopping_cart</span>
+                    Products
+                </button>
+                <button onclick="showTab('comparison')" id="comparison-tab"
+                    class="px-6 py-3 font-semibold transition-all border-b-4 border-transparent text-gray-600 hover:text-gray-800">
+                    <span class="material-icons align-middle mr-2 text-sm">trending_up</span>
+                    Price Comparison
+                </button>
+                <button onclick="showTab('farmers')" id="farmers-tab"
+                    class="px-6 py-3 font-semibold transition-all border-b-4 border-transparent text-gray-600 hover:text-gray-800">
+                    <span class="material-icons align-middle mr-2 text-sm">groups</span>
+                    Our Farmers
+                </button>
+                <button onclick="showTab('ai-agents')" id="ai-agents-tab"
+                    class="px-6 py-3 font-semibold transition-all border-b-4 border-transparent text-gray-600 hover:text-gray-800">
+                    <span class="material-icons align-middle mr-2 text-sm">smart_toy</span>
+                    AI Agents
+                </button>
+                <button onclick="showTab('analytics')" id="analytics-tab"
+                    class="px-6 py-3 font-semibold transition-all border-b-4 border-transparent text-gray-600 hover:text-gray-800">
+                    <span class="material-icons align-middle mr-2 text-sm">analytics</span>
+                    Analytics Hub
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Content Container -->
+        <div class="bg-white rounded-b-xl shadow-lg p-6 min-h-[500px]">
+            <!-- Products Tab -->
+            <div id="products" class="tab-content">
+                <div class="mb-6 flex justify-between items-center">
+                    <h3 class="text-2xl font-bold text-gray-800">Fresh Farm Products</h3>
+                    <div class="flex gap-2">
+                        <button class="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium">All Products</button>
+                        <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Vegetables</button>
+                        <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Fruits</button>
+                        <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Grains</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="products-grid">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Price Comparison Tab -->
+            <div id="comparison" class="tab-content hidden">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Real-Time Price Comparison</h3>
+                    <p class="text-gray-600">Compare FarmConnect prices with major retail platforms - Save 30-40% on average!</p>
+                </div>
+                <div id="price-comparison">
+                    <!-- Price comparison will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Farmers Tab -->
+            <div id="farmers" class="tab-content hidden">
+                <div class="mb-6 flex justify-between items-center">
+                    <h3 class="text-2xl font-bold text-gray-800">Partner Farmers Network</h3>
+                    <a href="farmer-scoring.html" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
+                        <span class="material-icons align-middle mr-1 text-sm">add</span>
+                        Score New Farmer
+                    </a>
+                </div>
+                <div id="farmers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Farmers will be loaded here -->
+                </div>
+            </div>
+
+            <!-- AI Agents Tab -->
+            <div id="ai-agents" class="tab-content hidden">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">AI-Powered Agent System</h3>
+                    <p class="text-gray-600">LangGraph agents optimizing every aspect of the agricultural supply chain</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition">
+                        <div class="flex items-center mb-4">
+                            <span class="material-icons text-green-600 text-3xl mr-3">local_shipping</span>
+                            <div>
+                                <h4 class="font-bold text-lg">Logistics Agent</h4>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Operational</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">Route optimization, delivery partner selection, real-time tracking</p>
+                        <button onclick="testAgent('logistics')" class="text-blue-600 hover:text-blue-800 font-medium text-sm">Test Agent →</button>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition">
+                        <div class="flex items-center mb-4">
+                            <span class="material-icons text-purple-600 text-3xl mr-3">verified</span>
+                            <div>
+                                <h4 class="font-bold text-lg">Quality Inspector</h4>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Operational</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">AI vision quality grading, defect detection, freshness scoring</p>
+                        <button onclick="testAgent('quality')" class="text-blue-600 hover:text-blue-800 font-medium text-sm">Test Agent →</button>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition">
+                        <div class="flex items-center mb-4">
+                            <span class="material-icons text-orange-600 text-3xl mr-3">inventory_2</span>
+                            <div>
+                                <h4 class="font-bold text-lg">Inventory Manager</h4>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Operational</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">Demand forecasting, stock optimization, expiry management</p>
+                        <button onclick="testAgent('inventory')" class="text-blue-600 hover:text-blue-800 font-medium text-sm">Test Agent →</button>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition">
+                        <div class="flex items-center mb-4">
+                            <span class="material-icons text-blue-600 text-3xl mr-3">assessment</span>
+                            <div>
+                                <h4 class="font-bold text-lg">Farmer Scoring</h4>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Operational</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">100-point scoring system for optimal farmer onboarding</p>
+                        <a href="farmer-scoring.html" class="text-blue-600 hover:text-blue-800 font-medium text-sm">Open Tool →</a>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition">
+                        <div class="flex items-center mb-4">
+                            <span class="material-icons text-red-600 text-3xl mr-3">insights</span>
+                            <div>
+                                <h4 class="font-bold text-lg">Revenue Insights</h4>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Operational</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">Revenue optimization with 412% ROI projections</p>
+                        <a href="revenue-insights.html" class="text-blue-600 hover:text-blue-800 font-medium text-sm">Open Dashboard →</a>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition">
+                        <div class="flex items-center mb-4">
+                            <span class="material-icons text-indigo-600 text-3xl mr-3">price_change</span>
+                            <div>
+                                <h4 class="font-bold text-lg">Dynamic Pricing</h4>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Operational</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">ML-powered pricing optimization for maximum revenue</p>
+                        <a href="dynamic-pricing.html" class="text-blue-600 hover:text-blue-800 font-medium text-sm">Open Dashboard →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Hub Tab -->
+            <div id="analytics" class="tab-content hidden">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Analytics & Insights Hub</h3>
+                    <p class="text-gray-600">Comprehensive business intelligence and performance metrics</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <a href="revenue-insights.html" class="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl p-6 text-white hover:shadow-xl transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="material-icons text-5xl">trending_up</span>
+                            <span class="text-3xl font-bold">412%</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Revenue Optimization Dashboard</h4>
+                        <p class="opacity-90">AI-powered insights for farmer onboarding and revenue maximization</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-sm">Projected Annual ROI</span>
+                            <span class="material-icons">arrow_forward</span>
+                        </div>
+                    </a>
+                    
+                    <a href="farmer-scoring.html" class="bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl p-6 text-white hover:shadow-xl transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="material-icons text-5xl">assessment</span>
+                            <span class="text-3xl font-bold">100</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Farmer Scoring System</h4>
+                        <p class="opacity-90">Comprehensive evaluation for optimal farmer onboarding decisions</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-sm">Point Scoring Scale</span>
+                            <span class="material-icons">arrow_forward</span>
+                        </div>
+                    </a>
+                    
+                    <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-6 text-white opacity-75">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="material-icons text-5xl">analytics</span>
+                            <span class="text-3xl font-bold">₹32Cr</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Market Expansion Analytics</h4>
+                        <p class="opacity-90">Identify and analyze new market opportunities</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-sm">Coming Soon</span>
+                            <span class="material-icons">lock</span>
+                        </div>
+                    </div>
+                    
+                    <a href="dynamic-pricing.html" class="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl p-6 text-white hover:shadow-xl transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="material-icons text-5xl">price_change</span>
+                            <span class="text-3xl font-bold">15%</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Dynamic Pricing Engine</h4>
+                        <p class="opacity-90">ML algorithms for optimal price optimization</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-sm">Revenue Uplift Potential</span>
+                            <span class="material-icons">arrow_forward</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-16 py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-bold text-lg mb-4">FarmConnect Platform</h4>
+                    <p class="text-gray-400 text-sm">AI-powered agricultural marketplace eliminating middlemen and providing 30-40% consumer savings</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="farmer-scoring.html" class="text-gray-400 hover:text-white">Farmer Scoring</a></li>
+                        <li><a href="revenue-insights.html" class="text-gray-400 hover:text-white">Revenue Insights</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">API Documentation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-4">Technology Stack</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li>• LangGraph AI Agents</li>
+                        <li>• FastAPI Backend</li>
+                        <li>• React + TypeScript</li>
+                        <li>• PostgreSQL + Redis</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-4">Platform Metrics</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li>• 412% Projected ROI</li>
+                        <li>• 30-40% Consumer Savings</li>
+                        <li>• 40% Farmer Income Increase</li>
+                        <li>• ₹90.1B Market Opportunity</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>© 2024 FarmConnect. AI-Powered Agricultural Revolution.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Load stats on page load
+        async function loadStats() {
+            try {
+                const response = await fetch('http://localhost:8000/api/stats');
+                const stats = await response.json();
+                
+                const statsHtml = `
+                    <div class="text-center p-4 bg-green-50 rounded-lg">
+                        <p class="text-2xl font-bold text-green-600">${stats.total_farmers}</p>
+                        <p class="text-sm text-gray-600">Active Farmers</p>
+                    </div>
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <p class="text-2xl font-bold text-blue-600">${stats.total_products}</p>
+                        <p class="text-sm text-gray-600">Products</p>
+                    </div>
+                    <div class="text-center p-4 bg-purple-50 rounded-lg">
+                        <p class="text-2xl font-bold text-purple-600">${stats.average_savings}</p>
+                        <p class="text-sm text-gray-600">Avg Savings</p>
+                    </div>
+                    <div class="text-center p-4 bg-orange-50 rounded-lg">
+                        <p class="text-2xl font-bold text-orange-600">${stats.active_users}</p>
+                        <p class="text-sm text-gray-600">Active Users</p>
+                    </div>
+                    <div class="text-center p-4 bg-red-50 rounded-lg">
+                        <p class="text-2xl font-bold text-red-600">${stats.orders_today}</p>
+                        <p class="text-sm text-gray-600">Orders Today</p>
+                    </div>
+                    <div class="text-center p-4 bg-indigo-50 rounded-lg">
+                        <p class="text-2xl font-bold text-indigo-600">${stats.revenue_today}</p>
+                        <p class="text-sm text-gray-600">Revenue Today</p>
+                    </div>
+                `;
+                document.getElementById('stats').innerHTML = statsHtml;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Load products
+        async function loadProducts() {
+            try {
+                const response = await fetch('http://localhost:8000/api/products');
+                const products = await response.json();
+                
+                const productsHtml = products.map(product => `
+                    <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer hover:shadow-xl">
+                        <div class="bg-gradient-to-br from-green-100 to-blue-100 p-6">
+                            <span class="material-icons text-green-600" style="font-size: 48px;">
+                                ${product.category === 'Vegetables' ? 'eco' : product.category === 'Fruits' ? 'spa' : 'grain'}
+                            </span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">${product.name}</h3>
+                            <p class="text-gray-600 mb-4">${product.description || 'Fresh from farm'}</p>
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-2xl font-bold text-green-600">₹${product.price}/${product.unit}</span>
+                                ${product.organic_certified ? '<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Organic</span>' : ''}
+                            </div>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <p><span class="material-icons align-middle text-sm mr-1">person</span> ${product.farmer_name}</p>
+                                <p><span class="material-icons align-middle text-sm mr-1">location_on</span> ${product.location}</p>
+                            </div>
+                            <button class="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('products-grid').innerHTML = productsHtml;
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        // Load price comparison
+        async function loadPriceComparison() {
+            try {
+                const response = await fetch('http://localhost:8000/api/price-comparison');
+                const comparisons = await response.json();
+                
+                const comparisonHtml = `
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Product</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-gray-700">
+                                        <span class="text-green-600">FarmConnect</span>
+                                    </th>
+                                    <th class="text-center py-3 px-4 font-semibold text-gray-700">BigBasket</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-gray-700">Zepto</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-gray-700">Swiggy</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-gray-700">
+                                        <span class="text-green-600">Your Savings</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${comparisons.map(item => `
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                        <td class="py-4 px-4 font-medium text-gray-800">${item.product_name}</td>
+                                        <td class="text-center py-4 px-4">
+                                            <span class="text-green-600 font-bold">₹${item.farmer_price}</span>
+                                        </td>
+                                        <td class="text-center py-4 px-4 text-gray-600">₹${item.bigbasket_price}</td>
+                                        <td class="text-center py-4 px-4 text-gray-600">₹${item.zepto_price}</td>
+                                        <td class="text-center py-4 px-4 text-gray-600">₹${item.swiggy_price}</td>
+                                        <td class="text-center py-4 px-4">
+                                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full font-semibold">
+                                                ${item.savings_percentage}% OFF
+                                            </span>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                document.getElementById('price-comparison').innerHTML = comparisonHtml;
+            } catch (error) {
+                console.error('Error loading price comparison:', error);
+            }
+        }
+
+        // Load farmers list
+        async function loadFarmers() {
+            try {
+                const response = await fetch('http://localhost:8000/api/farmers');
+                const farmers = await response.json();
+                
+                const farmersHtml = farmers.map(farmer => `
+                    <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <span class="material-icons text-green-600">person</span>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="font-bold text-lg text-gray-800">${farmer.name}</h4>
+                                    <p class="text-sm text-gray-600">${farmer.location}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="material-icons text-yellow-500 text-sm">star</span>
+                                <span class="font-bold text-gray-800 ml-1">${farmer.rating}</span>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <p class="text-gray-600">
+                                <span class="font-medium">Products:</span> ${farmer.products.join(', ')}
+                            </p>
+                            <p class="text-gray-600">
+                                <span class="font-medium">Delivery:</span> ${farmer.delivery_radius}
+                            </p>
+                            <div class="flex flex-wrap gap-2 mt-3">
+                                ${farmer.certifications.map(cert => 
+                                    `<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">${cert}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="mt-4 flex gap-2">
+                            <button class="flex-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">
+                                View Products
+                            </button>
+                            <a href="farmer-scoring.html" class="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium text-center">
+                                View Score
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('farmers-list').innerHTML = farmersHtml;
+            } catch (error) {
+                console.error('Error loading farmers:', error);
+            }
+        }
+
+        // Tab switching function
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Reset all tab buttons
+            document.querySelectorAll('[id$="-tab"]').forEach(btn => {
+                btn.className = 'px-6 py-3 font-semibold transition-all border-b-4 border-transparent text-gray-600 hover:text-gray-800';
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.remove('hidden');
+            
+            // Highlight selected tab button
+            document.getElementById(tabName + '-tab').className = 'px-6 py-3 font-semibold transition-all border-b-4 border-green-600 text-green-600';
+            
+            // Load content for the tab
+            if (tabName === 'comparison') {
+                loadPriceComparison();
+            } else if (tabName === 'farmers') {
+                loadFarmers();
+            }
+        }
+
+        // Test agent function
+        async function testAgent(agentType) {
+            alert(`Testing ${agentType} agent... Feature will connect to http://localhost:8000/api/agents/${agentType}`);
+        }
+
+        // Show supply chain demo
+        function showSupplyChain() {
+            showTab('ai-agents');
+            document.getElementById('ai-agents-tab').click();
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            loadProducts();
+            
+            // Auto-refresh stats every 30 seconds
+            setInterval(loadStats, 30000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Insights Dashboard - FarmConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body class="bg-gradient-to-br from-green-50 via-blue-50 to-orange-50 min-h-screen">
+    
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <span class="material-icons text-green-600 text-3xl mr-2">agriculture</span>
+                        <h1 class="text-2xl font-bold text-gray-900">FarmConnect</h1>
+                        <span class="ml-2 px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">Revenue Analytics</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Marketplace</a>
+                    <a href="#" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Revenue Insights</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Header Section -->
+        <div class="mb-8">
+            <div class="bg-gradient-to-r from-green-600 to-blue-600 rounded-xl p-8 text-white">
+                <h1 class="text-3xl font-bold mb-2">Revenue Optimization Dashboard</h1>
+                <p class="text-green-100 text-lg">AI-powered insights for farmer onboarding and revenue maximization</p>
+                <div class="mt-4 flex items-center space-x-6">
+                    <div class="flex items-center">
+                        <span class="material-icons mr-2">trending_up</span>
+                        <span class="text-sm">412% Projected ROI</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="material-icons mr-2">attach_money</span>
+                        <span class="text-sm">₹61.8L Net Profit Y1</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="material-icons mr-2">speed</span>
+                        <span class="text-sm">2.9 Month Payback</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Current Monthly Revenue</p>
+                        <p class="text-2xl font-bold text-gray-900">₹4L</p>
+                        <p class="text-green-600 text-xs mt-1">8% commission rate</p>
+                    </div>
+                    <span class="material-icons text-green-500 text-3xl">account_balance_wallet</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Projected Revenue (Y1)</p>
+                        <p class="text-2xl font-bold text-gray-900">₹10.4L</p>
+                        <p class="text-blue-600 text-xs mt-1">+160% growth</p>
+                    </div>
+                    <span class="material-icons text-blue-500 text-3xl">show_chart</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">High-Value Farmers</p>
+                        <p class="text-2xl font-bold text-gray-900">60%</p>
+                        <p class="text-orange-600 text-xs mt-1">Organic certified target</p>
+                    </div>
+                    <span class="material-icons text-orange-500 text-3xl">verified_user</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Revenue Multiplier</p>
+                        <p class="text-2xl font-bold text-gray-900">1.3x</p>
+                        <p class="text-purple-600 text-xs mt-1">Organic premium</p>
+                    </div>
+                    <span class="material-icons text-purple-500 text-3xl">eco</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Revenue Growth Chart -->
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Revenue Growth Projection</h3>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-medium">12 Months</button>
+                        <button class="px-3 py-1 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-100">24 Months</button>
+                    </div>
+                </div>
+                <canvas id="revenueChart" height="300"></canvas>
+                <div class="mt-4 grid grid-cols-3 gap-4 text-center">
+                    <div class="p-3 bg-green-50 rounded-lg">
+                        <p class="text-green-700 font-semibold">Month 6</p>
+                        <p class="text-gray-600 text-sm">₹8.6L (+115%)</p>
+                    </div>
+                    <div class="p-3 bg-blue-50 rounded-lg">
+                        <p class="text-blue-700 font-semibold">Month 12</p>
+                        <p class="text-gray-600 text-sm">₹10.4L (+160%)</p>
+                    </div>
+                    <div class="p-3 bg-orange-50 rounded-lg">
+                        <p class="text-orange-700 font-semibold">ROI</p>
+                        <p class="text-gray-600 text-sm">412% Annual</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farmer Segmentation -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">High-Value Farmer Segments</h3>
+                
+                <div class="space-y-4">
+                    <div class="border-l-4 border-green-500 pl-4 py-2">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-gray-900">Organic Certified</h4>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">1.3x</span>
+                        </div>
+                        <p class="text-gray-600 text-sm">Premium pricing, health-conscious market</p>
+                        <div class="mt-2 bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Expected: ₹15L/month additional</p>
+                    </div>
+
+                    <div class="border-l-4 border-blue-500 pl-4 py-2">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-gray-900">Diversified Portfolio</h4>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">1.25x</span>
+                        </div>
+                        <p class="text-gray-600 text-sm">Multiple products, year-round supply</p>
+                        <div class="mt-2 bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: 70%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Expected: ₹22L/month additional</p>
+                    </div>
+
+                    <div class="border-l-4 border-orange-500 pl-4 py-2">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-gray-900">Premium Quality</h4>
+                            <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium">1.15x</span>
+                        </div>
+                        <p class="text-gray-600 text-sm">High ratings, consistent quality</p>
+                        <div class="mt-2 bg-gray-200 rounded-full h-2">
+                            <div class="bg-orange-500 h-2 rounded-full" style="width: 60%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Expected: ₹12L/month additional</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg">
+                    <p class="text-sm text-gray-700 font-medium">🎯 Onboarding Target</p>
+                    <p class="text-xs text-gray-600">125 high-value farmers in next 6 months</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Portfolio & Pricing Strategy -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+            
+            <!-- Product Portfolio Optimization -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Product Portfolio Optimization</h3>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Exotic Fruits</h4>
+                            <p class="text-green-700 text-sm">Dragon Fruit, Avocados, Bell Peppers</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-green-700">₹25L/month</p>
+                            <p class="text-xs text-gray-600">₹8L investment</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Premium Vegetables</h4>
+                            <p class="text-blue-700 text-sm">Organic tomatoes, specialty greens</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-blue-700">₹18L/month</p>
+                            <p class="text-xs text-gray-600">₹5L investment</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-orange-50 rounded-lg">
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Seasonal Optimization</h4>
+                            <p class="text-orange-700 text-sm">Summer fruits, winter vegetables</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-orange-700">₹12L/month</p>
+                            <p class="text-xs text-gray-600">₹3L investment</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <canvas id="portfolioChart" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Dynamic Pricing Strategy -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Dynamic Pricing Strategy</h3>
+                
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-3">Pricing Models</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-3 border-2 border-green-200 rounded-lg">
+                                <p class="font-medium text-green-700">Organic Premium</p>
+                                <p class="text-2xl font-bold text-green-800">+30%</p>
+                                <p class="text-xs text-gray-600">Health-conscious segment</p>
+                            </div>
+                            <div class="p-3 border-2 border-blue-200 rounded-lg">
+                                <p class="font-medium text-blue-700">Seasonal Boost</p>
+                                <p class="text-2xl font-bold text-blue-800">+50%</p>
+                                <p class="text-xs text-gray-600">Peak demand periods</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-3">Bundling Strategy</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-green-100 rounded-lg">
+                                <div>
+                                    <p class="font-medium">Organic Vegetable Box</p>
+                                    <p class="text-xs text-gray-600">15% discount</p>
+                                </div>
+                                <span class="bg-green-600 text-white px-2 py-1 rounded-full text-xs">+60% AOV</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
+                                <div>
+                                    <p class="font-medium">Seasonal Fruit Box</p>
+                                    <p class="text-xs text-gray-600">20% discount</p>
+                                </div>
+                                <span class="bg-blue-600 text-white px-2 py-1 rounded-full text-xs">+40% Conv</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+                        <h4 class="font-semibold text-purple-900 mb-2">Expected Impact</h4>
+                        <p class="text-sm text-purple-700">35-50% total revenue lift through optimized pricing</p>
+                        <div class="mt-2 flex space-x-4 text-xs">
+                            <span class="text-purple-600">• Price elasticity optimization</span>
+                            <span class="text-purple-600">• Geographic targeting</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Expansion & Action Plan -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+            
+            <!-- Market Expansion Opportunities -->
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Market Expansion Opportunities</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200">
+                                <th class="text-left py-3 text-sm font-semibold text-gray-700">Opportunity</th>
+                                <th class="text-center py-3 text-sm font-semibold text-gray-700">Revenue Potential</th>
+                                <th class="text-center py-3 text-sm font-semibold text-gray-700">Investment</th>
+                                <th class="text-center py-3 text-sm font-semibold text-gray-700">ROI</th>
+                                <th class="text-center py-3 text-sm font-semibold text-gray-700">Timeline</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-green-50">
+                                <td class="py-4">
+                                    <div class="flex items-center">
+                                        <span class="material-icons text-green-600 mr-2">location_city</span>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Tier 2 Cities</p>
+                                            <p class="text-xs text-gray-600">Indore, Nagpur, Surat</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center py-4 font-semibold text-green-700">₹5Cr/month</td>
+                                <td class="text-center py-4 text-gray-600">₹2Cr</td>
+                                <td class="text-center py-4">
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold">30x</span>
+                                </td>
+                                <td class="text-center py-4 text-gray-600">6 months</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50">
+                                <td class="py-4">
+                                    <div class="flex items-center">
+                                        <span class="material-icons text-blue-600 mr-2">restaurant</span>
+                                        <div>
+                                            <p class="font-medium text-gray-900">B2B Restaurant</p>
+                                            <p class="text-xs text-gray-600">Chain partnerships</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center py-4 font-semibold text-blue-700">₹3Cr/month</td>
+                                <td class="text-center py-4 text-gray-600">₹1.5Cr</td>
+                                <td class="text-center py-4">
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-bold">24x</span>
+                                </td>
+                                <td class="text-center py-4 text-gray-600">4 months</td>
+                            </tr>
+                            <tr class="hover:bg-orange-50">
+                                <td class="py-4">
+                                    <div class="flex items-center">
+                                        <span class="material-icons text-orange-600 mr-2">business</span>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Corporate Cafeterias</p>
+                                            <p class="text-xs text-gray-600">IT companies, hospitals</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center py-4 font-semibold text-orange-700">₹2Cr/month</td>
+                                <td class="text-center py-4 text-gray-600">₹1Cr</td>
+                                <td class="text-center py-4">
+                                    <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-bold">24x</span>
+                                </td>
+                                <td class="text-center py-4 text-gray-600">3 months</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-6 p-4 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg">
+                    <p class="font-semibold text-gray-900">Total Addressable Market: ₹32Cr/month</p>
+                    <p class="text-sm text-gray-700 mt-1">Combined investment requirement: ₹7.5Cr with 18-month average payback</p>
+                </div>
+            </div>
+
+            <!-- Implementation Action Plan -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Implementation Roadmap</h3>
+                
+                <div class="space-y-4">
+                    <div class="border-l-4 border-green-500 pl-4">
+                        <h4 class="font-semibold text-gray-900">Phase 1 (Month 1-2)</h4>
+                        <p class="text-sm text-gray-600 mb-2">High-Value Farmer Onboarding</p>
+                        <ul class="text-xs text-gray-500 space-y-1">
+                            <li>• Launch organic certification program</li>
+                            <li>• Quality excellence training</li>
+                            <li>• Target: 25 farmers</li>
+                        </ul>
+                        <div class="mt-2 bg-gray-200 rounded-full h-1">
+                            <div class="bg-green-500 h-1 rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <h4 class="font-semibold text-gray-900">Phase 2 (Month 2-4)</h4>
+                        <p class="text-sm text-gray-600 mb-2">Product Portfolio Expansion</p>
+                        <ul class="text-xs text-gray-500 space-y-1">
+                            <li>• Introduce exotic fruits</li>
+                            <li>• Premium vegetable lines</li>
+                            <li>• Target: 15 new products</li>
+                        </ul>
+                        <div class="mt-2 bg-gray-200 rounded-full h-1">
+                            <div class="bg-blue-500 h-1 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-orange-500 pl-4">
+                        <h4 class="font-semibold text-gray-900">Phase 3 (Month 3-6)</h4>
+                        <p class="text-sm text-gray-600 mb-2">Dynamic Pricing Implementation</p>
+                        <ul class="text-xs text-gray-500 space-y-1">
+                            <li>• AI pricing engine</li>
+                            <li>• Product bundling</li>
+                            <li>• Target: 35% optimization</li>
+                        </ul>
+                        <div class="mt-2 bg-gray-200 rounded-full h-1">
+                            <div class="bg-orange-500 h-1 rounded-full" style="width: 40%"></div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <h4 class="font-semibold text-gray-900">Phase 4 (Month 4-12)</h4>
+                        <p class="text-sm text-gray-600 mb-2">Market Expansion</p>
+                        <ul class="text-xs text-gray-500 space-y-1">
+                            <li>• Tier 2 city expansion</li>
+                            <li>• B2B partnerships</li>
+                            <li>• Target: ₹10L+ revenue</li>
+                        </ul>
+                        <div class="mt-2 bg-gray-200 rounded-full h-1">
+                            <div class="bg-purple-500 h-1 rounded-full" style="width: 20%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-gradient-to-r from-green-600 to-blue-600 rounded-lg text-white">
+                    <p class="font-semibold text-sm">🎯 Success Metrics</p>
+                    <ul class="text-xs mt-2 space-y-1">
+                        <li>• 160% revenue growth by month 12</li>
+                        <li>• 85% farmer retention rate</li>
+                        <li>• 35% high-margin products</li>
+                        <li>• 412% annual ROI</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROI Calculator -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">Interactive ROI Calculator</h3>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-4">Investment Scenarios</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Organic Farmers Target</label>
+                            <input type="range" id="organicSlider" min="10" max="100" value="50" class="w-full">
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>10 farmers</span>
+                                <span id="organicValue">50 farmers</span>
+                                <span>100 farmers</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Investment Amount (₹L)</label>
+                            <input type="range" id="investmentSlider" min="5" max="25" value="15" class="w-full">
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>₹5L</span>
+                                <span id="investmentValue">₹15L</span>
+                                <span>₹25L</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Timeline (Months)</label>
+                            <input type="range" id="timelineSlider" min="6" max="24" value="12" class="w-full">
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>6 months</span>
+                                <span id="timelineValue">12 months</span>
+                                <span>24 months</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-4">Projected Returns</h4>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-green-50 rounded-lg">
+                            <p class="text-sm text-gray-700">Monthly Revenue</p>
+                            <p class="text-2xl font-bold text-green-700" id="monthlyRevenue">₹10.4L</p>
+                            <p class="text-xs text-green-600" id="revenueGrowth">+160% growth</p>
+                        </div>
+                        
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <p class="text-sm text-gray-700">Annual ROI</p>
+                            <p class="text-2xl font-bold text-blue-700" id="annualROI">412%</p>
+                            <p class="text-xs text-blue-600" id="paybackPeriod">2.9 month payback</p>
+                        </div>
+                        
+                        <div class="p-4 bg-orange-50 rounded-lg">
+                            <p class="text-sm text-gray-700">Net Profit</p>
+                            <p class="text-2xl font-bold text-orange-700" id="netProfit">₹61.8L</p>
+                            <p class="text-xs text-orange-600">Year 1 projection</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Call to Action -->
+        <div class="mt-8 bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 rounded-xl p-8 text-white text-center">
+            <h3 class="text-2xl font-bold mb-4">Ready to Maximize Revenue?</h3>
+            <p class="text-lg mb-6">Implement these AI-powered insights to achieve 412% ROI and transform your agricultural marketplace</p>
+            <div class="flex justify-center space-x-4">
+                <button class="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                    Start Implementation
+                </button>
+                <button class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition">
+                    Download Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Revenue Growth Chart
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Month 1', 'Month 2', 'Month 3', 'Month 6', 'Month 9', 'Month 12'],
+                datasets: [{
+                    label: 'Monthly Revenue (₹L)',
+                    data: [4, 5.4, 6.8, 8.6, 9.5, 10.4],
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#10B981',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value + 'L';
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Portfolio Chart
+        const portfolioCtx = document.getElementById('portfolioChart').getContext('2d');
+        new Chart(portfolioCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Exotic Fruits', 'Premium Vegetables', 'Seasonal Products', 'Regular Products'],
+                datasets: [{
+                    data: [25, 18, 12, 20],
+                    backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#E5E7EB'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    }
+                }
+            }
+        });
+
+        // Interactive ROI Calculator
+        const organicSlider = document.getElementById('organicSlider');
+        const investmentSlider = document.getElementById('investmentSlider');
+        const timelineSlider = document.getElementById('timelineSlider');
+
+        function updateValues() {
+            document.getElementById('organicValue').textContent = organicSlider.value + ' farmers';
+            document.getElementById('investmentValue').textContent = '₹' + investmentSlider.value + 'L';
+            document.getElementById('timelineValue').textContent = timelineSlider.value + ' months';
+            
+            // Calculate projections
+            const organicCount = parseInt(organicSlider.value);
+            const investment = parseInt(investmentSlider.value);
+            const timeline = parseInt(timelineSlider.value);
+            
+            const baseRevenue = 4;
+            const organicMultiplier = 1 + (organicCount / 100) * 1.5;
+            const timelineMultiplier = 1 + (timeline / 12) * 1.6;
+            
+            const monthlyRevenue = baseRevenue * organicMultiplier * timelineMultiplier;
+            const annualRevenue = monthlyRevenue * 12;
+            const roi = ((annualRevenue - investment) / investment) * 100;
+            const payback = investment / (monthlyRevenue - baseRevenue);
+            
+            document.getElementById('monthlyRevenue').textContent = '₹' + monthlyRevenue.toFixed(1) + 'L';
+            document.getElementById('revenueGrowth').textContent = '+' + Math.round((monthlyRevenue / baseRevenue - 1) * 100) + '% growth';
+            document.getElementById('annualROI').textContent = Math.round(roi) + '%';
+            document.getElementById('paybackPeriod').textContent = payback.toFixed(1) + ' month payback';
+            document.getElementById('netProfit').textContent = '₹' + (annualRevenue - investment).toFixed(1) + 'L';
+        }
+
+        organicSlider.addEventListener('input', updateValues);
+        investmentSlider.addEventListener('input', updateValues);
+        timelineSlider.addEventListener('input', updateValues);
+
+        // Initialize values
+        updateValues();
+
+        // Auto-refresh data every 30 seconds
+        setInterval(() => {
+            // In production, this would fetch real-time data
+            console.log('Refreshing revenue insights data...');
+        }, 30000);
+    </script>
+</body>
+</html>

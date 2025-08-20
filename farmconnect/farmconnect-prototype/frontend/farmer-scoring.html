@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Onboarding Scoring - FarmConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 min-h-screen">
+    
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <span class="material-icons text-green-600 text-3xl mr-2">agriculture</span>
+                        <h1 class="text-2xl font-bold text-gray-900">FarmConnect</h1>
+                        <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">Farmer Scoring</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Marketplace</a>
+                    <a href="revenue-insights.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Revenue Insights</a>
+                    <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Farmer Scoring</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Header Section -->
+        <div class="mb-8">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white">
+                <h1 class="text-3xl font-bold mb-2">AI-Powered Farmer Onboarding Scoring</h1>
+                <p class="text-blue-100 text-lg">Comprehensive evaluation system for optimal farmer onboarding decisions</p>
+                <div class="mt-4 flex items-center space-x-6">
+                    <div class="flex items-center">
+                        <span class="material-icons mr-2">assessment</span>
+                        <span class="text-sm">100-Point Scoring Scale</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="material-icons mr-2">speed</span>
+                        <span class="text-sm">Real-time Analysis</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="material-icons mr-2">trending_up</span>
+                        <span class="text-sm">Revenue Projections</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scoring Criteria Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Location Factors</p>
+                        <p class="text-2xl font-bold text-gray-900">20%</p>
+                        <p class="text-green-600 text-xs mt-1">Urban proximity, logistics</p>
+                    </div>
+                    <span class="material-icons text-green-500 text-3xl">location_on</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Product Portfolio</p>
+                        <p class="text-2xl font-bold text-gray-900">25%</p>
+                        <p class="text-blue-600 text-xs mt-1">Diversity, demand alignment</p>
+                    </div>
+                    <span class="material-icons text-blue-500 text-3xl">inventory_2</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Quality Credentials</p>
+                        <p class="text-2xl font-bold text-gray-900">25%</p>
+                        <p class="text-purple-600 text-xs mt-1">Certifications, ratings</p>
+                    </div>
+                    <span class="material-icons text-purple-500 text-3xl">verified</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Market Fit</p>
+                        <p class="text-2xl font-bold text-gray-900">15%</p>
+                        <p class="text-orange-600 text-xs mt-1">Demand, competition</p>
+                    </div>
+                    <span class="material-icons text-orange-500 text-3xl">trending_up</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Financial Potential</p>
+                        <p class="text-2xl font-bold text-gray-900">15%</p>
+                        <p class="text-red-600 text-xs mt-1">Revenue, ROI projection</p>
+                    </div>
+                    <span class="material-icons text-red-500 text-3xl">attach_money</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Farmer Input Form -->
+            <div class="lg:col-span-1 bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Score New Farmer</h3>
+                
+                <form id="farmerForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Farmer Name</label>
+                        <input type="text" id="farmerName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Enter farmer name" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                        <select id="farmerLocation" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                            <option value="">Select location</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Pune Rural">Pune Rural</option>
+                            <option value="Nashik">Nashik</option>
+                            <option value="Aurangabad">Aurangabad</option>
+                            <option value="Solapur">Solapur</option>
+                            <option value="Ratnagiri">Ratnagiri</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Products (select multiple)</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Tomatoes" class="product-checkbox mr-2">
+                                <span class="text-sm">Tomatoes</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Onions" class="product-checkbox mr-2">
+                                <span class="text-sm">Onions</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Potatoes" class="product-checkbox mr-2">
+                                <span class="text-sm">Potatoes</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Mangoes" class="product-checkbox mr-2">
+                                <span class="text-sm">Mangoes</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Grapes" class="product-checkbox mr-2">
+                                <span class="text-sm">Grapes</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="Rice" class="product-checkbox mr-2">
+                                <span class="text-sm">Rice</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Rating (1-5)</label>
+                        <input type="number" id="farmerRating" min="1" max="5" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="4.5" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Monthly Revenue (₹)</label>
+                        <input type="number" id="monthlyRevenue" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="45000" required>
+                    </div>
+                    
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="organicCertified" class="mr-2">
+                            <span class="text-sm font-medium text-gray-700">Organic Certified</span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-medium">
+                        Score Farmer
+                    </button>
+                </form>
+                
+                <div class="mt-6">
+                    <button id="demoBtn" class="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition font-medium">
+                        Run Demo with Sample Data
+                    </button>
+                </div>
+                
+                <div id="loadingSpinner" class="hidden mt-4 text-center">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <p class="text-gray-600 mt-2">Analyzing farmer data...</p>
+                </div>
+            </div>
+
+            <!-- Scoring Results -->
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Scoring Results</h3>
+                
+                <div id="noResults" class="text-center py-12">
+                    <span class="material-icons text-gray-400 text-6xl">assessment</span>
+                    <p class="text-gray-500 mt-4">Score a farmer to see detailed analysis results</p>
+                </div>
+                
+                <div id="scoringResults" class="hidden">
+                    <!-- Overall Score Card -->
+                    <div class="mb-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900" id="farmerNameResult">Farmer Score</h4>
+                                <p class="text-sm text-gray-600" id="farmerLocationResult">Location</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-4xl font-bold text-blue-600" id="overallScore">85</div>
+                                <div class="text-sm text-gray-500">Overall Score</div>
+                                <div class="mt-2">
+                                    <span id="priorityBadge" class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">High Priority</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Component Scores -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="p-4 border border-gray-200 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-700">Location</span>
+                                <span class="text-lg font-bold text-green-600" id="locationScore">18.5</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="locationBar" class="bg-green-500 h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 border border-gray-200 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-700">Product Portfolio</span>
+                                <span class="text-lg font-bold text-blue-600" id="productScore">22.0</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="productBar" class="bg-blue-500 h-2 rounded-full" style="width: 88%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 border border-gray-200 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-700">Quality Credentials</span>
+                                <span class="text-lg font-bold text-purple-600" id="qualityScore">20.5</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="qualityBar" class="bg-purple-500 h-2 rounded-full" style="width: 82%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 border border-gray-200 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-700">Market Fit</span>
+                                <span class="text-lg font-bold text-orange-600" id="marketScore">12.5</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="marketBar" class="bg-orange-500 h-2 rounded-full" style="width: 83%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financial Projections -->
+                    <div class="mb-6 p-4 bg-green-50 rounded-lg">
+                        <h5 class="font-semibold text-gray-900 mb-3">Financial Projections</h5>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-green-600" id="monthlyRevenueProj">₹65,000</div>
+                                <div class="text-sm text-gray-600">Monthly Revenue</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-blue-600" id="platformRevenue">₹5,200</div>
+                                <div class="text-sm text-gray-600">Platform Revenue</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-purple-600" id="riskGrade">A</div>
+                                <div class="text-sm text-gray-600">Risk Grade</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-orange-600" id="farmerGrade">A+</div>
+                                <div class="text-sm text-gray-600">Overall Grade</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Items -->
+                    <div class="mb-6">
+                        <h5 class="font-semibold text-gray-900 mb-3">Onboarding Action Plan</h5>
+                        <div id="actionItems" class="space-y-2">
+                            <!-- Action items will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Results Table -->
+        <div id="demoResults" class="hidden mt-8 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">Farmer Scoring Demo Results</h3>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 text-sm font-semibold text-gray-700">Farmer</th>
+                            <th class="text-center py-3 text-sm font-semibold text-gray-700">Overall Score</th>
+                            <th class="text-center py-3 text-sm font-semibold text-gray-700">Priority</th>
+                            <th class="text-center py-3 text-sm font-semibold text-gray-700">Revenue Potential</th>
+                            <th class="text-center py-3 text-sm font-semibold text-gray-700">Grade</th>
+                            <th class="text-center py-3 text-sm font-semibold text-gray-700">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="demoTableBody" class="divide-y divide-gray-200">
+                        <!-- Demo results will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScoringData = null;
+
+        // Form submission handler
+        document.getElementById('farmerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = collectFormData();
+            await scoreFarmer(formData);
+        });
+
+        // Demo button handler
+        document.getElementById('demoBtn').addEventListener('click', async function() {
+            showLoading(true);
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/farmers/scoring-demo');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayDemoResults(data);
+                } else {
+                    alert('Demo failed: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Demo error:', error);
+                alert('Failed to run demo: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        function collectFormData() {
+            const products = Array.from(document.querySelectorAll('.product-checkbox:checked')).map(cb => cb.value);
+            
+            return {
+                name: document.getElementById('farmerName').value,
+                location: document.getElementById('farmerLocation').value,
+                state: "Maharashtra", // Default for demo
+                products: products,
+                rating: parseFloat(document.getElementById('farmerRating').value),
+                monthly_revenue: parseInt(document.getElementById('monthlyRevenue').value),
+                organic_certified: document.getElementById('organicCertified').checked,
+                certifications: document.getElementById('organicCertified').checked ? 
+                    ["Organic Certified"] : ["Basic Registration"],
+                delivery_radius: "50 km",
+                years_experience: 5
+            };
+        }
+
+        async function scoreFarmer(farmerData) {
+            showLoading(true);
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/agents/farmer-scoring', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(farmerData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentScoringData = result;
+                    displayScoringResults(result);
+                } else {
+                    alert('Scoring failed: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Scoring error:', error);
+                alert('Failed to score farmer: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displayScoringResults(result) {
+            document.getElementById('noResults').classList.add('hidden');
+            document.getElementById('scoringResults').classList.remove('hidden');
+            
+            // Basic info
+            document.getElementById('farmerNameResult').textContent = result.farmer_name || 'Unknown Farmer';
+            document.getElementById('farmerLocationResult').textContent = result.detailed_analysis?.farmer_data?.location || 'Location';
+            
+            // Overall score
+            const overallScore = result.overall_score || 0;
+            document.getElementById('overallScore').textContent = overallScore.toFixed(1);
+            
+            // Priority badge
+            const priorityLevel = result.priority_level || 'low';
+            const priorityBadge = document.getElementById('priorityBadge');
+            priorityBadge.textContent = priorityLevel.charAt(0).toUpperCase() + priorityLevel.slice(1) + ' Priority';
+            
+            if (priorityLevel === 'high') {
+                priorityBadge.className = 'px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800';
+            } else if (priorityLevel === 'medium') {
+                priorityBadge.className = 'px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800';
+            } else {
+                priorityBadge.className = 'px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800';
+            }
+            
+            // Component scores
+            const componentScores = result.detailed_analysis?.final_score?.component_scores || {};
+            updateComponentScore('location', componentScores.location || 0, 20);
+            updateComponentScore('product', componentScores.product_portfolio || 0, 25);
+            updateComponentScore('quality', componentScores.quality_credentials || 0, 25);
+            updateComponentScore('market', componentScores.market_fit || 0, 15);
+            
+            // Financial projections
+            const financialData = result.detailed_analysis?.financial_projection || {};
+            document.getElementById('monthlyRevenueProj').textContent = '₹' + (financialData.monthly_revenue_projection || 0).toLocaleString();
+            document.getElementById('platformRevenue').textContent = '₹' + (financialData.monthly_platform_revenue || 0).toLocaleString();
+            document.getElementById('riskGrade').textContent = financialData.financial_grade || 'C';
+            document.getElementById('farmerGrade').textContent = result.detailed_analysis?.final_score?.grade || 'C';
+            
+            // Action items
+            displayActionItems(result.detailed_analysis?.onboarding_plan?.action_items || []);
+        }
+
+        function updateComponentScore(component, score, maxScore) {
+            document.getElementById(component + 'Score').textContent = score.toFixed(1);
+            const percentage = (score / maxScore) * 100;
+            document.getElementById(component + 'Bar').style.width = percentage + '%';
+        }
+
+        function displayActionItems(actionItems) {
+            const container = document.getElementById('actionItems');
+            container.innerHTML = '';
+            
+            if (actionItems.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-sm">No specific action items required.</p>';
+                return;
+            }
+            
+            actionItems.forEach(item => {
+                const actionDiv = document.createElement('div');
+                actionDiv.className = 'p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500';
+                actionDiv.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium text-gray-900">${item.action}</p>
+                            <p class="text-sm text-gray-600">Category: ${item.category} | Timeline: ${item.timeline}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-sm font-medium text-blue-600">${item.investment}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(actionDiv);
+            });
+        }
+
+        function displayDemoResults(data) {
+            document.getElementById('demoResults').classList.remove('hidden');
+            
+            const tbody = document.getElementById('demoTableBody');
+            tbody.innerHTML = '';
+            
+            data.farmers.forEach(farmer => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                const priorityClass = farmer.priority_level === 'high' ? 'bg-green-100 text-green-800' :
+                                   farmer.priority_level === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                   'bg-red-100 text-red-800';
+                
+                row.innerHTML = `
+                    <td class="py-4">
+                        <div>
+                            <p class="font-medium text-gray-900">${farmer.farmer_name}</p>
+                            <p class="text-sm text-gray-600">${farmer.detailed_analysis?.location_analysis?.location_category || 'Unknown'}</p>
+                        </div>
+                    </td>
+                    <td class="text-center py-4 font-semibold text-blue-600">${farmer.overall_score?.toFixed(1) || 0}</td>
+                    <td class="text-center py-4">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${priorityClass}">
+                            ${farmer.priority_level?.charAt(0).toUpperCase() + farmer.priority_level?.slice(1) || 'Low'}
+                        </span>
+                    </td>
+                    <td class="text-center py-4 font-semibold text-green-600">₹${(farmer.revenue_potential || 0).toLocaleString()}</td>
+                    <td class="text-center py-4 font-bold text-purple-600">${farmer.detailed_analysis?.final_score?.grade || 'C'}</td>
+                    <td class="text-center py-4">
+                        <button onclick="viewFarmerDetails('${farmer.farmer_id}')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            View Details
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function viewFarmerDetails(farmerId) {
+            alert('Feature coming soon: Detailed farmer analysis for ' + farmerId);
+        }
+
+        function showLoading(show) {
+            const spinner = document.getElementById('loadingSpinner');
+            if (show) {
+                spinner.classList.remove('hidden');
+            } else {
+                spinner.classList.add('hidden');
+            }
+        }
+
+        // Auto-refresh demo data every 2 minutes
+        setInterval(() => {
+            if (!document.getElementById('demoResults').classList.contains('hidden')) {
+                console.log('Auto-refreshing demo data...');
+                // Only refresh if demo is visible
+            }
+        }, 120000);
+    </script>
+</body>
+</html>

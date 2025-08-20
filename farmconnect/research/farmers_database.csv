@@ -1,0 +1,11 @@
+name,location,products,avg_rating,delivery_radius,certification
+Green Valley Farm,Bangalore Rural,"Tomatoes,Carrots,Spinach",4.7,25,Organic
+Organic Hills,Mysore,"Organic Vegetables,Fruits,Herbs",4.9,30,Organic Certified
+Fresh Harvest Co.,Mandya,"Rice,Pulses,Grains",4.5,35,Natural
+Sustainable Farms,Hassan,"Milk,Eggs,Dairy",4.8,20,Organic
+Krishna Agro,Tumkur,"Cereals,Oil Seeds,Spices",4.6,40,Conventional
+Eco Valley Farm,Kolar,"Leafy Greens,Herbs,Microgreens",4.8,20,Organic
+Heritage Seeds,Chikkaballapur,"Traditional Rice,Millets,Pulses",4.6,45,Heirloom
+Green Thumb Gardens,Ramanagara,"Exotic Vegetables,Salads,Peppers",4.9,30,Hydroponic
+Nature's Bounty,Bangalore South,"Mixed Vegetables,Seasonal Fruits",4.5,25,Natural
+Farm Fresh Direct,Devanahalli,"Root Vegetables,Gourds,Beans",4.7,35,Organic Transition
