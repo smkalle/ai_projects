@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv venv:*)",
+      "Bash(uv pip install:*)",
+      "Bash(pip install:*)",
+      "Bash(rm:*)",
+      "Bash(uv run:*)",
+      "Bash(python:*)",
+      "Bash(curl:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(find:*)",
+      "Bash(true)",
+      "Bash(cp:*)",
+      "Bash(grep:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "WebSearch",
+      "Bash(curl:*)",
+      "Bash(cp:*)",
+      "Bash(python3:*)",
+      "Bash(source:*)",
+      "Bash(pip install:*)",
+      "Bash(cat:*)",
+      "Bash(./test_api.sh:*)",
+      "Bash(lsof:*)",
+      "Bash(pkill:*)",
+      "Bash(rm:*)",
+      "Bash(find:*)",
+      "Bash(true)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

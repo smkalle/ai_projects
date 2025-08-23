@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(uv run:*)",
+      "Bash(pip install:*)",
+      "Bash(python3:*)",
+      "Bash(streamlit run:*)",
+      "Bash(source:*)",
+      "Bash(python:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(rm:*)",
+      "Bash(chmod:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

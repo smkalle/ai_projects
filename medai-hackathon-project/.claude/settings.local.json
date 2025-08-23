@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(test:*)",
+      "Bash(cat:*)",
+      "Bash(/root/.local/bin/uv venv:*)",
+      "Bash(source:*)",
+      "Bash(/root/.local/bin/uv pip install:*)",
+      "Bash(pip install:*)",
+      "Bash(.venv/bin/pip install:*)",
+      "Bash(rm:*)",
+      "Bash(python3:*)",
+      "Bash(.venv/bin/python:*)",
+      "Bash(.venv/bin/pytest tests/test_unit_medical_knowledge.py -v)",
+      "Bash(.venv/bin/pytest tests/test_unit_medical_knowledge.py tests/test_unit_confidence_calculator.py -v --cov=src --cov-report=term-missing)",
+      "Bash(curl:*)"
+    ],
+    "deny": []
+  }
+}
