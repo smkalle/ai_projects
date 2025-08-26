@@ -47,6 +47,7 @@ data/processed/
 qdrant_data/
 *.pdf
 !data/sample_documents/*.pdf
+!data/sample_pdfs/*.pdf
 
 # Logs
 *.log

@@ -17,6 +17,12 @@ cd pypdfium
 ./start.sh
 ```
 
+**Features**:
+- ✅ Automatic process cleanup (kills existing instances)
+- ✅ Interactive menu with restart options
+- ✅ Graceful shutdown with Ctrl+C
+- ✅ Built-in verification and PDF generation
+
 ### Manual Setup (3 Steps)
 
 ```bash
@@ -146,14 +152,18 @@ CHUNK_SIZE=800              # Text chunk size
 ## 🧪 Testing
 
 ```bash
-# Run verification
-python verify_setup.py
+# Quick verification via start script
+./start.sh  # Option 5: Run verification test
 
-# Run tests
-pytest tests/ -v
+# Generate sample PDFs
+./start.sh  # Option 4: Generate sample PDFs
 
-# Check code quality
-make lint
+# Stop all processes
+./stop.sh
+
+# Manual commands
+pytest tests/ -v    # Run tests
+make lint          # Code quality
 ```
 
 ## 🐳 Docker Deployment
