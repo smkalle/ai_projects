@@ -27,7 +27,7 @@ print_status "Stopping Energy Document AI processes..."
 
 # Kill processes on ports 8501 and 8000
 for port in 8501 8000; do
-    local pid=$(lsof -ti:$port 2>/dev/null)
+    pid=$(lsof -ti:$port 2>/dev/null)
     if [ -n "$pid" ]; then
         print_status "Killing process on port $port (PID: $pid)"
         # Try graceful shutdown first

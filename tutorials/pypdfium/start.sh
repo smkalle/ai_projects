@@ -3,7 +3,8 @@
 # Energy Document AI - Quick Start Script
 # Automates setup and launch of the application
 
-set -e  # Exit on error
+# Exit on unset variables but allow command failures
+set -u
 
 # Colors for output
 RED='\033[0;31m'
@@ -93,19 +94,42 @@ else
     print_success "Virtual environment already exists"
 fi
 
-# Activate virtual environment
+# Set Python executable path
+PYTHON_EXE="venv/bin/python"
+PIP_EXE="venv/bin/pip"
+
+# Activate virtual environment for current session
 print_status "Activating virtual environment..."
-source venv/bin/activate
+if [ -f "venv/bin/activate" ]; then
+    source venv/bin/activate
+    print_success "Virtual environment activated"
+else
+    print_error "Virtual environment activation failed"
+fi
 
 # Upgrade pip
 print_status "Upgrading pip..."
-pip install --upgrade pip --quiet
+$PIP_EXE install --upgrade pip --quiet
 print_success "pip upgraded"
 
-# Install requirements
-print_status "Installing dependencies (this may take a few minutes)..."
-pip install -r requirements.txt --quiet
-print_success "All dependencies installed"
+# Check if core dependencies are already installed
+print_status "Checking dependencies..."
+if $PYTHON_EXE -c "import streamlit, fastapi, openai, langchain, qdrant_client, pypdfium2" 2>/dev/null; then
+    print_success "Core dependencies already installed"
+else
+    print_status "Installing dependencies (this may take a few minutes)..."
+    if $PIP_EXE install -r requirements.txt --quiet 2>/dev/null; then
+        print_success "All dependencies installed"
+    else
+        echo -e "${YELLOW}⚠️  Some dependencies had conflicts. Trying alternative installation...${NC}"
+        # Try installing core dependencies first
+        if $PIP_EXE install fastapi streamlit openai langchain qdrant-client pypdfium2 plotly --quiet 2>/dev/null; then
+            print_success "Core dependencies installed successfully"
+        else
+            echo -e "${YELLOW}⚠️  Dependency installation had issues. The app may still work with existing packages.${NC}"
+        fi
+    fi
+fi
 
 # Check for .env file
 if [ ! -f ".env" ]; then
@@ -126,15 +150,18 @@ if command_exists docker; then
     print_success "Docker found"
     
     # Check if Qdrant is running
-    if docker ps | grep -q qdrant; then
+    if docker ps | grep -q qdrant 2>/dev/null; then
         print_success "Qdrant is already running"
     else
         echo -e "${YELLOW}Would you like to start Qdrant vector database? (y/n)${NC}"
         read -r response
         if [[ "$response" =~ ^[Yy]$ ]]; then
             print_status "Starting Qdrant..."
-            docker run -d -p 6333:6333 -v ./qdrant_data:/qdrant/storage --name qdrant qdrant/qdrant
-            print_success "Qdrant started on port 6333"
+            if docker run -d -p 6333:6333 -v ./qdrant_data:/qdrant/storage --name qdrant qdrant/qdrant 2>/dev/null; then
+                print_success "Qdrant started on port 6333"
+            else
+                echo -e "${YELLOW}⚠️  Failed to start Qdrant. It may already be running or Docker has issues.${NC}"
+            fi
         fi
     fi
 else
@@ -163,7 +190,7 @@ case $choice in
         echo -e "${GREEN}Access the application at: http://localhost:8501${NC}"
         echo -e "${GREEN}Press Ctrl+C to stop${NC}"
         echo -e "${GREEN}═══════════════════════════════════════════${NC}\n"
-        python app/main.py --mode ui
+        $PYTHON_EXE app/main.py --mode ui
         ;;
     2)
         print_status "Starting FastAPI server..."
@@ -171,7 +198,7 @@ case $choice in
         echo -e "${GREEN}API documentation at: http://localhost:8000/docs${NC}"
         echo -e "${GREEN}Press Ctrl+C to stop${NC}"
         echo -e "${GREEN}═══════════════════════════════════════════${NC}\n"
-        python app/main.py --mode api
+        $PYTHON_EXE app/main.py --mode api
         ;;
     3)
         print_status "Starting both UI and API..."
@@ -180,11 +207,11 @@ case $choice in
         echo -e "${GREEN}API documentation at: http://localhost:8000/docs${NC}"
         echo -e "${GREEN}Press Ctrl+C to stop${NC}"
         echo -e "${GREEN}═══════════════════════════════════════════${NC}\n"
-        python app/main.py --mode both
+        $PYTHON_EXE app/main.py --mode both
         ;;
     4)
         print_status "Generating sample PDFs..."
-        python scripts/generate_sample_pdfs.py --all
+        $PYTHON_EXE scripts/generate_sample_pdfs.py --all
         echo -e "${GREEN}Sample PDFs generated successfully!${NC}"
         echo -e "${YELLOW}You can now test the system with these documents${NC}"
         echo -e "${YELLOW}Run the script again to start the application${NC}"
@@ -192,10 +219,10 @@ case $choice in
     5)
         print_status "Running verification test..."
         if [ -f "verify_setup.py" ]; then
-            python verify_setup.py
+            $PYTHON_EXE verify_setup.py
         else
             echo -e "${YELLOW}Creating verification script...${NC}"
-            python -c "
+            $PYTHON_EXE -c "
 import sys
 sys.path.append('app')
 try:
