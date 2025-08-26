@@ -1,0 +1,40 @@
+# Core Dependencies
+fastapi==0.116.1
+uvicorn==0.24.0
+streamlit==1.48.1
+plotly==6.3.0
+python-multipart==0.0.6
+
+# PDF Processing
+pypdfium2==4.24.0
+pdfplumber==0.10.3
+pillow==10.1.0
+
+# AI/ML Dependencies
+openai==1.101.0
+langchain==0.3.27
+langchain-openai==0.3.31
+langchain-community==0.0.6
+langgraph==0.6.6
+qdrant-client==1.15.1
+tiktoken==0.11.0
+
+# Vector Embeddings
+sentence-transformers==2.2.2
+
+# Data Processing
+pandas==2.3.2
+numpy==1.25.2
+python-dotenv==1.0.0
+
+# Utilities
+pydantic==2.11.7
+pydantic-settings==2.10.1
+python-jose==3.3.0
+passlib==1.7.4
+bcrypt==4.1.1
+
+# Development
+pytest==7.4.3
+black==23.11.0
+flake8==6.1.0
