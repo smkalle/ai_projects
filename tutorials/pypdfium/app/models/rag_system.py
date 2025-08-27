@@ -23,20 +23,66 @@ class EnergyRAGSystem:
                  openai_api_key: str = None,
                  collection_name: str = "energy_documents"):
 
-        self.qdrant_client = QdrantClient(qdrant_url, port=qdrant_port)
-        self.embeddings = OpenAIEmbeddings(
-            openai_api_key=openai_api_key,
-            model="text-embedding-3-small"
-        )
+        self.qdrant_url = qdrant_url
+        self.qdrant_port = qdrant_port
         self.collection_name = collection_name
+        self.qdrant_available = False
+        self.qdrant_client = None
+        
+        # Initialize embeddings if API key available
+        self.embeddings = None
+        if openai_api_key:
+            try:
+                self.embeddings = OpenAIEmbeddings(
+                    openai_api_key=openai_api_key,
+                    model="text-embedding-3-small"
+                )
+            except Exception as e:
+                logger.warning(f"Failed to initialize embeddings: {e}")
+        
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=800,
             chunk_overlap=100,
             separators=["\n\n", "\n", ".", "!", "?", ",", " ", ""]
         )
+        
+        # Try to connect to Qdrant
+        self._initialize_qdrant()
+
+    def _initialize_qdrant(self):
+        """Initialize Qdrant connection with graceful fallback"""
+        try:
+            self.qdrant_client = QdrantClient(self.qdrant_url, port=self.qdrant_port)
+            # Test connection
+            collections = self.qdrant_client.get_collections()
+            self.qdrant_available = True
+            logger.info(f"Successfully connected to Qdrant at {self.qdrant_url}:{self.qdrant_port}")
+        except Exception as e:
+            self.qdrant_available = False
+            self.qdrant_client = None
+            logger.warning(f"Qdrant not available at {self.qdrant_url}:{self.qdrant_port}: {e}")
+            logger.info("System will continue without vector storage capabilities")
+
+    def is_available(self) -> bool:
+        """Check if RAG system is fully available"""
+        return self.qdrant_available and self.embeddings is not None
+
+    def get_status(self) -> dict:
+        """Get system status information"""
+        return {
+            "qdrant_available": self.qdrant_available,
+            "qdrant_url": f"{self.qdrant_url}:{self.qdrant_port}",
+            "embeddings_available": self.embeddings is not None,
+            "collection_name": self.collection_name,
+            "fully_operational": self.is_available()
+        }
 
     def ensure_collection_exists(self):
         """Create collection if it doesn't exist"""
+        if not self.qdrant_available:
+            logger.warning("Qdrant not available, cannot create collection")
+            return False
+            
         try:
             collections = self.qdrant_client.get_collections()
             collection_names = [col.name for col in collections.collections]
@@ -66,9 +112,16 @@ class EnergyRAGSystem:
                                    document_type: str = "energy",
                                    metadata: Dict = None) -> int:
         """Process document text and store in vector database"""
+        if not self.is_available():
+            logger.warning("RAG system not fully available (Qdrant or embeddings missing)")
+            # Still split text for consistency, but don't store
+            chunks = self.text_splitter.split_text(text)
+            return len(chunks)  # Return number of chunks that would have been stored
+            
         try:
             # Ensure collection exists
-            self.ensure_collection_exists()
+            if not self.ensure_collection_exists():
+                return 0
 
             # Split text into chunks
             chunks = self.text_splitter.split_text(text)
@@ -121,6 +174,10 @@ class EnergyRAGSystem:
                          document_type: Optional[str] = None,
                          score_threshold: float = 0.7) -> List[Dict]:
         """Perform similarity search with optional filtering"""
+        if not self.is_available():
+            logger.warning("RAG system not available, cannot perform similarity search")
+            return []  # Return empty results
+            
         try:
             # Generate query embedding
             query_embedding = self.embeddings.embed_query(query)
@@ -168,6 +225,14 @@ class EnergyRAGSystem:
 
     def get_document_stats(self) -> Dict:
         """Get statistics about stored documents"""
+        if not self.qdrant_available:
+            return {
+                "total_points": 0,
+                "total_documents": 0,
+                "document_types": {},
+                "collection_status": "qdrant_unavailable"
+            }
+            
         try:
             collection_info = self.qdrant_client.get_collection(self.collection_name)
 

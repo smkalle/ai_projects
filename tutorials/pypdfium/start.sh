@@ -176,11 +176,12 @@ echo -e "  1) Streamlit UI only (recommended)"
 echo -e "  2) FastAPI server only"
 echo -e "  3) Both UI and API"
 echo -e "  4) Generate sample PDFs"
-echo -e "  5) Run verification test"
-echo -e "  6) Restart (kill existing processes)"
-echo -e "  7) Exit"
+echo -e "  5) Start Qdrant Database"
+echo -e "  6) Run verification test"
+echo -e "  7) Restart (kill existing processes)"
+echo -e "  8) Exit"
 echo -e "${GREEN}═══════════════════════════════════════════${NC}"
-echo -n "Enter choice [1-7]: "
+echo -n "Enter choice [1-8]: "
 read -r choice
 
 case $choice in
@@ -217,6 +218,17 @@ case $choice in
         echo -e "${YELLOW}Run the script again to start the application${NC}"
         ;;
     5)
+        print_status "Starting Qdrant Database..."
+        if [ -n "$TERMUX_VERSION" ] || [ -d "$PREFIX" ]; then
+            print_status "Detected Termux environment, using native Qdrant..."
+            ./start_qdrant_termux.sh
+        else
+            print_status "Using Docker Qdrant..."
+            ./start_qdrant.sh
+        fi
+        echo -e "${YELLOW}Run the script again to start the application${NC}"
+        ;;
+    6)
         print_status "Running verification test..."
         if [ -f "verify_setup.py" ]; then
             $PYTHON_EXE verify_setup.py
@@ -235,13 +247,13 @@ except Exception as e:
 "
         fi
         ;;
-    6)
+    7)
         print_status "Restarting - killing all existing processes..."
         kill_existing_processes
         print_success "All processes stopped. Run the script again to restart."
         exit 0
         ;;
-    7)
+    8)
         echo -e "${GREEN}Exiting...${NC}"
         exit 0
         ;;

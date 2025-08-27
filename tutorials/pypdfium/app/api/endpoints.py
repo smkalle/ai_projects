@@ -132,15 +132,72 @@ async def health_check():
         "version": settings.app_version
     }
 
+@app.get("/health/detailed")
+async def detailed_health_check():
+    """Detailed health check with component status"""
+    try:
+        # Check RAG system availability
+        rag_status = "unknown"
+        qdrant_status = "unknown"
+        embeddings_status = "unknown"
+        
+        if rag_system:
+            system_status = rag_system.get_status()
+            qdrant_status = "connected" if system_status['qdrant_available'] else "disconnected"
+            embeddings_status = "ready" if system_status['embeddings_available'] else "not_configured"
+            rag_status = "operational" if system_status['fully_operational'] else "limited"
+        
+        # Check agent availability
+        agent_status = "ready" if agent else "not_initialized"
+        
+        overall_status = "healthy" if (rag_status == "operational" and agent_status == "ready") else "degraded"
+        
+        return {
+            "status": overall_status,
+            "timestamp": datetime.now().isoformat(),
+            "version": settings.app_version,
+            "components": {
+                "rag_system": rag_status,
+                "qdrant_database": qdrant_status,
+                "openai_embeddings": embeddings_status,
+                "agent_workflow": agent_status
+            },
+            "capabilities": {
+                "document_upload": rag_system is not None,
+                "document_search": rag_system and rag_system.is_available(),
+                "query_processing": agent is not None and rag_system and rag_system.is_available()
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error in detailed health check: {e}")
+        return {
+            "status": "error",
+            "timestamp": datetime.now().isoformat(),
+            "version": settings.app_version,
+            "error": str(e)
+        }
+
 @app.get("/status", response_model=SystemStatus)
 async def get_system_status(rag: EnergyRAGSystem = Depends(get_rag_system)):
     """Get system status and statistics"""
     try:
+        # Get system status first
+        system_status = rag.get_status()
         stats = rag.get_document_stats()
         uptime = (datetime.now() - start_time).total_seconds()
 
+        # Determine overall status
+        if system_status['fully_operational']:
+            status = "operational"
+        elif system_status['qdrant_available'] and not system_status['embeddings_available']:
+            status = "limited_no_embeddings"
+        elif not system_status['qdrant_available'] and system_status['embeddings_available']:
+            status = "limited_no_qdrant"
+        else:
+            status = "limited"
+
         return SystemStatus(
-            status="operational",
+            status=status,
             version=settings.app_version,
             total_documents=stats.get('total_documents', 0),
             total_chunks=stats.get('total_points', 0),
@@ -148,7 +205,13 @@ async def get_system_status(rag: EnergyRAGSystem = Depends(get_rag_system)):
         )
     except Exception as e:
         logger.error(f"Error getting system status: {e}")
-        raise HTTPException(status_code=500, detail=f"Error getting status: {e}")
+        return SystemStatus(
+            status="error",
+            version=settings.app_version,
+            total_documents=0,
+            total_chunks=0,
+            uptime_seconds=(datetime.now() - start_time).total_seconds()
+        )
 
 @app.post("/documents/upload", response_model=DocumentUploadResponse)
 async def upload_document(
@@ -256,6 +319,14 @@ async def process_query(
         if not request.query.strip():
             raise HTTPException(status_code=400, detail="Query cannot be empty")
 
+        # Check if system is fully operational
+        rag_system = agent_instance.rag_system if agent_instance else None
+        if rag_system and not rag_system.is_available():
+            raise HTTPException(
+                status_code=503, 
+                detail="RAG system not fully operational. Check Qdrant database and OpenAI API configuration."
+            )
+
         # Process query through agent
         result = agent_instance.process_query(request.query)
 
@@ -287,6 +358,13 @@ async def search_documents(
     try:
         if not query.strip():
             raise HTTPException(status_code=400, detail="Query cannot be empty")
+
+        # Check if system is available for search
+        if not rag.is_available():
+            raise HTTPException(
+                status_code=503,
+                detail="Search unavailable: RAG system not fully operational"
+            )
 
         results = rag.similarity_search(
             query=query,

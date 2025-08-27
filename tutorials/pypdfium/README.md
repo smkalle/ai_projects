@@ -18,10 +18,13 @@ cd pypdfium
 ```
 
 **Features**:
+- ✅ Modern UI with Claudable-inspired design 
+- ✅ **Graceful degradation** - works even without Qdrant/OpenAI
 - ✅ Automatic process cleanup (kills existing instances)
 - ✅ Interactive menu with restart options
 - ✅ Graceful shutdown with Ctrl+C
 - ✅ Built-in verification and PDF generation
+- ✅ One-click Qdrant database startup
 
 ### Manual Setup (3 Steps)
 
