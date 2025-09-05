@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Health Companion</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <div class="nav-brand">
+            <h1>Smart Health Companion</h1>
+        </div>
+        <div class="nav-menu">
+            <button class="nav-btn active" data-page="dashboard">
+                <span class="nav-icon">🏠</span>
+                Dashboard
+            </button>
+            <button class="nav-btn" data-page="medications">
+                <span class="nav-icon">💊</span>
+                Medications
+            </button>
+            <button class="nav-btn" data-page="trends">
+                <span class="nav-icon">📊</span>
+                Health Trends
+            </button>
+            <button class="nav-btn" data-page="emergency">
+                <span class="nav-icon">🚨</span>
+                Emergency
+            </button>
+            <button class="nav-btn" data-page="family">
+                <span class="nav-icon">👨‍👩‍👧‍👦</span>
+                Family
+            </button>
+            <button class="nav-btn" data-page="settings">
+                <span class="nav-icon">⚙️</span>
+                Settings
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page active">
+            <div class="page-header">
+                <h2>Today's Health Overview</h2>
+                <p class="current-time">Friday, September 05, 2025 - 2:00 PM</p>
+            </div>
+
+            <!-- Health Status Cards -->
+            <div class="health-grid">
+                <div class="health-card">
+                    <div class="card-header">
+                        <h3>Heart Rate</h3>
+                        <span class="status-indicator status-good"></span>
+                    </div>
+                    <div class="metric-value">
+                        <span id="current-heart-rate">85</span>
+                        <span class="metric-unit">bpm</span>
+                    </div>
+                    <div class="metric-trend">
+                        <span class="trend-arrow">↑</span>
+                        <span>Slightly elevated this evening</span>
+                    </div>
+                </div>
+
+                <div class="health-card">
+                    <div class="card-header">
+                        <h3>Blood Pressure</h3>
+                        <span class="status-indicator status-caution"></span>
+                    </div>
+                    <div class="metric-value">
+                        <span id="current-bp">135/88</span>
+                        <span class="metric-unit">mmHg</span>
+                    </div>
+                    <div class="metric-trend">
+                        <span class="trend-arrow">↗️</span>
+                        <span>Monitor closely</span>
+                    </div>
+                </div>
+
+                <div class="health-card">
+                    <div class="card-header">
+                        <h3>Activity Today</h3>
+                        <span class="status-indicator status-good"></span>
+                    </div>
+                    <div class="metric-value">
+                        <span id="current-activity">Light</span>
+                        <span class="metric-unit">level</span>
+                    </div>
+                    <div class="metric-trend">
+                        <span class="trend-arrow">👍</span>
+                        <span>Good activity level</span>
+                    </div>
+                </div>
+
+                <div class="health-card">
+                    <div class="card-header">
+                        <h3>Sleep Quality</h3>
+                        <span class="status-indicator status-good"></span>
+                    </div>
+                    <div class="metric-value">
+                        <span id="current-sleep">7.5</span>
+                        <span class="metric-unit">hours</span>
+                    </div>
+                    <div class="metric-trend">
+                        <span class="trend-arrow">😴</span>
+                        <span>Excellent rest</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medication Reminders -->
+            <div class="reminder-section">
+                <h3>Medication Reminders</h3>
+                <div class="reminder-card urgent">
+                    <div class="reminder-content">
+                        <span class="reminder-icon">⚠️</span>
+                        <div class="reminder-text">
+                            <strong>Metformin 500mg</strong>
+                            <p>Evening dose due at 6:00 PM</p>
+                        </div>
+                    </div>
+                    <button class="btn btn--primary btn--lg" onclick="markMedicationTaken('metformin-evening')">
+                        Mark as Taken
+                    </button>
+                </div>
+            </div>
+
+            <!-- AI Health Insights -->
+            <div class="insights-section">
+                <h3>Today's Health Insights</h3>
+                <div id="health-insights"></div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <div class="action-buttons">
+                    <button class="action-btn emergency-btn" onclick="showEmergencyDialog()">
+                        <span class="action-icon">🚨</span>
+                        Emergency
+                    </button>
+                    <button class="action-btn" onclick="openVoiceInterface()">
+                        <span class="action-icon">🎤</span>
+                        Voice Assistant
+                    </button>
+                    <button class="action-btn" onclick="checkVitals()">
+                        <span class="action-icon">📊</span>
+                        Check Vitals
+                    </button>
+                    <button class="action-btn" onclick="callFamily()">
+                        <span class="action-icon">📞</span>
+                        Call Family
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medications Page -->
+        <div id="medications-page" class="page">
+            <div class="page-header">
+                <h2>Medication Management</h2>
+                <p>Track your daily medications</p>
+            </div>
+
+            <div class="medication-schedule">
+                <h3>Today's Schedule</h3>
+                <div class="medication-list" id="medication-list"></div>
+            </div>
+
+            <div class="medication-history">
+                <h3>This Week's Compliance</h3>
+                <div class="compliance-chart">
+                    <canvas id="compliance-chart" style="position: relative; height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Trends Page -->
+        <div id="trends-page" class="page">
+            <div class="page-header">
+                <h2>Health Trends</h2>
+                <p>Your health patterns over time</p>
+            </div>
+
+            <div class="trend-cards">
+                <div class="trend-card">
+                    <h3>Blood Pressure Trend</h3>
+                    <canvas id="bp-chart" style="position: relative; height: 250px;"></canvas>
+                </div>
+                <div class="trend-card">
+                    <h3>Heart Rate Trend</h3>
+                    <canvas id="hr-chart" style="position: relative; height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Page -->
+        <div id="emergency-page" class="page">
+            <div class="page-header">
+                <h2>Emergency Contacts & Protocols</h2>
+                <p>Quick access to help when you need it</p>
+            </div>
+
+            <div class="emergency-grid">
+                <div class="emergency-card emergency-911">
+                    <div class="emergency-icon">🚨</div>
+                    <h3>Emergency Services</h3>
+                    <p>Life-threatening emergency</p>
+                    <a href="tel:911" class="btn btn--primary btn--lg emergency-call-btn">Call 911</a>
+                </div>
+
+                <div class="emergency-card">
+                    <div class="emergency-icon">👨‍⚕️</div>
+                    <h3>Dr. Smith</h3>
+                    <p>Primary Care Physician</p>
+                    <a href="tel:5551234567" class="btn btn--outline btn--lg">Call Doctor</a>
+                </div>
+
+                <div class="emergency-card">
+                    <div class="emergency-icon">👩</div>
+                    <h3>Sarah (Daughter)</h3>
+                    <p>Emergency Family Contact</p>
+                    <a href="tel:5559876543" class="btn btn--outline btn--lg">Call Sarah</a>
+                </div>
+            </div>
+
+            <div class="emergency-protocol">
+                <h3>Emergency Protocol</h3>
+                <div class="protocol-steps">
+                    <div class="protocol-step">
+                        <span class="step-number">1</span>
+                        <p>Stay calm and assess the situation</p>
+                    </div>
+                    <div class="protocol-step">
+                        <span class="step-number">2</span>
+                        <p>Call 911 for life-threatening emergencies</p>
+                    </div>
+                    <div class="protocol-step">
+                        <span class="step-number">3</span>
+                        <p>Contact your doctor for medical concerns</p>
+                    </div>
+                    <div class="protocol-step">
+                        <span class="step-number">4</span>
+                        <p>Notify family member of the situation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Family Page -->
+        <div id="family-page" class="page">
+            <div class="page-header">
+                <h2>Family Communication</h2>
+                <p>Stay connected with your loved ones</p>
+            </div>
+
+            <div class="family-summary">
+                <h3>Daily Health Summary</h3>
+                <div class="summary-card">
+                    <p><strong>Overall Status:</strong> <span class="status-good">Good</span></p>
+                    <p><strong>Medications:</strong> 1 of 3 doses taken today</p>
+                    <p><strong>Activity:</strong> Light activity throughout the day</p>
+                    <p><strong>Notable:</strong> Blood pressure slightly elevated this evening</p>
+                    <button class="btn btn--primary" onclick="shareSummary()">Share with Family</button>
+                </div>
+            </div>
+
+            <div class="family-messages">
+                <h3>Family Messages</h3>
+                <div class="message-list">
+                    <div class="message-item">
+                        <div class="message-sender">Sarah</div>
+                        <div class="message-content">Hope you're feeling well today! Remember to take your evening medication.</div>
+                        <div class="message-time">2:30 PM</div>
+                    </div>
+                </div>
+                <div class="message-input">
+                    <textarea class="form-control" placeholder="Type a message to your family..." rows="3"></textarea>
+                    <button class="btn btn--primary">Send Message</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settings-page" class="page">
+            <div class="page-header">
+                <h2>Settings</h2>
+                <p>Personalize your health companion</p>
+            </div>
+
+            <div class="settings-sections">
+                <div class="settings-section">
+                    <h3>Accessibility</h3>
+                    <div class="setting-item">
+                        <label for="font-size">Font Size</label>
+                        <select id="font-size" class="form-control">
+                            <option value="normal">Normal</option>
+                            <option value="large" selected>Large</option>
+                            <option value="extra-large">Extra Large</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label for="contrast-mode">High Contrast</label>
+                        <input type="checkbox" id="contrast-mode" class="form-control">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Notifications</h3>
+                    <div class="setting-item">
+                        <label for="medication-reminders">Medication Reminders</label>
+                        <input type="checkbox" id="medication-reminders" class="form-control" checked>
+                    </div>
+                    <div class="setting-item">
+                        <label for="vital-alerts">Vital Sign Alerts</label>
+                        <input type="checkbox" id="vital-alerts" class="form-control" checked>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Emergency Contacts</h3>
+                    <div class="contact-list" id="emergency-contacts-list"></div>
+                    <button class="btn btn--outline">Add Emergency Contact</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Voice Interface Modal -->
+    <div id="voice-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Voice Assistant</h3>
+                <button class="modal-close" onclick="closeVoiceModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="voice-interface">
+                    <div class="voice-status">
+                        <span class="voice-icon">🎤</span>
+                        <p>What would you like to know about your health?</p>
+                    </div>
+                    <div class="voice-input">
+                        <input type="text" class="form-control" placeholder="Type your question here..." id="voice-input">
+                        <button class="btn btn--primary" onclick="processVoiceCommand()">Ask</button>
+                    </div>
+                    <div class="voice-response" id="voice-response"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Modal -->
+    <div id="emergency-modal" class="modal hidden">
+        <div class="modal-content emergency-modal">
+            <div class="modal-header">
+                <h3>🚨 Emergency Alert</h3>
+            </div>
+            <div class="modal-body">
+                <p class="emergency-text">Are you experiencing a medical emergency?</p>
+                <div class="emergency-actions">
+                    <a href="tel:911" class="btn btn--primary btn--lg emergency-call-btn">Call 911 Now</a>
+                    <button class="btn btn--outline btn--lg" onclick="closeEmergencyModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
