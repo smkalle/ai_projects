@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Scheduling Management - City General Hospital</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header__content">
+            <div class="header__left">
+                <div class="header__hospital">
+                    <h1 class="header__name">City General Hospital</h1>
+                    <span class="header__subtitle">Scheduling Management System</span>
+                    <span class="header__stats" id="hospitalStats">450 Beds • 387 Occupied • 86% Capacity</span>
+                </div>
+            </div>
+            <div class="header__center">
+                <div class="header__date">
+                    <span class="header__day">Thursday, September 11, 2025</span>
+                    <span class="header__time" id="currentTime">10:29 AM</span>
+                </div>
+            </div>
+            <div class="header__right">
+                <select class="form-control header__selector" id="viewSelector">
+                    <option value="hospital">Hospital Overview</option>
+                    <option value="department">Department View</option>
+                    <option value="doctor">Doctor View</option>
+                </select>
+                <select class="form-control header__selector" id="departmentSelector">
+                    <option value="all">All Departments</option>
+                    <option value="cardiology">Cardiology</option>
+                    <option value="emergency">Emergency</option>
+                    <option value="surgery">Surgery</option>
+                    <option value="internal_medicine">Internal Medicine</option>
+                    <option value="pediatrics">Pediatrics</option>
+                </select>
+                <button class="btn btn--primary btn--sm" id="quickAddBtn">
+                    <span>+ Schedule Appointment</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar sidebar--left">
+            <nav class="sidebar__nav">
+                <div class="nav__section">
+                    <h3 class="nav__title">Views</h3>
+                    <ul class="nav__list">
+                        <li class="nav__item nav__item--active">
+                            <button class="nav__link" data-view="daily">Today's Schedule</button>
+                        </li>
+                        <li class="nav__item">
+                            <button class="nav__link" data-view="analytics">Hospital Analytics</button>
+                        </li>
+                        <li class="nav__item">
+                            <button class="nav__link" data-view="resources">Resource Management</button>
+                        </li>
+                        <li class="nav__item">
+                            <button class="nav__link" data-view="departments">Department Overview</button>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav__section">
+                    <h3 class="nav__title">Hospital Stats</h3>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat__value">32</span>
+                            <span class="stat__label">Today's Appointments</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat__value">8</span>
+                            <span class="stat__label">Active Doctors</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat__value">86%</span>
+                            <span class="stat__label">Bed Occupancy</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat__value">4.6</span>
+                            <span class="stat__label">Satisfaction</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav__section">
+                    <h3 class="nav__title">Filters</h3>
+                    <div class="filters">
+                        <button class="filter-btn filter-btn--active" data-filter="all">All</button>
+                        <button class="filter-btn filter-btn--patient-care" data-filter="patient_care">Patient Care</button>
+                        <button class="filter-btn filter-btn--procedure" data-filter="procedure">Procedures</button>
+                        <button class="filter-btn filter-btn--emergency" data-filter="emergency">Emergency</button>
+                        <button class="filter-btn filter-btn--administrative" data-filter="administrative">Admin</button>
+                    </div>
+                </div>
+                
+                <div class="nav__section">
+                    <h3 class="nav__title">Departments</h3>
+                    <div class="filters">
+                        <button class="filter-btn department-filter" data-department="all">All Departments</button>
+                        <button class="filter-btn department-filter" data-department="cardiology">Cardiology</button>
+                        <button class="filter-btn department-filter" data-department="emergency">Emergency</button>
+                        <button class="filter-btn department-filter" data-department="surgery">Surgery</button>
+                        <button class="filter-btn department-filter" data-department="internal_medicine">Internal Med</button>
+                        <button class="filter-btn department-filter" data-department="pediatrics">Pediatrics</button>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Daily Schedule View -->
+            <div id="dailyView" class="view view--active">
+                <div class="schedule">
+                    <div class="schedule__header">
+                        <h2 id="scheduleTitle">Today's Hospital Schedule</h2>
+                        <div class="schedule__controls">
+                            <select class="form-control schedule__doctor-select" id="doctorSelector">
+                                <option value="all">All Doctors</option>
+                                <option value="DR001">Dr. Michael Rodriguez</option>
+                                <option value="DR002">Dr. Sarah Chen</option>
+                                <option value="DR003">Dr. James Wilson</option>
+                                <option value="DR004">Dr. Emily Davis</option>
+                                <option value="DR005">Dr. Robert Kim</option>
+                                <option value="DR006">Dr. Lisa Thompson</option>
+                                <option value="DR007">Dr. David Park</option>
+                                <option value="DR008">Dr. Amanda Martinez</option>
+                            </select>
+                        </div>
+                        <div class="schedule__legend">
+                            <span class="legend__item legend__item--patient-care">Patient Care</span>
+                            <span class="legend__item legend__item--procedure">Procedures</span>
+                            <span class="legend__item legend__item--emergency">Emergency</span>
+                            <span class="legend__item legend__item--administrative">Administrative</span>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline">
+                        <div class="timeline__hours">
+                            <div class="hour" data-hour="8">8:00 AM</div>
+                            <div class="hour" data-hour="9">9:00 AM</div>
+                            <div class="hour" data-hour="10">10:00 AM</div>
+                            <div class="hour" data-hour="11">11:00 AM</div>
+                            <div class="hour" data-hour="12">12:00 PM</div>
+                            <div class="hour" data-hour="13">1:00 PM</div>
+                            <div class="hour" data-hour="14">2:00 PM</div>
+                            <div class="hour" data-hour="15">3:00 PM</div>
+                            <div class="hour" data-hour="16">4:00 PM</div>
+                            <div class="hour" data-hour="17">5:00 PM</div>
+                            <div class="hour" data-hour="18">6:00 PM</div>
+                        </div>
+                        
+                        <div class="timeline__content">
+                            <div class="timeline__grid">
+                                <div class="grid-line" style="top: 0%;"></div>
+                                <div class="grid-line" style="top: 9.09%;"></div>
+                                <div class="grid-line" style="top: 18.18%;"></div>
+                                <div class="grid-line" style="top: 27.27%;"></div>
+                                <div class="grid-line" style="top: 36.36%;"></div>
+                                <div class="grid-line" style="top: 45.45%;"></div>
+                                <div class="grid-line" style="top: 54.54%;"></div>
+                                <div class="grid-line" style="top: 63.63%;"></div>
+                                <div class="grid-line" style="top: 72.72%;"></div>
+                                <div class="grid-line" style="top: 81.81%;"></div>
+                                <div class="grid-line" style="top: 90.90%;"></div>
+                                <div class="grid-line" style="top: 100%;"></div>
+                            </div>
+                            
+                            <div class="appointments" id="meetingsContainer">
+                                <!-- Appointments will be dynamically inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hospital Analytics View -->
+            <div id="analyticsView" class="view">
+                <div class="analytics">
+                    <h2>Hospital Analytics Dashboard</h2>
+                    
+                    <div class="analytics__overview">
+                        <div class="analytics__card">
+                            <h3>Today's Overview</h3>
+                            <div class="overview-metrics">
+                                <div class="metric">
+                                    <span class="metric__value">247</span>
+                                    <span class="metric__label">Total Appointments</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric__value">32</span>
+                                    <span class="metric__label">Today's Schedule</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric__value">8</span>
+                                    <span class="metric__label">Active Doctors</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric__value">86%</span>
+                                    <span class="metric__label">Occupancy Rate</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics__grid">
+                        <div class="analytics__card">
+                            <h3>Department Performance</h3>
+                            <div class="chart-container" style="position: relative; height: 200px;">
+                                <canvas id="departmentChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="analytics__card">
+                            <h3>Appointment Distribution</h3>
+                            <div class="chart-container" style="position: relative; height: 200px;">
+                                <canvas id="appointmentTypeChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="analytics__card">
+                            <h3>Resource Utilization</h3>
+                            <div class="chart-container" style="position: relative; height: 200px;">
+                                <canvas id="resourceChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="analytics__card">
+                            <h3>Quality Metrics</h3>
+                            <div class="efficiency-metrics">
+                                <div class="metric">
+                                    <span class="metric__value">4.6</span>
+                                    <span class="metric__label">Patient Satisfaction</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric__value">2.3%</span>
+                                    <span class="metric__label">Readmission Rate</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric__value">96.8%</span>
+                                    <span class="metric__label">Procedure Success</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric__value">1.2%</span>
+                                    <span class="metric__label">Infection Rate</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics__grid">
+                        <div class="analytics__card">
+                            <h3>Financial Overview</h3>
+                            <div class="patient-metrics">
+                                <div class="metric">
+                                    <span class="metric__value">$125K</span>
+                                    <span class="metric__label">Daily Revenue</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric__value">$875K</span>
+                                    <span class="metric__label">Weekly Revenue</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric__value">$3.2K</span>
+                                    <span class="metric__label">Avg Cost/Patient</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="analytics__card">
+                            <h3>Staff Utilization</h3>
+                            <div class="efficiency-metrics">
+                                <div class="metric">
+                                    <span class="metric__value">65</span>
+                                    <span class="metric__label">Total Staff</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric__value">50</span>
+                                    <span class="metric__label">Active Staff</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric__value">77%</span>
+                                    <span class="metric__label">Utilization Rate</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="trends">
+                        <h3>Hospital Trends</h3>
+                        <div class="trend-items">
+                            <div class="trend">
+                                <span class="trend__label">Appointments</span>
+                                <span class="trend__value trend__value--positive">+12%</span>
+                            </div>
+                            <div class="trend">
+                                <span class="trend__label">Patient Satisfaction</span>
+                                <span class="trend__value trend__value--positive">+0.2</span>
+                            </div>
+                            <div class="trend">
+                                <span class="trend__label">Wait Times</span>
+                                <span class="trend__value trend__value--positive">-8%</span>
+                            </div>
+                            <div class="trend">
+                                <span class="trend__label">Revenue</span>
+                                <span class="trend__value trend__value--positive">+15%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resource Management View -->
+            <div id="resourcesView" class="view">
+                <div class="resources">
+                    <h2>Resource Management</h2>
+                    
+                    <div class="resources__grid">
+                        <div class="resources__card">
+                            <h3>Room Status</h3>
+                            <div class="resource-list" id="roomsList">
+                                <!-- Room status will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="resources__card">
+                            <h3>Equipment Status</h3>
+                            <div class="resource-list" id="equipmentList">
+                                <!-- Equipment status will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="resources__card">
+                            <h3>Staff Overview</h3>
+                            <div class="staff-overview" id="staffOverview">
+                                <!-- Staff overview will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Department Overview View -->
+            <div id="departmentsView" class="view">
+                <div class="departments">
+                    <h2>Department Overview</h2>
+                    
+                    <div class="departments__grid" id="departmentGrid">
+                        <!-- Department cards will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="sidebar sidebar--right">
+            <div class="sidebar__section">
+                <h3 class="sidebar__title">Priority Alerts</h3>
+                <div class="upcoming-events" id="priorityAlerts">
+                    <!-- Priority alerts will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="sidebar__section">
+                <h3 class="sidebar__title">System Status</h3>
+                <div class="insights">
+                    <div class="insight">
+                        <div class="insight__icon">🏥</div>
+                        <div class="insight__content">
+                            <div class="insight__title">Bed Capacity</div>
+                            <div class="insight__desc">387/450 beds occupied (86%)</div>
+                        </div>
+                    </div>
+                    <div class="insight">
+                        <div class="insight__icon">⚕️</div>
+                        <div class="insight__content">
+                            <div class="insight__title">Staff Status</div>
+                            <div class="insight__desc">50/65 staff active (77%)</div>
+                        </div>
+                    </div>
+                    <div class="insight">
+                        <div class="insight__icon">📊</div>
+                        <div class="insight__content">
+                            <div class="insight__title">Daily Performance</div>
+                            <div class="insight__desc">Patient satisfaction: 4.6/5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Appointment Detail Modal -->
+    <div class="modal hidden" id="appointmentModal">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 id="modalTitle">Appointment Details</h2>
+                <button class="modal__close" id="modalClose">×</button>
+            </div>
+            <div class="modal__body">
+                <div class="appointment-detail">
+                    <div class="detail-row">
+                        <span class="detail-label">Time:</span>
+                        <span class="detail-value" id="modalTime"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Location:</span>
+                        <span class="detail-value" id="modalLocation"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Attendees:</span>
+                        <span class="detail-value" id="modalAttendees"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Type:</span>
+                        <span class="detail-value" id="modalType"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Department:</span>
+                        <span class="detail-value" id="modalDepartment"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Doctor:</span>
+                        <span class="detail-value" id="modalDoctor"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Patient ID:</span>
+                        <span class="detail-value" id="modalPatientId"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Diagnosis:</span>
+                        <span class="detail-value" id="modalDiagnosis"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Priority:</span>
+                        <span class="detail-value" id="modalPriority"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Resources:</span>
+                        <span class="detail-value" id="modalResources"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--secondary" id="modalClose2">Close</button>
+                <button class="btn btn--primary">Edit Appointment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Modal -->
+    <div class="modal hidden" id="quickAddModal">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2>Schedule Appointment</h2>
+                <button class="modal__close" id="quickAddClose">×</button>
+            </div>
+            <div class="modal__body">
+                <form class="quick-add-form">
+                    <div class="form-group">
+                        <label class="form-label">Patient Name</label>
+                        <input type="text" class="form-control" placeholder="Enter patient name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <select class="form-control" id="appointmentDepartment">
+                            <option value="cardiology">Cardiology</option>
+                            <option value="emergency">Emergency</option>
+                            <option value="surgery">Surgery</option>
+                            <option value="internal_medicine">Internal Medicine</option>
+                            <option value="pediatrics">Pediatrics</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Doctor</label>
+                        <select class="form-control" id="appointmentDoctor">
+                            <!-- Options will be populated based on department -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time</label>
+                        <input type="time" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Duration (minutes)</label>
+                        <select class="form-control">
+                            <option>30</option>
+                            <option>60</option>
+                            <option>90</option>
+                            <option>120</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select class="form-control">
+                            <option value="patient_care">Patient Care</option>
+                            <option value="procedure">Procedure</option>
+                            <option value="emergency">Emergency</option>
+                            <option value="administrative">Administrative</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--secondary" id="quickAddCancel">Cancel</button>
+                <button class="btn btn--primary" id="quickAddSave">Schedule Appointment</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
