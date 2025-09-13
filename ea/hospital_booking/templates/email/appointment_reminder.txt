@@ -1,0 +1,19 @@
+{{ hospital_name }}
+APPOINTMENT REMINDER
+
+Dear {{ patient_name }},
+
+Reminder: Appointment {{ reminder_message }}
+
+Doctor: {{ doctor_title }} {{ doctor_name }}
+Department: {{ department }}
+Date: {{ appointment_date }}
+Time: {{ appointment_time }}
+Location: {{ location }}
+Confirmation #: {{ confirmation_number }}
+
+Please arrive 15 minutes early for check-in.
+
+Need to reschedule? Call {{ hospital_phone }}
+
+{{ hospital_name }}

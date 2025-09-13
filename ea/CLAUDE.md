@@ -4,86 +4,95 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Architecture
 
-This is a Hospital Doctor Schedule Management web application built as a static single-page application featuring:
+This is a Hospital Scheduling Management System - a comprehensive static web application for managing hospital operations. Built as a single-page application with multiple views and departments:
 
-- **Frontend**: Pure HTML, CSS, and vanilla JavaScript with medical theme
-- **Doctor Dashboard**: Calendar interface for Dr. Michael Rodriguez (Cardiologist) with appointment management
-- **Medical Analytics**: Comprehensive healthcare analytics with Chart.js visualizations
-- **Data Structure**: In-memory JavaScript objects containing doctor profile, patient appointments, and clinical metrics
-
-The application displays:
-- Daily schedule view with patient appointments (time, patient info, location, priority, diagnosis)
-- Weekly medical analytics with appointment type breakdowns, patient metrics, and clinical outcomes
-- Doctor profile information with license number and specialization
-- Interactive navigation between daily schedule and analytics views
+- **Frontend**: Pure HTML, CSS, and vanilla JavaScript (no framework dependencies)
+- **Multi-View Interface**: Hospital overview, department view, and doctor view with dynamic switching
+- **Department Management**: Cardiology, Emergency, Surgery, Internal Medicine, and Pediatrics
+- **Analytics Dashboard**: Hospital-wide metrics with Chart.js visualizations
+- **Data Structure**: Large in-memory JavaScript object (`appData`) containing hospital, staff, and scheduling data
 
 ## Development Commands
 
 ### Running the Application
 - **No build step required** - this is a static website
-- **Local development**: Open `index.html` directly in a web browser
-- **HTTP server**: `python -m http.server` then visit `http://localhost:8000`
+- **Local development**: Open `index.html` directly in web browser
+- **HTTP server**: `python -m http.server` then visit `http://localhost:8000` (recommended)
+- **No package manager** - uses CDN for Chart.js dependency
 
 ### Dependencies
 - **Chart.js**: Loaded via CDN (`https://cdn.jsdelivr.net/npm/chart.js`)
-- **Python virtual environment**: Present in `venv/` directory (for potential server-side features)
+- **No build tools, bundlers, or package managers** - pure static files
 
-## File Structure
+## Core File Structure
 
-- `index.html`: Main application HTML with doctor schedule interface
-- `app.js`: JavaScript application logic with appointment data and medical analytics
-- `style.css`: CSS styling for medical theme with priority indicators and appointment types
-- `GEMINI.md`: Existing project documentation
-- `venv/`: Python virtual environment (standard pip installation)
+- `index.html` (521 lines): Main application HTML with navigation, modals, and dashboard sections
+- `app.js` (1505 lines): Complete application logic and comprehensive hospital data
+- `style.css` (1928 lines): Extensive CSS with hospital theming, responsive layout, and animations
+- `README.md`: User-facing documentation with setup instructions
+- `ENHANCEMENT_SPEC.md`: Specification for patient-facing booking feature (future enhancement)
 
 ## Data Architecture
 
-The application uses a centralized `appData` object containing:
+The `appData` object in `app.js` contains the complete hospital data model:
 
-### Doctor Profile
-- Doctor information (name, title, department, email, license number, specialization)
+### Hospital Information
+- Basic hospital details (name, address, bed capacity, occupancy)
+- Current user context and permissions
+- Date/time and view state management
 
-### Appointments Array
-- Detailed appointment objects with medical-specific fields:
-  - Patient care appointments with patient IDs and diagnoses
-  - Medical procedures with priority levels
-  - Emergency consultations
-  - Administrative meetings
-  - Break periods
+### Departments Structure
+- **5 departments**: cardiology, emergency, surgery, internal_medicine, pediatrics
+- Each department includes: head doctor, location, staff counts, rooms, equipment
+- Complete staffing and resource allocation data
 
-### Medical Analytics
-- **Appointment Distribution**: Patient care, procedures, emergency, administrative, breaks
-- **Time Allocation**: How doctor's time is spent across different activities
-- **Patient Metrics**: New patients, follow-ups, procedures completed, emergency consults
-- **Clinical Outcomes**: Patient satisfaction, readmission rates, procedure success rates
-- **Efficiency Metrics**: On-time starts, average wait times, completion rates
-- **Workload Distribution**: Breakdown of clinical activities
+### Doctor Profiles
+- Comprehensive doctor records with licenses, specializations, contact info
+- Department assignments and experience levels
+- Status and scheduling information
 
-## Medical Theme Features
+### Appointments System
+- Detailed appointment objects with patient information
+- Multiple appointment types: patient_care, procedure, emergency, administrative, break
+- Priority levels: urgent, high, routine with visual indicators
+- Time slots, locations, and medical notes
 
-### Appointment Types
-- `patient_care`: Regular patient consultations and check-ups
-- `procedure`: Medical procedures and surgeries  
-- `emergency`: Urgent patient cases
-- `administrative`: Hospital meetings and paperwork
-- `break`: Lunch and rest periods
+### Analytics Data
+- Hospital performance metrics and KPIs
+- Department-specific analytics and comparisons
+- Resource utilization and capacity planning data
 
-### Priority Levels
-- `urgent`: Critical cases with pulsing red badge animation
-- `high`: Important cases with orange badge
-- `routine`: Standard appointments
+## Key Application Views
 
-### Color Coding
-- **Patient Care**: Green theme
-- **Procedures**: Blue theme  
-- **Emergency**: Red theme with special highlighting
-- **Administrative**: Orange theme
-- **Breaks**: Gray theme
+### Hospital Overview
+- Real-time hospital statistics and occupancy
+- Department status summaries
+- System-wide analytics and charts
 
-## Key Functions
+### Department View  
+- Department-specific scheduling and resources
+- Staff assignments and availability
+- Equipment and room management
 
-- `renderAppointments()`: Renders filtered appointment list
-- `createAppointmentElement()`: Creates individual appointment blocks with priority badges
-- `openAppointmentModal()`: Shows detailed appointment information including patient ID and diagnosis
-- `setupAppointmentTypeChart()`: Creates medical analytics charts
-- `detectConflicts()`: Prevents appointment scheduling conflicts
+### Doctor View
+- Individual doctor schedules and appointments
+- Patient care tracking and medical records
+- Performance metrics and workload analysis
+
+## Major JavaScript Functions
+
+The application uses a modular approach with key functions:
+- `initializeApp()`: Main initialization and setup
+- `switchView()`: Handles view transitions between hospital/department/doctor
+- `renderAppointments()`: Dynamic appointment rendering with filtering
+- `setupEventListeners()`: Comprehensive event handling
+- Chart setup functions for analytics visualization
+- Modal management for appointment details and quick scheduling
+
+## Development Notes
+
+- **Static Architecture**: No server-side dependencies or build process
+- **Single File Components**: All logic contained in three main files
+- **In-Memory Data**: All data stored in JavaScript objects (no persistence)
+- **Responsive Design**: Mobile-friendly interface with CSS Grid/Flexbox
+- **Accessibility**: Semantic HTML structure with proper ARIA labels

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Appointment Confirmation</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #2563eb; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .appointment-details { background: white; padding: 15px; border-left: 4px solid #2563eb; margin: 15px 0; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        .button { display: inline-block; padding: 10px 20px; background: #10b981; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ hospital_name }}</h1>
+            <h2>Appointment Confirmed</h2>
+        </div>
+
+        <div class="content">
+            <p>Dear {{ patient_name }},</p>
+
+            <p>Your appointment has been confirmed. Here are the details:</p>
+
+            <div class="appointment-details">
+                <h3>Appointment Details</h3>
+                <p><strong>Doctor:</strong> {{ doctor_title }} {{ doctor_name }}</p>
+                <p><strong>Department:</strong> {{ department }}</p>
+                <p><strong>Date:</strong> {{ appointment_date }}</p>
+                <p><strong>Time:</strong> {{ appointment_time }}</p>
+                <p><strong>Duration:</strong> {{ appointment_duration }}</p>
+                <p><strong>Location:</strong> {{ location }}</p>
+                <p><strong>Reason:</strong> {{ reason }}</p>
+                <p><strong>Confirmation #:</strong> {{ confirmation_number }}</p>
+            </div>
+
+            <p><strong>Please arrive 15 minutes early</strong> for check-in and bring:</p>
+            <ul>
+                <li>Valid photo ID</li>
+                <li>Insurance card</li>
+                <li>List of current medications</li>
+            </ul>
+
+            <p>If you need to reschedule or cancel, please call us at {{ hospital_phone }} at least 24 hours in advance.</p>
+        </div>
+
+        <div class="footer">
+            <p>{{ hospital_name }}<br>
+            {{ hospital_address }}<br>
+            Phone: {{ hospital_phone }}</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{{ hospital_name }}
+APPOINTMENT CONFIRMATION
+
+Dear {{ patient_name }},
+
+Your appointment has been confirmed. Here are the details:
+
+Doctor: {{ doctor_title }} {{ doctor_name }}
+Department: {{ department }}
+Date: {{ appointment_date }}
+Time: {{ appointment_time }}
+Duration: {{ appointment_duration }}
+Location: {{ location }}
+Reason: {{ reason }}
+Confirmation #: {{ confirmation_number }}
+
+Please arrive 15 minutes early for check-in and bring:
+- Valid photo ID
+- Insurance card
+- List of current medications
+
+If you need to reschedule or cancel, please call us at {{ hospital_phone }} at least 24 hours in advance.
+
+{{ hospital_name }}
+{{ hospital_address }}
+Phone: {{ hospital_phone }}
