@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Commerce Agent - UCP + LangGraph + RAG</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <h1>AI Commerce Agent</h1>
+                <span class="badge">UCP + LangGraph + RAG</span>
+            </div>
+            <div class="header-right">
+                <button id="btn-ucp-discover" class="btn btn-outline" title="Discover UCP capabilities">
+                    UCP Discovery
+                </button>
+                <button id="btn-clear-session" class="btn btn-outline" title="Clear session">
+                    Clear Session
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar: Product Catalog -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Product Catalog</h2>
+                    <select id="category-filter" class="select-filter">
+                        <option value="">All Categories</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Accessories">Accessories</option>
+                        <option value="Smart Home">Smart Home</option>
+                    </select>
+                </div>
+                <div id="product-list" class="product-list">
+                    <p class="loading">Loading products...</p>
+                </div>
+            </aside>
+
+            <!-- Chat Area -->
+            <main class="chat-area">
+                <div id="chat-messages" class="chat-messages">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            <p>Welcome to the AI Commerce Agent! I can help you:</p>
+                            <ul>
+                                <li>Search for products ("Show me headphones under $200")</li>
+                                <li>Get product details ("Tell me about the mechanical keyboard")</li>
+                                <li>Make purchases ("Buy the wireless headphones")</li>
+                                <li>Manage your cart ("What's in my cart?")</li>
+                            </ul>
+                            <p>What are you looking for today?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <form id="chat-form" class="chat-form">
+                        <input
+                            type="text"
+                            id="chat-input"
+                            placeholder="Ask about products, search, or buy..."
+                            autocomplete="off"
+                            autofocus
+                        >
+                        <button type="submit" class="btn btn-primary" id="btn-send">
+                            Send
+                        </button>
+                    </form>
+                    <div class="quick-actions">
+                        <button class="btn btn-sm" onclick="sendQuickQuery('Show me all products')">Browse All</button>
+                        <button class="btn btn-sm" onclick="sendQuickQuery('What electronics do you have?')">Electronics</button>
+                        <button class="btn btn-sm" onclick="sendQuickQuery('Show me accessories under $50')">Budget Accessories</button>
+                        <button class="btn btn-sm" onclick="sendQuickQuery('What is in my cart?')">View Cart</button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Info Panel -->
+            <aside class="info-panel">
+                <div class="panel-section">
+                    <h3>Session Info</h3>
+                    <div id="session-info">
+                        <div class="info-row">
+                            <span class="info-label">Session</span>
+                            <span class="info-value" id="session-id">default</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Cart</span>
+                            <span class="info-value" id="cart-status">Empty</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Checkout</span>
+                            <span class="info-value" id="checkout-status">None</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Last Intent</h3>
+                    <div id="intent-display" class="intent-badge">-</div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Matched Products</h3>
+                    <div id="matched-products" class="matched-products">
+                        <p class="text-muted">No products matched yet</p>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Architecture</h3>
+                    <div class="architecture-flow">
+                        <div class="flow-step">Query</div>
+                        <div class="flow-arrow">&#8595;</div>
+                        <div class="flow-step">Intent Detection</div>
+                        <div class="flow-arrow">&#8595;</div>
+                        <div class="flow-step">RAG Retrieval</div>
+                        <div class="flow-arrow">&#8595;</div>
+                        <div class="flow-step">UCP Actions</div>
+                        <div class="flow-arrow">&#8595;</div>
+                        <div class="flow-step">LLM Response</div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- UCP Discovery Modal -->
+    <div id="ucp-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>UCP Discovery - Merchant Capabilities</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="ucp-modal-body" class="modal-body">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
