@@ -95,8 +95,11 @@ function addMessage(content, role) {
 function formatMessage(text) {
     if (!text) return '<p>No response received.</p>';
 
-    // Convert markdown-like formatting
-    let html = text
+    // Escape HTML first to prevent XSS from LLM output
+    let escaped = escapeHtml(text);
+
+    // Then apply markdown-like formatting on the safe escaped text
+    let html = escaped
         // Code blocks
         .replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
         // Inline code
@@ -109,10 +112,10 @@ function formatMessage(text) {
         .split('\n\n')
         .map(p => {
             p = p.trim();
-            if (p.startsWith('<li>')) {
+            if (p.startsWith('&lt;li&gt;') || p.startsWith('<li>')) {
                 return '<ul>' + p + '</ul>';
             }
-            if (p.startsWith('<pre>')) {
+            if (p.startsWith('&lt;pre&gt;') || p.startsWith('<pre>')) {
                 return p;
             }
             return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
@@ -179,9 +182,12 @@ function renderProductList(products) {
         return;
     }
 
-    productList.innerHTML = products.map(p => `
-        <div class="product-card" onclick="sendQuickQuery('Tell me about ${p.name}')">
-            <div class="product-name">${escapeHtml(p.name)}</div>
+    productList.innerHTML = products.map(p => {
+        const safeName = escapeHtml(p.name);
+        const safeNameAttr = safeName.replace(/'/g, '&#39;');
+        return `
+        <div class="product-card" onclick="sendQuickQuery('Tell me about ${safeNameAttr}')">
+            <div class="product-name">${safeName}</div>
             <div class="product-price">$${p.price.toFixed(2)}</div>
             <div class="product-meta">
                 <span class="product-category">${escapeHtml(p.category || 'General')}</span>
@@ -189,7 +195,8 @@ function renderProductList(products) {
                 ${p.brand ? ` &middot; ${escapeHtml(p.brand)}` : ''}
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // --- State Updates ---

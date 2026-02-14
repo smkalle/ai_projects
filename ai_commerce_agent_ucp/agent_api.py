@@ -6,12 +6,17 @@ Also serves the web UI and runs the merchant server in-process.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
+import subprocess
+import sys
+import time as _time
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
+import httpx
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -23,83 +28,111 @@ from config import settings
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
+# Resolve paths once at module level (absolute, no os.chdir needed)
+BASE_DIR = Path(__file__).parent.resolve()
+PRODUCTS_PATH = BASE_DIR / "data" / "products.json"
+
 # --- Lifespan: initialize RAG + Merchant Server on startup ---
 
-# Track whether the merchant server subprocess is running
-_merchant_process = None
+_merchant_process: subprocess.Popen | None = None
+
+
+async def _wait_for_merchant(max_attempts: int = 20) -> bool:
+    """Wait for the merchant server with exponential backoff."""
+    delay = 0.2
+    async with httpx.AsyncClient() as client:
+        for attempt in range(1, max_attempts + 1):
+            try:
+                resp = await client.get(f"{settings.merchant_base_url}/health", timeout=2)
+                if resp.status_code == 200:
+                    logger.info("Merchant server healthy: %s", resp.json())
+                    return True
+            except (httpx.ConnectError, httpx.TimeoutException):
+                pass
+
+            logger.info(
+                "Waiting for merchant server (attempt %d/%d, %.1fs)...",
+                attempt, max_attempts, delay,
+            )
+            await asyncio.sleep(delay)
+            delay = min(delay * 2, 3.0)
+
+    logger.error("Merchant server failed to become healthy after %d attempts", max_attempts)
+    return False
+
+
+def _terminate_merchant() -> None:
+    """Gracefully stop the merchant server subprocess with SIGKILL fallback."""
+    global _merchant_process
+    if _merchant_process is None:
+        return
+
+    try:
+        _merchant_process.terminate()
+        try:
+            _merchant_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            logger.warning("Merchant server did not stop gracefully, sending SIGKILL")
+            _merchant_process.kill()
+            _merchant_process.wait(timeout=3)
+    except Exception as e:
+        logger.error("Error stopping merchant server: %s", e)
+    finally:
+        _merchant_process = None
+        logger.info("Merchant server stopped")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown events."""
-    import subprocess
-    import sys
-    import time
-
     global _merchant_process
 
-    # Resolve paths relative to this file
-    base_dir = Path(__file__).parent.resolve()
-    products_path = base_dir / "data" / "products.json"
-
-    # Start merchant server as a subprocess
-    merchant_env = os.environ.copy()
-    merchant_env["PYTHONPATH"] = str(base_dir)
-
-    logger.info("Starting UCP merchant server on port %d...", settings.merchant_server_port)
-    _merchant_process = subprocess.Popen(
-        [
-            sys.executable,
-            "-m",
-            "uvicorn",
-            "merchant_server.startup:create_merchant_app",
-            "--factory",
-            "--host",
-            settings.merchant_server_host,
-            "--port",
-            str(settings.merchant_server_port),
-        ],
-        cwd=str(base_dir),
-        env=merchant_env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    # Give merchant server time to start
-    time.sleep(2)
-
-    # Load products into the merchant server
-    import requests as req
-
-    for attempt in range(5):
-        try:
-            # Load products into the merchant server via startup event
-            # The merchant server loads products from its own startup
-            health = req.get(f"{settings.merchant_base_url}/health", timeout=3)
-            if health.status_code == 200:
-                logger.info("Merchant server is healthy: %s", health.json())
-                break
-        except req.ConnectionError:
-            logger.info("Waiting for merchant server (attempt %d)...", attempt + 1)
-            time.sleep(1)
-
-    # Initialize RAG
-    os.chdir(str(base_dir))
     try:
-        from agent.rag import initialize_rag
+        # Start merchant server with minimal environment
+        merchant_env = {
+            "PYTHONPATH": str(BASE_DIR),
+            "PATH": os.environ.get("PATH", ""),
+        }
+        if os.environ.get("OPENAI_API_KEY"):
+            merchant_env["OPENAI_API_KEY"] = os.environ["OPENAI_API_KEY"]
 
-        rag = initialize_rag(str(products_path))
-        logger.info("RAG system initialized with products from %s", products_path)
-    except Exception as e:
-        logger.warning("RAG initialization requires OpenAI API key: %s", e)
-        logger.info("Set OPENAI_API_KEY environment variable to enable RAG features")
+        logger.info("Starting UCP merchant server on port %d...", settings.merchant_server_port)
+        _merchant_process = subprocess.Popen(
+            [
+                sys.executable,
+                "-m",
+                "uvicorn",
+                "merchant_server.startup:create_merchant_app",
+                "--factory",
+                "--host",
+                settings.merchant_server_host,
+                "--port",
+                str(settings.merchant_server_port),
+            ],
+            cwd=str(BASE_DIR),
+            env=merchant_env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
 
-    yield
+        # Async exponential backoff health check
+        merchant_ok = await _wait_for_merchant()
+        if not merchant_ok:
+            logger.warning("Continuing without confirmed merchant server health")
 
-    # Shutdown
-    if _merchant_process:
-        _merchant_process.terminate()
-        _merchant_process.wait(timeout=5)
-        logger.info("Merchant server stopped")
+        # Initialize RAG (uses absolute paths, no chdir needed)
+        try:
+            from agent.rag import initialize_rag
+
+            initialize_rag(str(PRODUCTS_PATH))
+            logger.info("RAG system initialized with products from %s", PRODUCTS_PATH)
+        except Exception as e:
+            logger.warning("RAG initialization failed (set OPENAI_API_KEY to enable): %s", e)
+
+        yield
+
+    finally:
+        _terminate_merchant()
 
 
 # --- FastAPI App ---
@@ -112,24 +145,43 @@ app = FastAPI(
 )
 
 # Static files and templates
-base_dir = Path(__file__).parent
-app.mount("/static", StaticFiles(directory=str(base_dir / "ui" / "static")), name="static")
-templates = Jinja2Templates(directory=str(base_dir / "ui" / "templates"))
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "ui" / "static")), name="static")
+templates = Jinja2Templates(directory=str(BASE_DIR / "ui" / "templates"))
 
 
 # --- Session Management ---
 
-# Simple in-memory session store (use Redis/DB in production)
+MAX_SESSIONS = 1000
+SESSION_TTL_SECONDS = 3600  # 1 hour
+
 _sessions: dict[str, dict[str, Any]] = {}
+
+
+def _prune_expired_sessions() -> None:
+    """Remove sessions older than SESSION_TTL_SECONDS."""
+    now = _time.time()
+    expired = [
+        sid for sid, s in _sessions.items()
+        if now - s.get("created_at", 0) > SESSION_TTL_SECONDS
+    ]
+    for sid in expired:
+        del _sessions[sid]
 
 
 def get_session(session_id: str) -> dict[str, Any]:
     """Get or create a session."""
+    if len(_sessions) >= MAX_SESSIONS:
+        _prune_expired_sessions()
+    if len(_sessions) >= MAX_SESSIONS:
+        oldest_id = min(_sessions, key=lambda s: _sessions[s].get("created_at", 0))
+        del _sessions[oldest_id]
+
     if session_id not in _sessions:
         _sessions[session_id] = {
             "cart_id": "",
             "checkout_id": "",
             "history": [],
+            "created_at": _time.time(),
         }
     return _sessions[session_id]
 
@@ -171,6 +223,7 @@ def chat(request: ChatRequest) -> ChatResponse:
         query=request.query,
         cart_id=session.get("cart_id", ""),
         checkout_id=session.get("checkout_id", ""),
+        conversation_history=session.get("history", []),
     )
 
     # Update session state
@@ -181,6 +234,10 @@ def chat(request: ChatRequest) -> ChatResponse:
 
     session["history"].append({"role": "user", "content": request.query})
     session["history"].append({"role": "assistant", "content": result.get("response", "")})
+
+    # Keep only last 20 messages (10 turns)
+    if len(session["history"]) > 20:
+        session["history"] = session["history"][-20:]
 
     return ChatResponse(
         response=result.get("response", "I couldn't process your request."),

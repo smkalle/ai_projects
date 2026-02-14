@@ -74,6 +74,12 @@ class AddToCartRequest(BaseModel):
     quantity: int = 1
 
 
+class UpdateCartItemRequest(BaseModel):
+    """Request to update a cart item's quantity."""
+
+    quantity: int
+
+
 class CartResponse(BaseModel):
     """Response containing cart details."""
 

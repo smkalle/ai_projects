@@ -10,7 +10,8 @@ import json
 import uuid
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 
 from .models import (
     AddToCartRequest,
@@ -27,6 +28,7 @@ from .models import (
     ProductSearchResponse,
     UCPCapability,
     UCPManifest,
+    UpdateCartItemRequest,
 )
 
 app = FastAPI(
@@ -34,6 +36,24 @@ app = FastAPI(
     description="A UCP-compliant merchant server simulator for AI commerce agents",
     version="1.0.0",
 )
+
+
+# --- Standardized error handler ---
+
+
+@app.exception_handler(HTTPException)
+async def ucp_error_handler(request: Request, exc: HTTPException):
+    """Return standardized UCP error responses."""
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error": {
+                "code": exc.status_code,
+                "message": exc.detail,
+            }
+        },
+    )
+
 
 # In-memory stores
 _products: dict[str, Product] = {}
@@ -73,10 +93,16 @@ def ucp_discovery() -> UCPManifest:
         protocol="ucp",
         capabilities=[
             UCPCapability(
+                name="product_list",
+                endpoint="/products",
+                methods=["GET"],
+                description="List and filter products in the catalog",
+            ),
+            UCPCapability(
                 name="product_search",
                 endpoint="/products/search",
                 methods=["POST"],
-                description="Search and discover products in the catalog",
+                description="Search products by keyword query",
             ),
             UCPCapability(
                 name="product_detail",
@@ -85,16 +111,46 @@ def ucp_discovery() -> UCPManifest:
                 description="Get detailed information about a specific product",
             ),
             UCPCapability(
-                name="cart",
+                name="cart_create",
                 endpoint="/cart",
-                methods=["GET", "POST"],
-                description="Manage shopping cart (view, add items)",
+                methods=["POST"],
+                description="Create a new shopping cart",
             ),
             UCPCapability(
-                name="checkout",
+                name="cart_view",
+                endpoint="/cart/{cart_id}",
+                methods=["GET"],
+                description="View cart details",
+            ),
+            UCPCapability(
+                name="cart_items",
+                endpoint="/cart/{cart_id}/items",
+                methods=["POST"],
+                description="Add items to a cart",
+            ),
+            UCPCapability(
+                name="cart_item_update",
+                endpoint="/cart/{cart_id}/items/{product_id}",
+                methods=["PATCH", "DELETE"],
+                description="Update or remove a cart item",
+            ),
+            UCPCapability(
+                name="checkout_create",
                 endpoint="/checkout-sessions",
                 methods=["POST"],
-                description="Create and manage checkout sessions",
+                description="Create a checkout session",
+            ),
+            UCPCapability(
+                name="checkout_view",
+                endpoint="/checkout-sessions/{session_id}",
+                methods=["GET"],
+                description="View checkout session details",
+            ),
+            UCPCapability(
+                name="checkout_confirm",
+                endpoint="/checkout-sessions/{session_id}/confirm",
+                methods=["POST"],
+                description="Confirm and finalize a checkout session",
             ),
         ],
         payment_handlers=["google_pay", "credit_card", "paypal"],
@@ -207,6 +263,36 @@ def add_to_cart(cart_id: str, request: AddToCartRequest) -> CartResponse:
                 name=product.name,
             )
         )
+
+    cart.recalculate_total()
+    return CartResponse(cart=cart)
+
+
+@app.patch("/cart/{cart_id}/items/{product_id}")
+def update_cart_item(
+    cart_id: str, product_id: str, request: UpdateCartItemRequest
+) -> CartResponse:
+    """Update the quantity of a cart item."""
+    cart = _carts.get(cart_id)
+    if not cart:
+        raise HTTPException(status_code=404, detail=f"Cart {cart_id} not found")
+
+    item = next((i for i in cart.items if i.product_id == product_id), None)
+    if not item:
+        raise HTTPException(
+            status_code=404, detail=f"Item {product_id} not found in cart"
+        )
+
+    if request.quantity <= 0:
+        cart.items = [i for i in cart.items if i.product_id != product_id]
+    else:
+        product = _products.get(product_id)
+        if product and product.quantity < request.quantity:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Insufficient stock for {product.name}. Available: {product.quantity}",
+            )
+        item.quantity = request.quantity
 
     cart.recalculate_total()
     return CartResponse(cart=cart)

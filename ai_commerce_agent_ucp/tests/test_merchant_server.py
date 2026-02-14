@@ -201,9 +201,107 @@ class TestCart:
         assert resp.status_code == 200
         assert len(resp.json()["cart"]["items"]) == 0
 
+    def test_update_cart_item_quantity(self, client):
+        cart_resp = client.post("/cart")
+        cart_id = cart_resp.json()["cart"]["id"]
+
+        client.post(f"/cart/{cart_id}/items", json={"product_id": "TEST-001", "quantity": 1})
+        resp = client.patch(
+            f"/cart/{cart_id}/items/TEST-001",
+            json={"quantity": 5},
+        )
+        assert resp.status_code == 200
+        cart = resp.json()["cart"]
+        assert cart["items"][0]["quantity"] == 5
+        assert cart["total"] == 499.95
+
+    def test_update_cart_item_to_zero_removes(self, client):
+        cart_resp = client.post("/cart")
+        cart_id = cart_resp.json()["cart"]["id"]
+
+        client.post(f"/cart/{cart_id}/items", json={"product_id": "TEST-001", "quantity": 1})
+        resp = client.patch(
+            f"/cart/{cart_id}/items/TEST-001",
+            json={"quantity": 0},
+        )
+        assert resp.status_code == 200
+        assert len(resp.json()["cart"]["items"]) == 0
+
+    def test_update_cart_item_not_in_cart(self, client):
+        cart_resp = client.post("/cart")
+        cart_id = cart_resp.json()["cart"]["id"]
+
+        resp = client.patch(
+            f"/cart/{cart_id}/items/TEST-001",
+            json={"quantity": 5},
+        )
+        assert resp.status_code == 404
+
+    def test_update_cart_item_insufficient_stock(self, client):
+        cart_resp = client.post("/cart")
+        cart_id = cart_resp.json()["cart"]["id"]
+
+        client.post(f"/cart/{cart_id}/items", json={"product_id": "TEST-001", "quantity": 1})
+        resp = client.patch(
+            f"/cart/{cart_id}/items/TEST-001",
+            json={"quantity": 999},
+        )
+        assert resp.status_code == 400
+
     def test_get_cart_not_found(self, client):
         resp = client.get("/cart/nonexistent-id")
         assert resp.status_code == 404
+
+
+# --- Standardized Errors ---
+
+
+class TestStandardizedErrors:
+    def test_404_error_format(self, client):
+        resp = client.get("/products/NONEXISTENT")
+        assert resp.status_code == 404
+        data = resp.json()
+        assert "error" in data
+        assert data["error"]["code"] == 404
+        assert "message" in data["error"]
+
+    def test_400_error_format(self, client):
+        cart_resp = client.post("/cart")
+        cart_id = cart_resp.json()["cart"]["id"]
+        resp = client.post(
+            f"/cart/{cart_id}/items",
+            json={"product_id": "TEST-003", "quantity": 5},  # 0 stock
+        )
+        assert resp.status_code == 400
+        data = resp.json()
+        assert data["error"]["code"] == 400
+
+
+# --- UCP Manifest ---
+
+
+class TestUCPManifestAccuracy:
+    def test_manifest_lists_all_endpoints(self, client):
+        resp = client.get("/.well-known/ucp")
+        data = resp.json()
+        cap_names = [c["name"] for c in data["capabilities"]]
+        assert "product_list" in cap_names
+        assert "product_search" in cap_names
+        assert "product_detail" in cap_names
+        assert "cart_create" in cap_names
+        assert "cart_view" in cap_names
+        assert "cart_items" in cap_names
+        assert "cart_item_update" in cap_names
+        assert "checkout_create" in cap_names
+        assert "checkout_view" in cap_names
+        assert "checkout_confirm" in cap_names
+
+    def test_cart_item_update_has_patch(self, client):
+        resp = client.get("/.well-known/ucp")
+        data = resp.json()
+        update_cap = next(c for c in data["capabilities"] if c["name"] == "cart_item_update")
+        assert "PATCH" in update_cap["methods"]
+        assert "DELETE" in update_cap["methods"]
 
 
 # --- Checkout ---
