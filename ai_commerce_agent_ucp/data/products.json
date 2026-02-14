@@ -1,0 +1,122 @@
+[
+  {
+    "id": "SKU-001",
+    "name": "Wireless Noise-Cancelling Headphones",
+    "price": 199.99,
+    "description": "Premium over-ear headphones with active noise cancellation, 30-hour battery life, and Hi-Res Audio support. Features adaptive sound control and multipoint connection.",
+    "category": "Electronics",
+    "quantity": 50,
+    "rating": 4.7,
+    "brand": "SoundMax"
+  },
+  {
+    "id": "SKU-002",
+    "name": "USB-C Fast Charging Cable (6ft)",
+    "price": 24.99,
+    "description": "Braided nylon USB-C to USB-C cable with 100W Power Delivery support. Compatible with laptops, phones, and tablets. 480Mbps data transfer.",
+    "category": "Accessories",
+    "quantity": 200,
+    "rating": 4.5,
+    "brand": "ChargeLink"
+  },
+  {
+    "id": "SKU-003",
+    "name": "Mechanical Keyboard RGB",
+    "price": 149.99,
+    "description": "Full-size mechanical keyboard with Cherry MX Brown switches, per-key RGB backlighting, USB-C connectivity, and programmable macros. Hot-swappable switches.",
+    "category": "Electronics",
+    "quantity": 75,
+    "rating": 4.8,
+    "brand": "KeyCraft"
+  },
+  {
+    "id": "SKU-004",
+    "name": "Portable Bluetooth Speaker",
+    "price": 79.99,
+    "description": "Waterproof IPX7 portable speaker with 360-degree sound, 20-hour battery, and built-in microphone for calls. Supports stereo pairing.",
+    "category": "Electronics",
+    "quantity": 120,
+    "rating": 4.4,
+    "brand": "SoundMax"
+  },
+  {
+    "id": "SKU-005",
+    "name": "Wireless Charging Pad",
+    "price": 39.99,
+    "description": "15W Qi-certified wireless charging pad with LED indicator. Compatible with iPhone, Samsung Galaxy, and all Qi-enabled devices. Includes USB-C cable.",
+    "category": "Accessories",
+    "quantity": 180,
+    "rating": 4.3,
+    "brand": "ChargeLink"
+  },
+  {
+    "id": "SKU-006",
+    "name": "Ergonomic Wireless Mouse",
+    "price": 69.99,
+    "description": "Vertical ergonomic mouse with 4000 DPI optical sensor, 6 programmable buttons, and dual-mode connectivity (Bluetooth + 2.4GHz). Rechargeable battery lasts 3 months.",
+    "category": "Electronics",
+    "quantity": 90,
+    "rating": 4.6,
+    "brand": "KeyCraft"
+  },
+  {
+    "id": "SKU-007",
+    "name": "4K Webcam with Ring Light",
+    "price": 129.99,
+    "description": "Ultra HD 4K webcam with built-in adjustable ring light, auto-focus, dual noise-cancelling microphones, and privacy shutter. Works with Zoom, Teams, and Google Meet.",
+    "category": "Electronics",
+    "quantity": 60,
+    "rating": 4.5,
+    "brand": "VisionPro"
+  },
+  {
+    "id": "SKU-008",
+    "name": "Laptop Stand Adjustable",
+    "price": 49.99,
+    "description": "Aluminum adjustable laptop stand with ventilated design. Supports laptops 10-17 inches. Foldable and portable. Ergonomic height adjustment up to 6 inches.",
+    "category": "Accessories",
+    "quantity": 150,
+    "rating": 4.7,
+    "brand": "DeskPro"
+  },
+  {
+    "id": "SKU-009",
+    "name": "Smart Power Strip",
+    "price": 44.99,
+    "description": "WiFi-enabled power strip with 4 smart outlets, 3 USB ports, and surge protection. Works with Alexa and Google Home. Schedule and monitor energy usage via app.",
+    "category": "Smart Home",
+    "quantity": 100,
+    "rating": 4.2,
+    "brand": "HomeTech"
+  },
+  {
+    "id": "SKU-010",
+    "name": "Noise-Cancelling Earbuds",
+    "price": 159.99,
+    "description": "True wireless earbuds with hybrid ANC, spatial audio, and transparency mode. 8-hour battery with 32-hour charging case. IPX5 water resistant.",
+    "category": "Electronics",
+    "quantity": 85,
+    "rating": 4.6,
+    "brand": "SoundMax"
+  },
+  {
+    "id": "SKU-011",
+    "name": "USB-C Hub 7-in-1",
+    "price": 59.99,
+    "description": "Multiport USB-C hub with HDMI 4K@60Hz, 2x USB-A 3.0, USB-C data, SD/microSD card readers, and 100W pass-through charging. Aluminum body.",
+    "category": "Accessories",
+    "quantity": 110,
+    "rating": 4.4,
+    "brand": "ChargeLink"
+  },
+  {
+    "id": "SKU-012",
+    "name": "Smart LED Desk Lamp",
+    "price": 89.99,
+    "description": "Eye-care LED desk lamp with 5 color temperatures, auto-dimming, and built-in wireless charging base. Touch controls and voice assistant compatible.",
+    "category": "Smart Home",
+    "quantity": 70,
+    "rating": 4.5,
+    "brand": "HomeTech"
+  }
+]
