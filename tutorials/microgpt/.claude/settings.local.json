@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:gist.github.com)",
+      "Bash(curl:*)",
+      "Bash(python:*)"
+    ]
+  }
+}
