@@ -1,0 +1,16 @@
+[project]
+name = "microgpt"
+version = "0.1.0"
+description = "MicroGPT: Building a GPT from Scratch - Pure Python & PyTorch tutorials"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "torch",
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+notebook = ["jupyter"]
+
+[tool.uv]
+python-preference = "only-managed"
+environments = ["sys_platform == 'linux' and platform_machine == 'aarch64'"]

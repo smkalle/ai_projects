@@ -3,7 +3,15 @@
     "allow": [
       "WebFetch(domain:gist.github.com)",
       "Bash(curl:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(uv init:*)",
+      "Bash(uv sync:*)",
+      "Bash(python3:*)",
+      "Bash(pip install:*)",
+      "Bash(pacman -Ss:*)",
+      "Bash(/usr/bin/python3:*)",
+      "Bash(# Python 3.14 is too new for PyTorch. Let''s use 3.12 which torch supports.\n# Update pyproject.toml to use 3.12 and let uv download it\n)",
+      "Bash(uv run python:*)"
     ]
   }
 }
