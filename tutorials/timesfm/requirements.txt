@@ -1,0 +1,26 @@
+# TimesFM Tutorial Dependencies
+# Tested with Python 3.11+
+# Install: pip install -r requirements.txt
+
+# Core: TimesFM with PyTorch backend
+timesfm[torch]>=1.3.0
+
+# Data & Visualization
+numpy>=1.24.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Datasets
+datasetslib>=0.1.0
+
+# Optional: XReg covariate support (requires JAX)
+# Uncomment below if you need forecast_with_covariates()
+# jax>=0.4.20
+# jaxlib>=0.4.20
+
+# Optional: Hugging Face Hub (for model downloads)
+huggingface-hub>=0.20.0
+
+# PyTorch (installed via timesfm[torch], listed for reference)
+# torch>=2.1.0
