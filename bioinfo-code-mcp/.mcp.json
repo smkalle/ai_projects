@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "bioinfo-code-mcp": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "bioinfo_code_mcp.server"],
+      "env": {
+        "NCBI_EMAIL": "your-email@example.com",
+        "NCBI_API_KEY": "",
+        "EXEC_TIMEOUT": "30",
+        "MAX_OUTPUT_CHARS": "50000"
+      }
+    }
+  }
+}
