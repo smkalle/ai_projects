@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bioinformatics Playground</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- CodeMirror 6 via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@codemirror/lang-python@6/dist/index.cjs.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/comment/comment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/selection/active-line.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <h1 class="logo">
+                <span class="logo-icon">&#x1F9EC;</span>
+                Bioinformatics Playground
+            </h1>
+            <span class="badge">Code Mode MCP</span>
+        </div>
+        <div class="header-right">
+            <button id="btn-api-search" class="btn btn-ghost" title="Search available APIs">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                API Search
+            </button>
+            <button id="btn-theme" class="btn btn-ghost" title="Toggle theme">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <!-- Sidebar: Templates -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Starter Projects</h2>
+                <button id="btn-sidebar-toggle" class="btn btn-icon" title="Toggle sidebar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                </button>
+            </div>
+            <div class="template-list">
+                {% for category, projects in categories.items() %}
+                <div class="template-category">
+                    <h3 class="category-title">{{ category }}</h3>
+                    {% for proj in projects %}
+                    <button class="template-item" data-id="{{ proj.id }}" title="{{ proj.description }}">
+                        <div class="template-item-header">
+                            <span class="template-name">{{ proj.title }}</span>
+                            <span class="difficulty difficulty-{{ proj.difficulty|lower }}">{{ proj.difficulty }}</span>
+                        </div>
+                        <p class="template-desc">{{ proj.description }}</p>
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main">
+            <!-- Editor panel -->
+            <div class="panel editor-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span id="current-template-name">Untitled</span>
+                        <span class="session-badge" title="Session state persists across runs">Session Active</span>
+                    </div>
+                    <div class="panel-actions">
+                        <button id="btn-reset-state" class="btn btn-ghost btn-sm" title="Clear persistent state">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                            Reset State
+                        </button>
+                        <button id="btn-run" class="btn btn-primary" title="Run code (Ctrl+Enter)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            Run
+                        </button>
+                    </div>
+                </div>
+                <div id="editor-container"></div>
+            </div>
+
+            <!-- Output panel -->
+            <div class="panel output-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        Output
+                        <span id="execution-time" class="exec-time"></span>
+                    </div>
+                    <div class="panel-actions">
+                        <span id="state-indicator" class="state-badge" style="display:none" title="Persistent state keys">
+                            State: <span id="state-keys"></span>
+                        </span>
+                        <button id="btn-clear-output" class="btn btn-ghost btn-sm" title="Clear output">Clear</button>
+                    </div>
+                </div>
+                <div id="output-container" class="output-content">
+                    <div class="welcome-message">
+                        <h2>Welcome to the Bioinformatics Playground</h2>
+                        <p>An interactive environment for bioinformatics research and learning,
+                           powered by the <strong>Code Mode MCP</strong> pattern.</p>
+                        <div class="welcome-features">
+                            <div class="feature">
+                                <strong>Choose a template</strong> from the sidebar to get started
+                            </div>
+                            <div class="feature">
+                                <strong>Write Python code</strong> with pre-loaded bioinformatics APIs
+                            </div>
+                            <div class="feature">
+                                <strong>Press Ctrl+Enter</strong> or click Run to execute
+                            </div>
+                            <div class="feature">
+                                <strong>Use <code>state</code></strong> dict to persist data between runs
+                            </div>
+                        </div>
+                        <h3>Available in the sandbox:</h3>
+                        <div class="api-grid">
+                            <div class="api-card">
+                                <strong>ncbi</strong>
+                                <span>PubMed, Gene, Nucleotide, Protein</span>
+                            </div>
+                            <div class="api-card">
+                                <strong>uniprot</strong>
+                                <span>Protein sequences, features, GO terms</span>
+                            </div>
+                            <div class="api-card">
+                                <strong>pdb</strong>
+                                <span>Protein structures, search</span>
+                            </div>
+                            <div class="api-card">
+                                <strong>ensembl</strong>
+                                <span>Genes, sequences, variants, VEP</span>
+                            </div>
+                            <div class="api-card">
+                                <strong>blast</strong>
+                                <span>Sequence similarity search</span>
+                            </div>
+                            <div class="api-card">
+                                <strong>seq_utils</strong>
+                                <span>translate, gc_content, find_orfs, ...</span>
+                            </div>
+                            <div class="api-card">
+                                <strong>fmt</strong>
+                                <span>parse_fasta, parse_gff, parse_bed, ...</span>
+                            </div>
+                            <div class="api-card">
+                                <strong>state</strong>
+                                <span>Persistent dict across executions</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- API Search Modal -->
+    <div id="api-search-modal" class="modal" style="display:none">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Search Bioinformatics Operations</h2>
+                <button id="btn-close-modal" class="btn btn-icon">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-bar">
+                    <input id="api-search-input" type="text" placeholder="Search operations... (e.g., 'gene lookup', 'protein structure', 'parse FASTA')" autofocus>
+                    <select id="api-module-filter">
+                        <option value="">All modules</option>
+                        <option value="ncbi">NCBI</option>
+                        <option value="uniprot">UniProt</option>
+                        <option value="pdb">PDB</option>
+                        <option value="ensembl">Ensembl</option>
+                        <option value="blast">BLAST</option>
+                        <option value="sequence_utils">Sequence Utils</option>
+                        <option value="format_utils">Format Utils</option>
+                    </select>
+                </div>
+                <div id="api-search-results" class="search-results">
+                    <p class="search-hint">Type to search 40+ bioinformatics operations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="session-id" value="{{ session_id }}">
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
