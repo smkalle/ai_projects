@@ -202,6 +202,63 @@ python examples/sequence_analysis.py
 NCBI_EMAIL=you@example.com python examples/protein_lookup.py
 ```
 
+## Interactive Playground
+
+A browser-based interactive environment for bioinformatics research and learning, with a live code editor, 12 starter project templates, and real-time execution.
+
+### Running the Playground
+
+```bash
+pip install -e ".[playground]"
+python playground/app.py
+# Open http://localhost:8765
+```
+
+### Features
+
+- **Live Python editor** with syntax highlighting (CodeMirror) and Ctrl+Enter execution
+- **12 starter project templates** organized by category and difficulty level:
+
+| Category | Templates |
+|----------|-----------|
+| **Getting Started** | Gene Lookup, DNA Sequence Analysis, FASTA Processing, Fetch NCBI Sequences |
+| **Protein Analysis** | Protein Search & Features, Protein Structure Lookup |
+| **Research** | PubMed Literature Search, Cross-Database Research, BLAST Sequence Search |
+| **Genomics** | Variant Analysis with VEP, Genomic Region Analysis (BED/GFF) |
+| **Lab Tools** | PCR Primer Design Helper |
+| **Advanced** | Multi-Step Stateful Workflow |
+
+- **API operation search** (Ctrl+K) — discover 40+ operations with examples
+- **State persistence** — `state` dict carries data across executions
+- **Dark/Light theme** toggle
+- **Session isolation** — each browser tab gets its own sandbox
+
+### Screenshot
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  🧬 Bioinformatics Playground          [API Search] [☀]  │
+├──────────┬───────────────────────────────────────────────┤
+│ Starter  │  Gene Lookup                    [Reset] [▶ Run]│
+│ Projects │  ─────────────────────────────────────────────│
+│          │  # Gene Lookup — Search for a gene            │
+│ Getting  │  gene_symbol = "TP53"                         │
+│ Started  │  genes = await ncbi.fetch_gene_info(          │
+│  Gene    │      gene_symbol, organism="human")           │
+│  DNA Seq │  ...                                          │
+│  FASTA   │                                               │
+│          ├───────────────────────────────────────────────│
+│ Protein  │  Output                              0.42s    │
+│  Search  │  ─────────────────────────────────────────────│
+│  PDB     │  Searching NCBI for TP53...                   │
+│          │    Name: TP53                                  │
+│ Research │    Description: tumor protein p53             │
+│  PubMed  │  Searching Ensembl for TP53...                │
+│  Cross-DB│    Ensembl ID: ENSG00000141510                │
+│          │    Chromosome: 17                             │
+└──────────┴───────────────────────────────────────────────┘
+```
+
 ## Architecture
 
 ```
@@ -220,11 +277,15 @@ bioinfo-code-mcp/
 │   └── utils/
 │       ├── sequence.py    # DNA/protein sequence utilities
 │       └── formats.py     # FASTA, GFF, BED, Clustal parsers
+├── playground/
+│   ├── app.py             # FastAPI web app with 12 starter templates
+│   ├── templates/         # Jinja2 HTML templates
+│   └── static/            # CSS and JavaScript
 ├── examples/
 │   ├── agent_demo.py      # Full workflow demonstration
 │   ├── sequence_analysis.py
 │   └── protein_lookup.py
-├── tests/                 # Comprehensive test suite
+├── tests/                 # 144 tests (sandbox, registry, APIs, playground)
 ├── .github/workflows/     # CI/CD
 ├── pyproject.toml
 └── .mcp.json              # MCP client configuration
