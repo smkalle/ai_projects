@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# run.sh — Run the playground, examples, tests, or MCP server
+# run.sh — Run the playground, examples, tests, or MCP server (powered by uv)
 #
 # Usage:
 #   ./run.sh playground          # Start interactive web playground
@@ -31,22 +31,21 @@ fail()  { echo -e "${RED}>>>${NC} $*"; exit 1; }
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# ── Ensure uv is available ──────────────────────────────────────────
+if ! command -v uv &>/dev/null; then
+    fail "uv is not installed. Run ./setup.sh first or install uv: https://docs.astral.sh/uv/getting-started/installation/"
+fi
+
 # ── Activate venv if available ────────────────────────────────────────
 if [ -z "${VIRTUAL_ENV:-}" ] && [ -d ".venv" ]; then
     source .venv/bin/activate
-fi
-
-# ── Detect Python ─────────────────────────────────────────────────────
-PYTHON="${PYTHON:-python3}"
-if ! command -v "$PYTHON" &>/dev/null; then
-    PYTHON="python"
 fi
 
 # ── Commands ──────────────────────────────────────────────────────────
 
 show_help() {
     echo ""
-    echo -e "${BOLD}Bioinformatics Code MCP — Runner${NC}"
+    echo -e "${BOLD}Bioinformatics Code MCP — Runner (uv)${NC}"
     echo ""
     echo "Usage: ./run.sh <command> [options]"
     echo ""
@@ -85,7 +84,7 @@ run_playground() {
     echo -e "  ${CYAN}Open your browser to:${NC} ${BOLD}http://localhost:${port}${NC}"
     echo -e "  Press Ctrl+C to stop"
     echo ""
-    $PYTHON playground/app.py
+    uv run python playground/app.py
 }
 
 run_examples() {
@@ -109,7 +108,7 @@ run_examples() {
         echo ""
         echo -e "${BOLD}--- $name ---${NC}"
 
-        if $PYTHON "$script" 2>&1; then
+        if uv run python "$script" 2>&1; then
             ok "$name completed"
             ((passed++))
         else
@@ -147,7 +146,7 @@ run_example() {
 
     info "Running $script"
     echo ""
-    $PYTHON "$script"
+    uv run python "$script"
 }
 
 run_tests() {
@@ -163,7 +162,7 @@ run_tests() {
 
     info "Running tests..."
     echo ""
-    $PYTHON -m pytest tests/ "${args[@]}"
+    uv run python -m pytest tests/ "${args[@]}"
 }
 
 run_server() {
@@ -171,7 +170,7 @@ run_server() {
     echo "  The server communicates via stdin/stdout."
     echo "  Configure your MCP client to connect to: bioinfo-mcp"
     echo ""
-    $PYTHON -m bioinfo_code_mcp.server
+    uv run python -m bioinfo_code_mcp.server
 }
 
 run_search() {
@@ -180,7 +179,7 @@ run_search() {
         fail "Usage: ./run.sh search <query>"
     fi
 
-    $PYTHON -c "
+    uv run python -c "
 from bioinfo_code_mcp.registry import Registry
 import json
 
@@ -203,7 +202,7 @@ else:
 }
 
 run_info() {
-    $PYTHON -c "
+    uv run python -c "
 from bioinfo_code_mcp.registry import Registry
 import bioinfo_code_mcp
 
@@ -238,13 +237,13 @@ print()
 
 run_lint() {
     info "Running linter..."
-    ruff check src/ tests/ playground/
+    uv run python -m ruff check src/ tests/ playground/
     ok "Lint passed"
 }
 
 run_fmt() {
     info "Formatting code..."
-    ruff format src/ tests/ playground/
+    uv run python -m ruff format src/ tests/ playground/
     ok "Formatting complete"
 }
 
