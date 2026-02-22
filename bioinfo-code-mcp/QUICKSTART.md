@@ -6,6 +6,7 @@ Get up and running in under 2 minutes.
 
 - Python 3.10 or higher
 - Git
+- [uv](https://docs.astral.sh/uv/) — fast Python package manager (auto-installed by `setup.sh` if missing)
 - (Optional) An NCBI account for API access — [register here](https://www.ncbi.nlm.nih.gov/account/)
 
 ## 1. Clone & Setup
@@ -14,13 +15,14 @@ Get up and running in under 2 minutes.
 git clone https://github.com/smkalle/ai_projects.git
 cd ai_projects/bioinfo-code-mcp
 
-# One-command setup (creates venv, installs everything, runs self-test)
+# One-command setup (installs uv if needed, creates venv, installs everything, runs self-test)
 ./setup.sh
 ```
 
 The setup script will:
-- Create a `.venv` virtual environment
-- Install all dependencies (core + playground + dev tools)
+- Install `uv` if not already available
+- Create a `.venv` virtual environment via `uv venv`
+- Install all dependencies with `uv pip install`
 - Verify imports
 - Run a quick self-test
 
@@ -31,6 +33,20 @@ The setup script will:
 ./setup.sh --core       # Minimal — MCP server only, no playground
 ./setup.sh --playground # Core + interactive web playground
 ./setup.sh --dev        # Everything including linting and testing
+```
+
+### Manual uv Install (if needed)
+
+```bash
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Or via pip / pipx / brew
+pip install uv
+brew install uv
 ```
 
 ## 2. Configure NCBI Access
@@ -163,6 +179,8 @@ Or add to your MCP client config (`.mcp.json`):
 ./run.sh fmt                 # Auto-format code
 ```
 
+All commands use `uv run` under the hood for fast, reliable execution.
+
 ## Starter Project Templates
 
 The playground includes 12 ready-to-run templates:
@@ -196,7 +214,15 @@ The playground includes 12 ready-to-run templates:
 
 ### "ModuleNotFoundError: No module named 'bioinfo_code_mcp'"
 
-Run `./setup.sh` first, or manually: `pip install -e .`
+Run `./setup.sh` first, or manually: `uv pip install -e .`
+
+### "uv: command not found"
+
+Run `./setup.sh` (it auto-installs uv), or install manually:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 ### API calls return errors
 
@@ -207,7 +233,7 @@ Run `./setup.sh` first, or manually: `pip install -e .`
 
 ### Playground won't start
 
-Install playground dependencies: `pip install -e ".[playground]"` or `./setup.sh --playground`
+Install playground dependencies: `uv pip install -e ".[playground]"` or `./setup.sh --playground`
 
 ### Tests fail
 

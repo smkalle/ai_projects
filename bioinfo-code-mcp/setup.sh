@@ -7,7 +7,7 @@
 #   ./setup.sh --playground # Install core + playground
 #   ./setup.sh --dev        # Install everything including test/lint tools
 #
-# Requirements: Python 3.10+
+# Requirements: Python 3.10+ (uv will be auto-installed if missing)
 
 set -euo pipefail
 
@@ -34,27 +34,20 @@ echo -e "${CYAN}  Bioinformatics Code MCP — Setup${NC}"
 echo -e "${CYAN}========================================${NC}"
 echo ""
 
-# ── Check Python version ──────────────────────────────────────────────
-info "Checking Python version..."
-
-PYTHON=""
-for cmd in python3 python; do
-    if command -v "$cmd" &>/dev/null; then
-        version=$("$cmd" -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')" 2>/dev/null || echo "0.0")
-        major=$("$cmd" -c "import sys; print(sys.version_info.major)" 2>/dev/null || echo "0")
-        minor=$("$cmd" -c "import sys; print(sys.version_info.minor)" 2>/dev/null || echo "0")
-        if [ "$major" -ge 3 ] && [ "$minor" -ge 10 ]; then
-            PYTHON="$cmd"
-            break
-        fi
+# ── Ensure uv is available ──────────────────────────────────────────
+if command -v uv &>/dev/null; then
+    ok "Found uv $(uv --version 2>&1 | head -1)"
+else
+    info "uv not found — installing..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    # Add to PATH for this session
+    export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+    if command -v uv &>/dev/null; then
+        ok "Installed uv $(uv --version 2>&1 | head -1)"
+    else
+        fail "Failed to install uv. Install manually: https://docs.astral.sh/uv/getting-started/installation/"
     fi
-done
-
-if [ -z "$PYTHON" ]; then
-    fail "Python 3.10+ is required but not found. Install from https://python.org"
 fi
-
-ok "Found $PYTHON ($($PYTHON --version 2>&1))"
 
 # ── Parse arguments ───────────────────────────────────────────────────
 INSTALL_MODE="dev"  # default: install everything
@@ -78,11 +71,11 @@ done
 
 info "Install mode: $INSTALL_MODE"
 
-# ── Create virtual environment (if not already in one) ────────────────
+# ── Create virtual environment with uv ────────────────────────────────
 if [ -z "${VIRTUAL_ENV:-}" ]; then
     if [ ! -d ".venv" ]; then
-        info "Creating virtual environment..."
-        $PYTHON -m venv .venv
+        info "Creating virtual environment with uv..."
+        uv venv --python ">=3.10"
         ok "Virtual environment created at .venv/"
     fi
     info "Activating virtual environment..."
@@ -92,30 +85,27 @@ else
     ok "Already in virtual environment: $VIRTUAL_ENV"
 fi
 
-# ── Upgrade pip ───────────────────────────────────────────────────────
-info "Upgrading pip..."
-pip install --upgrade pip --quiet
-ok "pip upgraded"
-
-# ── Install project ──────────────────────────────────────────────────
+# ── Install project with uv ─────────────────────────────────────────
 case "$INSTALL_MODE" in
     core)
         info "Installing core dependencies..."
-        pip install -e . --quiet
+        uv pip install -e .
         ;;
     playground)
         info "Installing core + playground dependencies..."
-        pip install -e ".[playground]" --quiet
+        uv pip install -e ".[playground]"
         ;;
     dev)
         info "Installing all dependencies (core + playground + dev)..."
-        pip install -e ".[dev]" --quiet
+        uv pip install -e ".[dev]"
         ;;
 esac
 ok "Dependencies installed"
 
 # ── Verify installation ──────────────────────────────────────────────
 info "Verifying installation..."
+
+PYTHON="$(which python)"
 
 $PYTHON -c "import bioinfo_code_mcp; print(f'  bioinfo_code_mcp {bioinfo_code_mcp.__version__}')" || fail "Core package import failed"
 $PYTHON -c "import httpx; print(f'  httpx {httpx.__version__}')" || fail "httpx not available"
@@ -143,7 +133,7 @@ fi
 
 # ── Run quick self-test ──────────────────────────────────────────────
 info "Running quick self-test..."
-$PYTHON -c "
+uv run python -c "
 from bioinfo_code_mcp.registry import Registry
 from bioinfo_code_mcp.config import ServerConfig
 from bioinfo_code_mcp.sandbox import Sandbox
@@ -173,7 +163,7 @@ echo "  Next steps:"
 echo ""
 if [ "$INSTALL_MODE" = "core" ]; then
     echo "    # Start the MCP server"
-    echo "    bioinfo-mcp"
+    echo "    ./run.sh server"
     echo ""
     echo "    # Run examples"
     echo "    ./run.sh examples"
