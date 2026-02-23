@@ -1,0 +1,33 @@
+[project]
+name = "nanbeige-ai-tutorial"
+version = "0.1.0"
+description = "Comprehensive tutorial for Nanbeige4.1-3B: agentic tool use, code generation, and reasoning with a 3B parameter model"
+requires-python = ">=3.10,<3.14"
+license = "Apache-2.0"
+dependencies = [
+    "torch>=2.1.0",
+    "transformers>=4.45.0",
+    "accelerate>=0.34.0",
+    "gradio>=4.0.0",
+    "jupyter",
+    "matplotlib",
+    "pandas",
+    "huggingface-hub>=0.25.0",
+    "sentencepiece",
+    "protobuf",
+]
+
+[project.optional-dependencies]
+vllm = ["vllm>=0.6.0", "openai"]
+quantize = ["bitsandbytes>=0.43.0", "auto-gptq"]
+dev = ["pytest", "ruff"]
+
+[project.scripts]
+nanbeige-app = "app:main"
+
+[tool.uv]
+python-preference = "only-managed"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
