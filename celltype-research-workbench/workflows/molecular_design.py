@@ -7,6 +7,7 @@ import numpy as np
 from utils.config import WorkbenchConfig
 from utils.celltype_agent import run_celltype_query
 from utils.state import save_report
+from utils.examples import MOLECULAR_EXAMPLES
 
 
 def render_molecular_design():
@@ -214,18 +215,34 @@ def _render_freeform_agent():
     st.subheader("Free-Form Molecular Design Agent")
     st.markdown("Ask any molecular biology design question in natural language.")
 
+    # Pre-built examples from gallery
+    with st.expander("📦 Load a pre-built example", expanded=False):
+        for ex_name, ex in MOLECULAR_EXAMPLES.items():
+            col_info, col_btn = st.columns([4, 1])
+            with col_info:
+                st.markdown(f"**{ex_name}**")
+                st.caption(ex["description"])
+            with col_btn:
+                if st.button("Load", key=f"mol_load_{ex_name}", use_container_width=True):
+                    st.session_state["_molecular_example_query"] = ex["query"]
+                    st.rerun()
+
+    # Additional inline examples
     examples = {
-        "Full Construct Design": "Design a complete expression construct for IKZF1 degradation domain: codon-optimize for E. coli BL21, add N-terminal His6-TEV tag, design Golden Gate assembly primers, and plan a colony PCR verification strategy.",
         "Mutagenesis Library": "Design a site-saturation mutagenesis library for BRD4 bromodomain residues 80-85 using NNK codons. Include primer design and expected library size.",
         "Reporter Assay": "Design a luciferase reporter construct for measuring CRBN-dependent degradation. Include CRE element, minimal promoter, and control constructs.",
     }
 
-    with st.expander("💡 Example Queries"):
-        for name, query in examples.items():
-            st.markdown(f"**{name}:** {query}")
+    with st.expander("💡 More example queries"):
+        for name, q in examples.items():
+            st.markdown(f"**{name}:** {q}")
+
+    # Use pre-loaded example query if available
+    default_query = st.session_state.pop("_molecular_example_query", "")
 
     query = st.text_area(
         "Your molecular design question",
+        value=default_query,
         height=120,
         placeholder="Ask anything about primer design, codon optimization, assembly planning, CRISPR design...",
     )

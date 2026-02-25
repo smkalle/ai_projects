@@ -15,6 +15,7 @@ from utils.sample_data import (
     generate_expression_data,
     generate_safety_profile,
 )
+from utils.examples import TARGET_EXAMPLES
 
 
 def render_target_prioritization():
@@ -24,6 +25,14 @@ def render_target_prioritization():
         "Prioritize degradation targets using DepMap essentiality, "
         "TCGA expression, co-essentiality networks, and safety profiling."
     )
+
+    # Show loaded-example banner
+    loaded = st.session_state.get("_loaded_example", "")
+    if loaded.startswith("target:"):
+        st.success(f"Example loaded: **{loaded.split(': ', 1)[1]}** — configuration pre-filled below.")
+        if st.button("Clear example", key="clear_target_ex"):
+            del st.session_state["_loaded_example"]
+            st.rerun()
 
     tab_config, tab_explore, tab_agent, tab_results = st.tabs([
         "📋 Configure", "📊 Data Explorer", "🤖 AI Agent", "📑 Results",
@@ -46,11 +55,27 @@ def _render_config_panel():
     """Configure target prioritization parameters."""
     st.subheader("Workflow Configuration")
 
+    # Load Example selector
+    with st.expander("📦 Load a pre-built example", expanded=False):
+        for ex_name, ex in TARGET_EXAMPLES.items():
+            col_info, col_btn = st.columns([4, 1])
+            with col_info:
+                st.markdown(f"**{ex_name}**")
+                st.caption(ex["description"])
+            with col_btn:
+                if st.button("Load", key=f"tgt_load_{ex_name}", use_container_width=True):
+                    st.session_state["target_config"] = ex["config"]
+                    st.session_state["_loaded_example"] = f"target: {ex_name}"
+                    st.rerun()
+
+    # Pre-fill from loaded example config
+    preloaded = st.session_state.get("target_config", {})
+
     col1, col2 = st.columns(2)
 
     with col1:
         st.markdown("#### Target Candidates")
-        default_genes = "IKZF1, GSPT1, CK1α, CRBN, MYC"
+        default_genes = ", ".join(preloaded["genes"]) if preloaded.get("genes") else "IKZF1, GSPT1, CK1α, CRBN, MYC"
         gene_input = st.text_area(
             "Gene symbols (comma-separated)",
             value=default_genes,

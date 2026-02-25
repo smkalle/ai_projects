@@ -34,6 +34,7 @@ def render_sidebar() -> str:
 
         pages = {
             "🏠 Dashboard": "dashboard",
+            "🚀 Quick Start": "quick_start",
             "🔬 Research Agent": "agent",
             "🎯 Target Prioritization": "target",
             "🧪 Resistance Biomarkers": "biomarker",

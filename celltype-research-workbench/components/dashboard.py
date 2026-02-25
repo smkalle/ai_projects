@@ -5,6 +5,7 @@ import streamlit as st
 from utils.config import WorkbenchConfig, TOOL_CATEGORIES, DATASETS
 from utils.celltype_agent import check_celltype_installed, run_ct_doctor
 from utils.state import list_sessions, list_reports
+from utils.examples import TARGET_EXAMPLES, BIOMARKER_EXAMPLES, COMBINATION_EXAMPLES
 
 
 def render_dashboard():
@@ -22,6 +23,21 @@ def render_dashboard():
         st.metric("Sessions", len(list_sessions()))
     with col4:
         st.metric("Reports", len(list_reports()))
+
+    st.divider()
+
+    # Quick Start banner
+    with st.container(border=True):
+        qs_col1, qs_col2 = st.columns([4, 1])
+        with qs_col1:
+            st.markdown("#### 🚀 New here? Start the Quick Start Tutorial")
+            st.caption(
+                "Interactive 7-step walkthrough + pre-built examples for every workflow. "
+                "Load a sample configuration with one click and explore real outputs."
+            )
+        with qs_col2:
+            st.markdown("")  # spacer
+            st.info("Select **🚀 Quick Start** in the sidebar")
 
     st.divider()
 
@@ -54,6 +70,32 @@ def render_dashboard():
             with st.expander(f"{cat} ({len(tools)} tools)"):
                 for tool in tools:
                     st.markdown(f"- {tool}")
+
+    st.divider()
+
+    # Featured Examples
+    st.subheader("Featured Examples — Load & Run")
+    st.caption("Pre-built configurations you can load into any workflow with one click.")
+    ex_cols = st.columns(3)
+
+    featured = [
+        ("🎯 BRD4 Molecular Glue", "target_config", "target",
+         TARGET_EXAMPLES["BRD4 Molecular Glue (Multiple Myeloma)"]),
+        ("🧪 CDK4/6i Resistance", "biomarker_config", "biomarker",
+         BIOMARKER_EXAMPLES["CDK4/6 Inhibitor Resistance (Breast Cancer)"]),
+        ("💊 KRAS G12C Combos", "combo_config", "combination",
+         COMBINATION_EXAMPLES["KRAS G12C Combinations (NSCLC)"]),
+    ]
+
+    for i, (title, state_key, workflow, ex) in enumerate(featured):
+        with ex_cols[i]:
+            with st.container(border=True):
+                st.markdown(f"**{title}**")
+                st.caption(ex["description"][:100] + "...")
+                if st.button("Load Example", key=f"dash_load_{i}", use_container_width=True):
+                    st.session_state[state_key] = ex["config"]
+                    st.session_state["_loaded_example"] = f"{workflow}: {title}"
+                    st.success(f"Loaded! Navigate to the workflow in the sidebar.")
 
     st.divider()
 

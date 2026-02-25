@@ -31,6 +31,7 @@ from components.data_explorer import render_data_explorer
 from components.data_management import render_data_management
 from components.reports import render_reports
 from components.help_page import render_help
+from components.quick_start import render_quick_start
 
 from workflows.target_prioritization import render_target_prioritization
 from workflows.resistance_biomarkers import render_resistance_biomarkers
@@ -121,6 +122,7 @@ def main():
     # Route to selected page
     page_router = {
         "dashboard": render_dashboard,
+        "quick_start": render_quick_start,
         "agent": render_agent_chat,
         "target": render_target_prioritization,
         "biomarker": render_resistance_biomarkers,

@@ -10,6 +10,7 @@ from utils.config import WorkbenchConfig
 from utils.celltype_agent import run_celltype_query
 from utils.state import save_report
 from utils.sample_data import generate_biomarker_panel, generate_dependency_scores
+from utils.examples import BIOMARKER_EXAMPLES
 
 
 def render_resistance_biomarkers():
@@ -19,6 +20,13 @@ def render_resistance_biomarkers():
         "Identify and validate resistance biomarkers using DepMap mutation sensitivity, "
         "PRISM viability, L1000 signatures, and TCGA stratification."
     )
+
+    loaded = st.session_state.get("_loaded_example", "")
+    if loaded.startswith("biomarker:"):
+        st.success(f"Example loaded: **{loaded.split(': ', 1)[1]}** — configuration pre-filled below.")
+        if st.button("Clear example", key="clear_bio_ex"):
+            del st.session_state["_loaded_example"]
+            st.rerun()
 
     tab_config, tab_explore, tab_agent, tab_results = st.tabs([
         "📋 Configure", "📊 Data Explorer", "🤖 AI Agent", "📑 Results",
@@ -40,6 +48,19 @@ def render_resistance_biomarkers():
 def _render_config():
     """Configure biomarker discovery parameters."""
     st.subheader("Biomarker Discovery Configuration")
+
+    # Load Example selector
+    with st.expander("📦 Load a pre-built example", expanded=False):
+        for ex_name, ex in BIOMARKER_EXAMPLES.items():
+            col_info, col_btn = st.columns([4, 1])
+            with col_info:
+                st.markdown(f"**{ex_name}**")
+                st.caption(ex["description"])
+            with col_btn:
+                if st.button("Load", key=f"bio_load_{ex_name}", use_container_width=True):
+                    st.session_state["biomarker_config"] = ex["config"]
+                    st.session_state["_loaded_example"] = f"biomarker: {ex_name}"
+                    st.rerun()
 
     col1, col2 = st.columns(2)
 
