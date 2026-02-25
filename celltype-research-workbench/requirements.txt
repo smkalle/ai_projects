@@ -1,0 +1,23 @@
+# Core dependencies
+streamlit>=1.40.0
+plotly>=5.24.0
+pandas>=2.2.0
+numpy>=1.26.0
+anthropic>=0.40.0
+biopython>=1.84
+requests>=2.32.0
+python-dotenv>=1.0.1
+
+# Streamlit widgets (optional but recommended)
+streamlit-option-menu>=0.4.0
+streamlit-ace>=0.1.1
+streamlit-aggrid>=1.0.5
+
+# Scientific computing (optional)
+# scipy>=1.12.0
+# scikit-learn>=1.4.0
+# gseapy>=1.1.0
+
+# Development (optional)
+# pytest>=8.0.0
+# ruff>=0.4.0
