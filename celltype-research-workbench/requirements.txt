@@ -1,0 +1,11 @@
+streamlit>=1.40.0
+plotly>=5.24.0
+pandas>=2.2.0
+numpy>=1.26.0
+anthropic>=0.40.0
+biopython>=1.84
+requests>=2.32.0
+python-dotenv>=1.0.1
+streamlit-option-menu>=0.4.0
+streamlit-ace>=0.1.1
+streamlit-aggrid>=1.0.5
