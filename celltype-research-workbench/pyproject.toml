@@ -1,0 +1,60 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "celltype-research-workbench"
+version = "1.0.0"
+description = "Interactive bioinformatics research workbench powered by celltype-cli"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Bioinformatics Research Team" },
+]
+keywords = ["bioinformatics", "drug-discovery", "celltype", "streamlit", "ai-agent"]
+
+dependencies = [
+    "streamlit>=1.40.0",
+    "plotly>=5.24.0",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "anthropic>=0.40.0",
+    "biopython>=1.84",
+    "requests>=2.32.0",
+    "python-dotenv>=1.0.1",
+]
+
+[project.optional-dependencies]
+widgets = [
+    "streamlit-option-menu>=0.4.0",
+    "streamlit-ace>=0.1.1",
+    "streamlit-aggrid>=1.0.5",
+]
+science = [
+    "scipy>=1.12.0",
+    "scikit-learn>=1.4.0",
+    "gseapy>=1.1.0",
+]
+dev = [
+    "celltype-research-workbench[widgets,science]",
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+]
+all = [
+    "celltype-research-workbench[widgets,science,dev]",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["utils", "components", "workflows"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
