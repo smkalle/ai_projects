@@ -4,12 +4,10 @@ import streamlit as st
 
 from utils.examples import (
     TUTORIAL_STEPS,
-    TARGET_EXAMPLES,
-    BIOMARKER_EXAMPLES,
-    COMBINATION_EXAMPLES,
-    LITERATURE_EXAMPLES,
-    MOLECULAR_EXAMPLES,
+    WORKFLOW_REGISTRY,
     CHAT_EXAMPLES,
+    load_example,
+    get_expected_result,
 )
 
 
@@ -119,109 +117,34 @@ def _render_example_gallery():
         "navigate to that workflow from the sidebar."
     )
 
-    # ----- Target Prioritization -----
-    st.markdown("---")
-    st.markdown("#### 🎯 Target Prioritization")
-    for name, ex in TARGET_EXAMPLES.items():
-        with st.container(border=True):
-            col_info, col_btn = st.columns([4, 1])
-            with col_info:
-                st.markdown(f"**{name}**")
-                st.caption(ex["description"])
-            with col_btn:
-                if st.button("Load", key=f"load_target_{name}", use_container_width=True):
-                    st.session_state["target_config"] = ex["config"]
-                    st.session_state["_loaded_example"] = f"target: {name}"
-                    st.success(f"Loaded! Go to **Target Prioritization** in the sidebar.")
+    # Data-driven loop over all workflows in the registry
+    for wf_id, wf in WORKFLOW_REGISTRY.items():
+        st.markdown("---")
+        st.markdown(f"#### {wf['icon']} {wf['label']}")
 
-            with st.expander("Preview query & expected output"):
-                st.markdown("**Agent Query:**")
-                st.code(ex["query"], language="text")
-                if "expected_result" in ex:
-                    st.markdown("**Expected Output (sample):**")
-                    st.dataframe(ex["expected_result"], use_container_width=True, hide_index=True)
+        for name, ex in wf["examples"].items():
+            with st.container(border=True):
+                col_info, col_btn = st.columns([4, 1])
+                with col_info:
+                    st.markdown(f"**{name}**")
+                    st.caption(ex["description"])
+                with col_btn:
+                    if st.button("Load", key=f"gallery_{wf_id}_{name}", use_container_width=True):
+                        load_example(wf_id, name, ex)
+                        st.success(f"Loaded! Go to **{wf['label']}** in the sidebar.")
 
-    # ----- Resistance Biomarkers -----
-    st.markdown("---")
-    st.markdown("#### 🧪 Resistance Biomarkers")
-    for name, ex in BIOMARKER_EXAMPLES.items():
-        with st.container(border=True):
-            col_info, col_btn = st.columns([4, 1])
-            with col_info:
-                st.markdown(f"**{name}**")
-                st.caption(ex["description"])
-            with col_btn:
-                if st.button("Load", key=f"load_bio_{name}", use_container_width=True):
-                    st.session_state["biomarker_config"] = ex["config"]
-                    st.session_state["_loaded_example"] = f"biomarker: {name}"
-                    st.success(f"Loaded! Go to **Resistance Biomarkers** in the sidebar.")
+                # Preview expander
+                expected_df = get_expected_result(ex)
+                has_expected = expected_df is not None
+                preview_label = "Preview query & expected output" if has_expected else "Preview query"
+                with st.expander(preview_label):
+                    st.markdown("**Agent Query:**")
+                    st.code(ex["query"], language="text")
+                    if has_expected:
+                        st.markdown("**Expected Output (sample):**")
+                        st.dataframe(expected_df, use_container_width=True, hide_index=True)
 
-            with st.expander("Preview query & expected output"):
-                st.markdown("**Agent Query:**")
-                st.code(ex["query"], language="text")
-                if "expected_result" in ex:
-                    st.markdown("**Expected Output (sample):**")
-                    st.dataframe(ex["expected_result"], use_container_width=True, hide_index=True)
-
-    # ----- Combination Strategy -----
-    st.markdown("---")
-    st.markdown("#### 💊 Combination Strategy")
-    for name, ex in COMBINATION_EXAMPLES.items():
-        with st.container(border=True):
-            col_info, col_btn = st.columns([4, 1])
-            with col_info:
-                st.markdown(f"**{name}**")
-                st.caption(ex["description"])
-            with col_btn:
-                if st.button("Load", key=f"load_combo_{name}", use_container_width=True):
-                    st.session_state["combo_config"] = ex["config"]
-                    st.session_state["_loaded_example"] = f"combination: {name}"
-                    st.success(f"Loaded! Go to **Combination Strategy** in the sidebar.")
-
-            with st.expander("Preview query & expected output"):
-                st.markdown("**Agent Query:**")
-                st.code(ex["query"], language="text")
-                if "expected_result" in ex:
-                    st.markdown("**Expected Output (sample):**")
-                    st.dataframe(ex["expected_result"], use_container_width=True, hide_index=True)
-
-    # ----- Literature Synthesis -----
-    st.markdown("---")
-    st.markdown("#### 📚 Literature Synthesis")
-    for name, ex in LITERATURE_EXAMPLES.items():
-        with st.container(border=True):
-            col_info, col_btn = st.columns([4, 1])
-            with col_info:
-                st.markdown(f"**{name}**")
-                st.caption(ex["description"])
-            with col_btn:
-                if st.button("Load", key=f"load_lit_{name}", use_container_width=True):
-                    st.session_state["lit_config"] = ex["config"]
-                    st.session_state["_loaded_example"] = f"literature: {name}"
-                    st.success(f"Loaded! Go to **Literature Synthesis** in the sidebar.")
-
-            with st.expander("Preview query"):
-                st.code(ex["query"], language="text")
-
-    # ----- Molecular Design -----
-    st.markdown("---")
-    st.markdown("#### 🧬 Molecular Design")
-    for name, ex in MOLECULAR_EXAMPLES.items():
-        with st.container(border=True):
-            col_info, col_btn = st.columns([4, 1])
-            with col_info:
-                st.markdown(f"**{name}**")
-                st.caption(ex["description"])
-            with col_btn:
-                if st.button("Load", key=f"load_mol_{name}", use_container_width=True):
-                    st.session_state["_molecular_example_query"] = ex["query"]
-                    st.session_state["_loaded_example"] = f"molecular: {name}"
-                    st.success(f"Loaded! Go to **Molecular Design → Free-Form Agent** in the sidebar.")
-
-            with st.expander("Preview query"):
-                st.code(ex["query"], language="text")
-
-    # ----- Agent Chat -----
+    # ----- Agent Chat (different structure — list not dict) -----
     st.markdown("---")
     st.markdown("#### 🔬 Research Agent Chat")
     cols = st.columns(2)

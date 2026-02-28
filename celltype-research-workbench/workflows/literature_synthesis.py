@@ -9,7 +9,7 @@ from datetime import datetime
 from utils.config import WorkbenchConfig
 from utils.celltype_agent import run_celltype_query
 from utils.state import save_report
-from utils.examples import LITERATURE_EXAMPLES
+from utils.examples import render_loaded_example_banner, render_example_loader
 
 
 def render_literature_synthesis():
@@ -20,12 +20,7 @@ def render_literature_synthesis():
         "and DepMap to build comprehensive target or indication profiles."
     )
 
-    loaded = st.session_state.get("_loaded_example", "")
-    if loaded.startswith("literature:"):
-        st.success(f"Example loaded: **{loaded.split(': ', 1)[1]}** — configuration pre-filled below.")
-        if st.button("Clear example", key="clear_lit_ex"):
-            del st.session_state["_loaded_example"]
-            st.rerun()
+    render_loaded_example_banner("literature")
 
     tab_config, tab_explore, tab_agent, tab_results = st.tabs([
         "📋 Configure", "📊 Knowledge Map", "🤖 AI Agent", "📑 Results",
@@ -48,18 +43,7 @@ def _render_config():
     """Configure literature synthesis parameters."""
     st.subheader("Synthesis Configuration")
 
-    # Load Example selector
-    with st.expander("📦 Load a pre-built example", expanded=False):
-        for ex_name, ex in LITERATURE_EXAMPLES.items():
-            col_info, col_btn = st.columns([4, 1])
-            with col_info:
-                st.markdown(f"**{ex_name}**")
-                st.caption(ex["description"])
-            with col_btn:
-                if st.button("Load", key=f"lit_load_{ex_name}", use_container_width=True):
-                    st.session_state["lit_config"] = ex["config"]
-                    st.session_state["_loaded_example"] = f"literature: {ex_name}"
-                    st.rerun()
+    render_example_loader("literature")
 
     col1, col2 = st.columns(2)
 

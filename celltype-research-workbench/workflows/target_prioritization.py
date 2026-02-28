@@ -15,7 +15,7 @@ from utils.sample_data import (
     generate_expression_data,
     generate_safety_profile,
 )
-from utils.examples import TARGET_EXAMPLES
+from utils.examples import render_loaded_example_banner, render_example_loader, get_expected_result, TARGET_EXAMPLES
 
 
 def render_target_prioritization():
@@ -26,13 +26,7 @@ def render_target_prioritization():
         "TCGA expression, co-essentiality networks, and safety profiling."
     )
 
-    # Show loaded-example banner
-    loaded = st.session_state.get("_loaded_example", "")
-    if loaded.startswith("target:"):
-        st.success(f"Example loaded: **{loaded.split(': ', 1)[1]}** — configuration pre-filled below.")
-        if st.button("Clear example", key="clear_target_ex"):
-            del st.session_state["_loaded_example"]
-            st.rerun()
+    render_loaded_example_banner("target")
 
     tab_config, tab_explore, tab_agent, tab_results = st.tabs([
         "📋 Configure", "📊 Data Explorer", "🤖 AI Agent", "📑 Results",
@@ -55,18 +49,7 @@ def _render_config_panel():
     """Configure target prioritization parameters."""
     st.subheader("Workflow Configuration")
 
-    # Load Example selector
-    with st.expander("📦 Load a pre-built example", expanded=False):
-        for ex_name, ex in TARGET_EXAMPLES.items():
-            col_info, col_btn = st.columns([4, 1])
-            with col_info:
-                st.markdown(f"**{ex_name}**")
-                st.caption(ex["description"])
-            with col_btn:
-                if st.button("Load", key=f"tgt_load_{ex_name}", use_container_width=True):
-                    st.session_state["target_config"] = ex["config"]
-                    st.session_state["_loaded_example"] = f"target: {ex_name}"
-                    st.rerun()
+    render_example_loader("target")
 
     # Pre-fill from loaded example config
     preloaded = st.session_state.get("target_config", {})
@@ -296,19 +279,12 @@ def _render_results_panel():
     if not results:
         st.info("Run an agent analysis first to see results here.")
 
-        # Show example result
+        # Show example result from first available example
         st.markdown("#### Example Output Format")
-        example_df = pd.DataFrame({
-            "Rank": [1, 2, 3],
-            "Target": ["IKZF1", "GSPT1", "CK1α"],
-            "Essentiality (CERES)": [-1.2, -0.9, -0.7],
-            "Expression (TPM)": [45.2, 12.8, 89.1],
-            "Co-essentiality Score": [0.82, 0.75, 0.61],
-            "Safety": ["Pass", "Pass", "Review"],
-            "Literature Support": ["Strong (15 papers)", "Moderate (8 papers)", "Emerging (3 papers)"],
-            "Overall Score": [0.95, 0.87, 0.72],
-        })
-        st.dataframe(example_df, use_container_width=True, hide_index=True)
+        first_ex = next(iter(TARGET_EXAMPLES.values()))
+        example_df = get_expected_result(first_ex)
+        if example_df is not None:
+            st.dataframe(example_df.head(3), use_container_width=True, hide_index=True)
         return
 
     st.markdown("#### Latest Analysis")

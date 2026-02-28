@@ -5,7 +5,7 @@ import streamlit as st
 from utils.config import WorkbenchConfig, TOOL_CATEGORIES, DATASETS
 from utils.celltype_agent import check_celltype_installed, run_ct_doctor
 from utils.state import list_sessions, list_reports
-from utils.examples import TARGET_EXAMPLES, BIOMARKER_EXAMPLES, COMBINATION_EXAMPLES
+from utils.examples import get_featured_examples, load_example, WORKFLOW_REGISTRY
 
 
 def render_dashboard():
@@ -76,26 +76,18 @@ def render_dashboard():
     # Featured Examples
     st.subheader("Featured Examples — Load & Run")
     st.caption("Pre-built configurations you can load into any workflow with one click.")
-    ex_cols = st.columns(3)
+    featured = get_featured_examples()
+    ex_cols = st.columns(min(len(featured), 3))
 
-    featured = [
-        ("🎯 BRD4 Molecular Glue", "target_config", "target",
-         TARGET_EXAMPLES["BRD4 Molecular Glue (Multiple Myeloma)"]),
-        ("🧪 CDK4/6i Resistance", "biomarker_config", "biomarker",
-         BIOMARKER_EXAMPLES["CDK4/6 Inhibitor Resistance (Breast Cancer)"]),
-        ("💊 KRAS G12C Combos", "combo_config", "combination",
-         COMBINATION_EXAMPLES["KRAS G12C Combinations (NSCLC)"]),
-    ]
-
-    for i, (title, state_key, workflow, ex) in enumerate(featured):
-        with ex_cols[i]:
+    for i, (wf_id, ex_name, ex) in enumerate(featured):
+        wf = WORKFLOW_REGISTRY[wf_id]
+        with ex_cols[i % 3]:
             with st.container(border=True):
-                st.markdown(f"**{title}**")
+                st.markdown(f"**{wf['icon']} {ex_name}**")
                 st.caption(ex["description"][:100] + "...")
-                if st.button("Load Example", key=f"dash_load_{i}", use_container_width=True):
-                    st.session_state[state_key] = ex["config"]
-                    st.session_state["_loaded_example"] = f"{workflow}: {title}"
-                    st.success(f"Loaded! Navigate to the workflow in the sidebar.")
+                if st.button("Load Example", key=f"dash_load_{wf_id}", use_container_width=True):
+                    load_example(wf_id, ex_name, ex)
+                    st.success(f"Loaded! Navigate to **{wf['label']}** in the sidebar.")
 
     st.divider()
 

@@ -4,11 +4,18 @@ Each example includes:
 - config: pre-filled workflow configuration (matches session_state keys)
 - query: ready-to-run agent query
 - description: short human-readable summary
-- expected_result: sample output to show in the UI before running the agent
+- _expected_result_data: raw dict data for lazy DataFrame construction
 """
 
 import pandas as pd
-import numpy as np
+import streamlit as st
+
+
+# ============================================================================
+# Session state key constant
+# ============================================================================
+
+LOADED_EXAMPLE_KEY = "_loaded_example"
 
 
 # ============================================================================
@@ -21,6 +28,7 @@ TARGET_EXAMPLES = {
             "Evaluate BRD4 and related bromodomain proteins as molecular glue "
             "degradation targets in multiple myeloma using CRBN as the E3 ligase."
         ),
+        "featured": True,
         "config": {
             "genes": ["BRD4", "BRD2", "BRD3", "IKZF1", "GSPT1"],
             "e3_ligase": "CRBN (Cereblon)",
@@ -41,7 +49,7 @@ TARGET_EXAMPLES = {
             "Output a ranked table with evidence scores, safety flags, and "
             "a final recommendation with rationale."
         ),
-        "expected_result": pd.DataFrame({
+        "_expected_result_data": {
             "Rank": [1, 2, 3, 4, 5],
             "Target": ["IKZF1", "GSPT1", "BRD4", "BRD2", "BRD3"],
             "Essentiality (CERES)": [-1.32, -0.95, -0.88, -0.42, -0.31],
@@ -52,7 +60,7 @@ TARGET_EXAMPLES = {
                            "Strong (45 papers)", "Moderate (9 papers)",
                            "Weak (4 papers)"],
             "Overall Score": [0.95, 0.88, 0.84, 0.65, 0.52],
-        }),
+        },
     },
     "KRAS G12C PROTAC (NSCLC)": {
         "description": (
@@ -77,7 +85,7 @@ TARGET_EXAMPLES = {
             "check TCGA expression and safety flags. Rank targets by druggability, "
             "essentiality, and safety. Include known PROTAC efforts from literature."
         ),
-        "expected_result": pd.DataFrame({
+        "_expected_result_data": {
             "Rank": [1, 2, 3, 4, 5],
             "Target": ["KRAS", "EGFR", "CDK4", "BRAF", "MYC"],
             "Essentiality (CERES)": [-1.45, -0.98, -0.72, -0.65, -1.61],
@@ -88,7 +96,7 @@ TARGET_EXAMPLES = {
                            "Moderate (14 papers)", "Strong (31 papers)",
                            "Strong (89 papers)"],
             "Overall Score": [0.93, 0.85, 0.78, 0.74, 0.62],
-        }),
+        },
     },
 }
 
@@ -103,6 +111,7 @@ BIOMARKER_EXAMPLES = {
             "Build a 10-gene resistance biomarker panel for CDK4/6 inhibitor "
             "therapy in HR+ breast cancer."
         ),
+        "featured": True,
         "config": {
             "compound_class": "CDK4/6 Inhibitor",
             "compound_name": "Palbociclib",
@@ -122,7 +131,7 @@ BIOMARKER_EXAMPLES = {
             "stratification. Output a ranked panel with mutation frequency, effect sizes, "
             "FDR values, DepMap correlation, and clinical evidence levels."
         ),
-        "expected_result": pd.DataFrame({
+        "_expected_result_data": {
             "Rank": list(range(1, 11)),
             "Gene": ["RB1", "CCNE1", "CDKN2A", "FGFR1", "PIK3CA",
                       "ESR1", "TP53", "PTEN", "MYC", "AKT1"],
@@ -135,7 +144,7 @@ BIOMARKER_EXAMPLES = {
             "Clinical Evidence": ["Strong", "Strong", "Moderate", "Moderate",
                                    "Strong", "Strong", "Moderate", "Weak",
                                    "Emerging", "Emerging"],
-        }),
+        },
     },
     "BET Inhibitor Resistance (AML)": {
         "description": (
@@ -160,7 +169,7 @@ BIOMARKER_EXAMPLES = {
             "Validate with TCGA stratification. Output ranked table with mutation frequency, "
             "effect sizes, FDR, and clinical evidence."
         ),
-        "expected_result": pd.DataFrame({
+        "_expected_result_data": {
             "Rank": list(range(1, 11)),
             "Gene": ["TP53", "DNMT3A", "NPM1", "FLT3", "IDH1",
                       "IDH2", "NRAS", "KRAS", "RUNX1", "ASXL1"],
@@ -173,7 +182,7 @@ BIOMARKER_EXAMPLES = {
             "Clinical Evidence": ["Strong", "Moderate", "Strong", "Strong",
                                    "Moderate", "Moderate", "Weak",
                                    "Emerging", "Weak", "Emerging"],
-        }),
+        },
     },
 }
 
@@ -205,7 +214,7 @@ COMBINATION_EXAMPLES = {
             "Prioritize by therapeutic window and safety profile. "
             "Include Bliss synergy predictions and clinical evidence for each combination."
         ),
-        "expected_result": pd.DataFrame({
+        "_expected_result_data": {
             "Rank": [1, 2, 3, 4, 5],
             "Combination Partner": ["Venetoclax (BCL2i)", "Azacitidine (DNMTi)",
                                      "Ruxolitinib (JAKi)", "Anti-PD1",
@@ -222,13 +231,14 @@ COMBINATION_EXAMPLES = {
                 "Immune checkpoint + transcriptional reprogramming",
                 "MAPK pathway co-dependency in RAS-mutant AML",
             ],
-        }),
+        },
     },
     "KRAS G12C Combinations (NSCLC)": {
         "description": (
             "Identify synergistic partners for a KRAS G12C inhibitor in "
             "non-small cell lung cancer."
         ),
+        "featured": True,
         "config": {
             "lead_compound": "KRAS G12C inhibitor (Sotorasib-class)",
             "lead_target": "KRAS G12C",
@@ -244,7 +254,7 @@ COMBINATION_EXAMPLES = {
             "resistance using DepMap co-dependency, Reactome pathways, and ClinicalTrials.gov. "
             "Include clinical evidence and mechanistic rationale for each."
         ),
-        "expected_result": pd.DataFrame({
+        "_expected_result_data": {
             "Rank": [1, 2, 3, 4, 5],
             "Combination Partner": ["SHP2 inhibitor", "MEK inhibitor",
                                      "Anti-EGFR (Cetuximab)", "CDK4/6 inhibitor",
@@ -261,7 +271,7 @@ COMBINATION_EXAMPLES = {
                 "Cell cycle arrest synergy; overcomes adaptive resistance",
                 "Blocks RAS-GTP loading; complementary mechanism",
             ],
-        }),
+        },
     },
 }
 
@@ -453,7 +463,10 @@ TUTORIAL_STEPS = [
             "flags, and return a structured answer with citations."
         ),
         "action": "agent",
-        "example_query": CHAT_EXAMPLES[0]["query"],
+        "example_query": (
+            "Is GSPT1 a good molecular glue degradation target for AML? "
+            "Check DepMap essentiality, safety flags, and recent literature."
+        ),
     },
     {
         "step": 4,
@@ -513,13 +526,103 @@ TUTORIAL_STEPS = [
 ]
 
 
-def get_all_examples() -> dict:
-    """Return all examples organized by workflow."""
-    return {
-        "target": TARGET_EXAMPLES,
-        "biomarker": BIOMARKER_EXAMPLES,
-        "combination": COMBINATION_EXAMPLES,
-        "literature": LITERATURE_EXAMPLES,
-        "molecular": MOLECULAR_EXAMPLES,
-        "chat": CHAT_EXAMPLES,
+# ============================================================================
+# Workflow Registry — single source of truth
+# ============================================================================
+
+WORKFLOW_REGISTRY = {
+    "target": {
+        "config_key": "target_config",
+        "label": "Target Prioritization",
+        "icon": "🎯",
+        "examples": TARGET_EXAMPLES,
+    },
+    "biomarker": {
+        "config_key": "biomarker_config",
+        "label": "Resistance Biomarkers",
+        "icon": "🧪",
+        "examples": BIOMARKER_EXAMPLES,
+    },
+    "combination": {
+        "config_key": "combo_config",
+        "label": "Combination Strategy",
+        "icon": "💊",
+        "examples": COMBINATION_EXAMPLES,
+    },
+    "literature": {
+        "config_key": "lit_config",
+        "label": "Literature Synthesis",
+        "icon": "📚",
+        "examples": LITERATURE_EXAMPLES,
+    },
+    "molecular": {
+        "config_key": "_molecular_example_query",
+        "label": "Molecular Design",
+        "icon": "🧬",
+        "examples": MOLECULAR_EXAMPLES,
+        "loads_query": True,
+    },
+}
+
+
+# ============================================================================
+# Shared UI helpers
+# ============================================================================
+
+def get_expected_result(example: dict) -> pd.DataFrame | None:
+    """Lazily build a DataFrame from raw dict data. Returns None if no data."""
+    data = example.get("_expected_result_data")
+    if data is None:
+        return None
+    return pd.DataFrame(data)
+
+
+def load_example(workflow_id: str, example_name: str, example: dict) -> None:
+    """Load an example into session state for a given workflow."""
+    wf = WORKFLOW_REGISTRY[workflow_id]
+    config_key = wf["config_key"]
+    if wf.get("loads_query"):
+        st.session_state[config_key] = example["query"]
+    else:
+        st.session_state[config_key] = example["config"]
+    st.session_state[LOADED_EXAMPLE_KEY] = {
+        "workflow": workflow_id,
+        "name": example_name,
     }
+
+
+def render_loaded_example_banner(workflow_id: str) -> None:
+    """Show a banner if an example is loaded for this workflow, with a clear button."""
+    loaded = st.session_state.get(LOADED_EXAMPLE_KEY)
+    if not isinstance(loaded, dict) or loaded.get("workflow") != workflow_id:
+        return
+    st.success(f"Example loaded: **{loaded['name']}** — configuration pre-filled below.")
+    if st.button("Clear example", key=f"clear_{workflow_id}_ex"):
+        del st.session_state[LOADED_EXAMPLE_KEY]
+        st.rerun()
+
+
+def render_example_loader(workflow_id: str) -> None:
+    """Render a 'Load a pre-built example' expander for a workflow config panel."""
+    wf = WORKFLOW_REGISTRY[workflow_id]
+    examples = wf["examples"]
+    with st.expander("📦 Load a pre-built example", expanded=False):
+        for ex_name, ex in examples.items():
+            col_info, col_btn = st.columns([4, 1])
+            with col_info:
+                st.markdown(f"**{ex_name}**")
+                st.caption(ex["description"])
+            with col_btn:
+                if st.button("Load", key=f"{workflow_id}_load_{ex_name}", use_container_width=True):
+                    load_example(workflow_id, ex_name, ex)
+                    st.rerun()
+
+
+def get_featured_examples() -> list[tuple[str, str, dict]]:
+    """Return examples marked as featured: list of (workflow_id, example_name, example)."""
+    featured = []
+    for wf_id, wf in WORKFLOW_REGISTRY.items():
+        for ex_name, ex in wf["examples"].items():
+            if ex.get("featured"):
+                featured.append((wf_id, ex_name, ex))
+    return featured

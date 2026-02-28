@@ -7,7 +7,7 @@ import numpy as np
 from utils.config import WorkbenchConfig
 from utils.celltype_agent import run_celltype_query
 from utils.state import save_report
-from utils.examples import MOLECULAR_EXAMPLES
+from utils.examples import render_example_loader
 
 
 def render_molecular_design():
@@ -215,17 +215,7 @@ def _render_freeform_agent():
     st.subheader("Free-Form Molecular Design Agent")
     st.markdown("Ask any molecular biology design question in natural language.")
 
-    # Pre-built examples from gallery
-    with st.expander("📦 Load a pre-built example", expanded=False):
-        for ex_name, ex in MOLECULAR_EXAMPLES.items():
-            col_info, col_btn = st.columns([4, 1])
-            with col_info:
-                st.markdown(f"**{ex_name}**")
-                st.caption(ex["description"])
-            with col_btn:
-                if st.button("Load", key=f"mol_load_{ex_name}", use_container_width=True):
-                    st.session_state["_molecular_example_query"] = ex["query"]
-                    st.rerun()
+    render_example_loader("molecular")
 
     # Additional inline examples
     examples = {
