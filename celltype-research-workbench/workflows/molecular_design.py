@@ -8,6 +8,7 @@ from utils.config import WorkbenchConfig
 from utils.celltype_agent import run_celltype_query
 from utils.state import save_report
 from utils.examples import render_example_loader
+from components.design_system import render_empty_state
 
 
 def render_molecular_design():

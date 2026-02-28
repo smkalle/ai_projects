@@ -11,6 +11,7 @@ from utils.celltype_agent import run_celltype_query
 from utils.state import save_report
 from utils.sample_data import generate_combination_data, generate_prism_viability
 from utils.examples import render_loaded_example_banner, render_example_loader
+from components.design_system import apply_plotly_theme, COLORS, render_empty_state
 
 
 def render_combination_strategy():
@@ -115,13 +116,14 @@ def _render_explorer():
         color="Synergy Classification",
         title="Combination Synergy Scores (Bliss Independence)",
         color_discrete_map={
-            "Synergistic": "#27ae60",
-            "Additive": "#f39c12",
-            "Antagonistic": "#e74c3c",
+            "Synergistic": COLORS["success"],
+            "Additive": COLORS["warning"],
+            "Antagonistic": COLORS["error"],
         },
     )
     fig_synergy.add_hline(y=0, line_dash="dash", line_color="gray")
     fig_synergy.update_layout(height=400)
+    apply_plotly_theme(fig_synergy)
     st.plotly_chart(fig_synergy, use_container_width=True)
 
     # Full combo table
@@ -139,6 +141,7 @@ def _render_explorer():
         title="PRISM Drug Viability Across Cell Lines",
     )
     fig_prism.update_layout(height=500)
+    apply_plotly_theme(fig_prism)
     st.plotly_chart(fig_prism, use_container_width=True)
 
     # Clinical stage distribution
@@ -152,6 +155,7 @@ def _render_explorer():
         color=stage_counts.index,
         color_discrete_sequence=px.colors.qualitative.Pastel,
     )
+    apply_plotly_theme(fig_stages)
     st.plotly_chart(fig_stages, use_container_width=True)
 
     col1, col2 = st.columns(2)
@@ -222,7 +226,11 @@ def _render_results():
 
     results = st.session_state.get("combo_results")
     if not results:
-        st.info("Run an agent analysis to see results here.")
+        render_empty_state(
+            headline="No results yet",
+            description="Run an agent analysis from the AI Agent tab to see results here.",
+            icon="📑",
+        )
         combo_df = generate_combination_data()
         st.markdown("#### Example Output")
         st.dataframe(combo_df, use_container_width=True, hide_index=True)

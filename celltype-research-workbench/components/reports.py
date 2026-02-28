@@ -4,6 +4,7 @@ import streamlit as st
 from pathlib import Path
 
 from utils.state import list_sessions, list_reports, load_session, save_session
+from components.design_system import render_empty_state
 
 
 def render_reports():
@@ -11,7 +12,7 @@ def render_reports():
     st.title("📝 Reports & Sessions")
     st.caption("Manage saved research sessions and generated reports.")
 
-    tab_sessions, tab_reports = st.tabs(["🔄 Sessions", "📄 Reports"])
+    tab_sessions, tab_reports = st.tabs(["Sessions", "Reports"])
 
     with tab_sessions:
         _render_sessions()
@@ -26,14 +27,18 @@ def _render_sessions():
 
     col1, col2 = st.columns([1, 4])
     with col1:
-        if st.button("💾 Save Current Session", use_container_width=True):
+        if st.button("Save current session", type="primary", use_container_width=True):
             path = save_session()
-            st.success(f"Session saved!")
+            st.success("Session saved!")
 
     sessions = list_sessions()
 
     if not sessions:
-        st.info("No saved sessions yet. Your sessions will be auto-saved as you work.")
+        render_empty_state(
+            headline="No saved sessions yet",
+            description="Sessions are auto-saved as you work. You can also save manually using the button above.",
+            icon="🔄",
+        )
         return
 
     for session in sessions:
@@ -41,7 +46,7 @@ def _render_sessions():
             col1, col2, col3 = st.columns([3, 1, 1])
             with col1:
                 st.markdown(f"**{session['name']}**")
-                st.caption(f"ID: {session['id']} | Saved: {session['saved_at']}")
+                st.caption(f"ID: {session['id']} · Saved: {session['saved_at']}")
             with col2:
                 st.metric("Queries", session["queries"])
             with col3:
@@ -59,7 +64,7 @@ def _render_sessions():
                         st.rerun()
 
     st.divider()
-    st.markdown("#### Session Tips")
+    st.markdown("#### Tips")
     st.markdown(
         "- Sessions are auto-saved after each agent query\n"
         "- Use the chat interface (`/agents 3 query`) for parallel agent runs\n"
@@ -75,7 +80,11 @@ def _render_reports():
     reports = list_reports()
 
     if not reports:
-        st.info("No reports generated yet. Run any workflow to generate a report.")
+        render_empty_state(
+            headline="No reports generated yet",
+            description="Run any workflow to automatically generate a report. Reports are saved as Markdown or HTML.",
+            icon="📄",
+        )
         return
 
     for report in reports:
@@ -83,20 +92,20 @@ def _render_reports():
             col1, col2, col3 = st.columns([3, 1, 1])
             with col1:
                 st.markdown(f"**{report['name']}**")
-                st.caption(f"Format: {report['format'].upper()} | Size: {report['size']} | Modified: {report['modified']}")
+                st.caption(f"Format: {report['format'].upper()} · Size: {report['size']} · Modified: {report['modified']}")
             with col2:
                 path = Path(report["path"])
                 if path.exists():
                     content = path.read_text()
                     st.download_button(
-                        "📥 Download",
+                        "Download",
                         content,
                         f"{report['name']}.{report['format']}",
                         key=f"dl_{report['name']}",
                     )
             with col3:
-                if st.button("👁 View", key=f"view_{report['name']}"):
-                    st.session_state[f"_view_report"] = report["path"]
+                if st.button("View", key=f"view_{report['name']}"):
+                    st.session_state["_view_report"] = report["path"]
 
     # Report viewer
     view_path = st.session_state.get("_view_report")
@@ -112,7 +121,7 @@ def _render_reports():
                 st.components.v1.html(content, height=600, scrolling=True)
             else:
                 st.code(content)
-        if st.button("Close Viewer"):
+        if st.button("Close viewer"):
             del st.session_state["_view_report"]
             st.rerun()
 

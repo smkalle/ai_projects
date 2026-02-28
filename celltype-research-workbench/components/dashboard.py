@@ -6,6 +6,7 @@ from utils.config import WorkbenchConfig, TOOL_CATEGORIES, DATASETS
 from utils.celltype_agent import check_celltype_installed, run_ct_doctor
 from utils.state import list_sessions, list_reports
 from utils.examples import get_featured_examples, load_example, WORKFLOW_REGISTRY
+from components.design_system import render_status_badge
 
 
 def render_dashboard():
@@ -13,7 +14,7 @@ def render_dashboard():
     st.title("🧬 Bioinformatics Research Workbench")
     st.caption("Powered by CellType CLI — Autonomous AI Agent for Drug Discovery")
 
-    # Top metrics row
+    # Top metrics row — KPI → trend → detail hierarchy
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("Total Tools", "190+", help="Pre-integrated bioinformatics tools")
@@ -46,7 +47,7 @@ def render_dashboard():
 
     with col_left:
         st.subheader("Quick Start Workflows")
-        st.markdown("Click any workflow to jump directly to a pre-configured research pipeline.")
+        st.caption("Jump directly to a pre-configured research pipeline.")
 
         workflows = [
             ("🎯 Target Prioritization", "Prioritize degradation targets using DepMap co-essentiality, TCGA expression, and safety flags.", "target"),
@@ -74,7 +75,7 @@ def render_dashboard():
     st.divider()
 
     # Featured Examples
-    st.subheader("Featured Examples — Load & Run")
+    st.subheader("Featured Examples")
     st.caption("Pre-built configurations you can load into any workflow with one click.")
     featured = get_featured_examples()
     ex_cols = st.columns(min(len(featured), 3))
@@ -85,13 +86,13 @@ def render_dashboard():
             with st.container(border=True):
                 st.markdown(f"**{wf['icon']} {ex_name}**")
                 st.caption(ex["description"][:100] + "...")
-                if st.button("Load Example", key=f"dash_load_{wf_id}", use_container_width=True):
+                if st.button("Load example", key=f"dash_load_{wf_id}", use_container_width=True):
                     load_example(wf_id, ex_name, ex)
                     st.success(f"Loaded! Navigate to **{wf['label']}** in the sidebar.")
 
     st.divider()
 
-    # Installation & Setup Guide
+    # Setup Checklist — status badges
     st.subheader("Setup Checklist")
     config = WorkbenchConfig.load()
     ct_info = check_celltype_installed()
@@ -105,9 +106,9 @@ def render_dashboard():
     ]
 
     for step_name, done, instruction in steps:
-        icon = "✅" if done else "⬜"
-        status = "" if done else f" — {instruction}"
-        st.markdown(f"{icon} **{step_name}**{status}")
+        badge = render_status_badge("Done", "success") if done else render_status_badge("Pending", "warning")
+        detail = "" if done else f" — {instruction}"
+        st.markdown(f"{badge} **{step_name}**{detail}", unsafe_allow_html=True)
 
     # Dataset overview
     st.divider()
@@ -123,7 +124,7 @@ def render_dashboard():
 
 
 def _render_health_check():
-    """Render a compact health check panel."""
+    """Render a compact health check panel with status badges."""
     config = WorkbenchConfig.load()
     ct_info = check_celltype_installed()
 
@@ -135,10 +136,10 @@ def _render_health_check():
     ]
 
     for name, ok, detail in checks:
-        icon = "🟢" if ok else "🔴"
-        st.markdown(f"{icon} **{name}:** {detail}")
+        badge = render_status_badge(detail, "success" if ok else "error")
+        st.markdown(f"**{name}** {badge}", unsafe_allow_html=True)
 
-    if st.button("Run Full Diagnostics (`ct doctor`)"):
+    if st.button("Run diagnostics", help="Run ct doctor to check full system health"):
         with st.spinner("Running ct doctor..."):
             health = run_ct_doctor()
         if health.get("issues"):

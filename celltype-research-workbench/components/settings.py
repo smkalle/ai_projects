@@ -28,21 +28,22 @@ def render_settings():
     with tab_advanced:
         _render_advanced_settings(config)
 
+    # Button hierarchy: primary (Save), secondary (Reset), secondary (Doctor)
     st.divider()
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("💾 Save Configuration", type="primary", use_container_width=True):
+        if st.button("Save configuration", type="primary", use_container_width=True):
             config.save()
             st.success("Configuration saved successfully!")
             st.rerun()
     with col2:
-        if st.button("🔄 Reset to Defaults", use_container_width=True):
+        if st.button("Reset to defaults", use_container_width=True):
             default_config = WorkbenchConfig()
             default_config.save()
             st.info("Configuration reset to defaults.")
             st.rerun()
     with col3:
-        if st.button("🩺 Run ct doctor", use_container_width=True):
+        if st.button("Run diagnostics", use_container_width=True):
             from utils.celltype_agent import run_ct_doctor
             with st.spinner("Running diagnostics..."):
                 health = run_ct_doctor()

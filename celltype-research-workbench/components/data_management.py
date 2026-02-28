@@ -1,10 +1,10 @@
 """Data Management page — dataset downloads, paths, and status."""
 
 import streamlit as st
-import subprocess
 
 from utils.config import WorkbenchConfig, DATASETS, ensure_dirs
 from utils.celltype_agent import check_celltype_installed
+from components.design_system import render_status_badge, render_empty_state
 
 
 def render_data_management():
@@ -13,7 +13,7 @@ def render_data_management():
     st.caption("Download, configure, and manage local datasets for offline analysis.")
 
     tab_status, tab_download, tab_config = st.tabs([
-        "📊 Dataset Status", "📥 Download Datasets", "⚙️ Path Configuration",
+        "Dataset Status", "Download Datasets", "Path Configuration",
     ])
 
     with tab_status:
@@ -27,7 +27,7 @@ def render_data_management():
 
 
 def _render_status():
-    """Show dataset availability status."""
+    """Show dataset availability status with badges."""
     st.subheader("Dataset Availability")
 
     config = WorkbenchConfig.load()
@@ -41,17 +41,17 @@ def _render_status():
 
     for key, ds in DATASETS.items():
         path = path_map.get(key, "")
-        status = "🟢 Configured" if path else "🔴 Not configured"
+        badge = render_status_badge("Configured", "success") if path else render_status_badge("Not configured", "warning")
 
         with st.container(border=True):
             col1, col2 = st.columns([3, 1])
             with col1:
-                st.markdown(f"**{ds['name']}** — {status}")
+                st.markdown(f"**{ds['name']}** {badge}", unsafe_allow_html=True)
                 st.caption(ds["description"])
                 if path:
                     st.code(path, language=None)
                 else:
-                    st.caption(f"Size: {ds['size']} | Command: `{ds['command']}`")
+                    st.caption(f"Size: {ds['size']} · Command: `{ds['command']}`")
             with col2:
                 st.markdown(f"**{ds['size']}**")
 
@@ -70,16 +70,16 @@ def _render_download():
 
     ct = check_celltype_installed()
     if not ct["installed"]:
-        st.warning(
-            "celltype-cli is not installed. Install it first:\n\n"
-            "```bash\npip install celltype-cli\n```"
+        render_empty_state(
+            headline="celltype-cli not installed",
+            description="Install celltype-cli first, then come back here to download datasets.",
+            icon="🖥️",
         )
-        st.markdown("After installation, come back here to download datasets.")
+        st.code("pip install celltype-cli", language="bash")
         return
 
-    st.markdown(
-        "Click below to generate terminal commands for dataset downloads. "
-        "These commands should be run in your terminal (not in the browser)."
+    st.caption(
+        "Run these commands in your terminal to download datasets."
     )
 
     for key, ds in DATASETS.items():
@@ -87,7 +87,7 @@ def _render_download():
             col1, col2 = st.columns([3, 1])
             with col1:
                 st.markdown(f"**{ds['name']}**")
-                st.caption(f"{ds['description']}")
+                st.caption(ds["description"])
             with col2:
                 st.code(ds["command"], language="bash")
 
@@ -107,7 +107,7 @@ echo "Done! Configure paths with: ct config set data.<name> /path/"
 """
     st.code(script, language="bash")
     st.download_button(
-        "📥 Download Script",
+        "Download script",
         script,
         "download_datasets.sh",
         "text/plain",
@@ -120,7 +120,7 @@ def _render_path_config():
 
     config = WorkbenchConfig.load()
 
-    st.markdown("Point to your locally downloaded datasets:")
+    st.caption("Point to your locally downloaded datasets:")
 
     config.data_dir = st.text_input(
         "Base Data Directory",
@@ -145,14 +145,14 @@ def _render_path_config():
         placeholder="e.g., /data/msigdb/",
     )
 
-    if st.button("💾 Save Paths", type="primary"):
+    if st.button("Save paths", type="primary"):
         config.save()
         st.success("Dataset paths saved!")
 
     st.divider()
 
     st.markdown("#### CLI Path Configuration")
-    st.markdown("You can also set paths via the command line:")
+    st.caption("You can also set paths via the command line:")
     st.code("""ct config set data.depmap /path/to/depmap/
 ct config set data.prism /path/to/prism/
 ct config set data.msigdb /path/to/msigdb/""", language="bash")

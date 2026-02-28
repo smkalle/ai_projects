@@ -16,6 +16,7 @@ from utils.sample_data import (
     generate_safety_profile,
 )
 from utils.examples import render_loaded_example_banner, render_example_loader, get_expected_result, TARGET_EXAMPLES
+from components.design_system import apply_plotly_theme, COLORS, render_empty_state
 
 
 def render_target_prioritization():
@@ -144,6 +145,7 @@ def _render_data_explorer():
         title="CRISPR Dependency Scores Across Cell Lines",
     )
     fig_heatmap.update_layout(height=400)
+    apply_plotly_theme(fig_heatmap)
     st.plotly_chart(fig_heatmap, use_container_width=True)
 
     # Dependency distribution
@@ -153,9 +155,10 @@ def _render_data_explorer():
         dep_melted, x="Gene", y="Score", color="Gene",
         title="Dependency Score Distribution by Gene",
     )
-    fig_box.add_hline(y=-0.5, line_dash="dash", line_color="red",
+    fig_box.add_hline(y=-0.5, line_dash="dash", line_color=COLORS["error"],
                       annotation_text="Essentiality threshold (-0.5)")
     fig_box.update_layout(height=400, showlegend=False)
+    apply_plotly_theme(fig_box)
     st.plotly_chart(fig_box, use_container_width=True)
 
     # Expression data
@@ -170,6 +173,7 @@ def _render_data_explorer():
         title="Gene Expression Across Normal Tissues (log2 TPM)",
     )
     fig_expr.update_layout(height=400)
+    apply_plotly_theme(fig_expr)
     st.plotly_chart(fig_expr, use_container_width=True)
 
     # Safety profile
@@ -277,7 +281,11 @@ def _render_results_panel():
 
     results = st.session_state.get("target_results")
     if not results:
-        st.info("Run an agent analysis first to see results here.")
+        render_empty_state(
+            headline="No results yet",
+            description="Run an agent analysis from the AI Agent tab to see results here.",
+            icon="📑",
+        )
 
         # Show example result from first available example
         st.markdown("#### Example Output Format")

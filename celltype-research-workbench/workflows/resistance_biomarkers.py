@@ -11,6 +11,7 @@ from utils.celltype_agent import run_celltype_query
 from utils.state import save_report
 from utils.sample_data import generate_biomarker_panel, generate_dependency_scores
 from utils.examples import render_loaded_example_banner, render_example_loader
+from components.design_system import apply_plotly_theme, COLORS, render_empty_state
 
 
 def render_resistance_biomarkers():
@@ -120,7 +121,7 @@ def _render_explorer():
         text="Gene",
         title="Biomarker Effect Size vs. Significance",
         labels={"neg_log10_pval": "-log10(P-value)"},
-        color_discrete_map={True: "#e74c3c", False: "#95a5a6"},
+        color_discrete_map={True: COLORS["error"], False: COLORS["text_tertiary"]},
     )
     fig_volcano.update_traces(textposition="top center", marker=dict(size=12))
     fig_volcano.add_hline(y=-np.log10(0.05), line_dash="dash", line_color="gray",
@@ -128,6 +129,7 @@ def _render_explorer():
     fig_volcano.add_vline(x=-1.0, line_dash="dash", line_color="gray")
     fig_volcano.add_vline(x=1.0, line_dash="dash", line_color="gray")
     fig_volcano.update_layout(height=500)
+    apply_plotly_theme(fig_volcano)
     st.plotly_chart(fig_volcano, use_container_width=True)
 
     # Biomarker table
@@ -150,6 +152,7 @@ def _render_explorer():
         title="DepMap Dependency Correlation per Biomarker",
     )
     fig_corr.update_layout(height=400)
+    apply_plotly_theme(fig_corr)
     st.plotly_chart(fig_corr, use_container_width=True)
 
     # Clinical evidence breakdown
@@ -161,10 +164,11 @@ def _render_explorer():
         title="Clinical Evidence Distribution",
         color_discrete_sequence=px.colors.qualitative.Set2,
     )
+    apply_plotly_theme(fig_pie)
     st.plotly_chart(fig_pie, use_container_width=True)
 
     st.download_button(
-        "📥 Download Biomarker Panel (CSV)",
+        "Download biomarker panel",
         panel_df.drop(columns=["neg_log10_pval", "Significant"]).to_csv(index=False),
         "resistance_biomarker_panel.csv",
         "text/csv",
@@ -222,7 +226,11 @@ def _render_results():
 
     results = st.session_state.get("biomarker_results")
     if not results:
-        st.info("Run an agent analysis to see results here.")
+        render_empty_state(
+            headline="No results yet",
+            description="Run an agent analysis from the AI Agent tab to see results here.",
+            icon="📑",
+        )
         st.markdown("#### Example Output")
         example = generate_biomarker_panel()
         st.dataframe(example, use_container_width=True, hide_index=True)

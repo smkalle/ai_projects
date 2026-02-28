@@ -10,6 +10,7 @@ from utils.config import WorkbenchConfig
 from utils.celltype_agent import run_celltype_query
 from utils.state import save_report
 from utils.examples import render_loaded_example_banner, render_example_loader
+from components.design_system import apply_plotly_theme, COLORS, render_empty_state
 
 
 def render_literature_synthesis():
@@ -116,6 +117,7 @@ def _render_knowledge_map():
         color_continuous_scale="Blues",
     )
     fig_timeline.update_layout(height=350, showlegend=False)
+    apply_plotly_theme(fig_timeline)
     st.plotly_chart(fig_timeline, use_container_width=True)
 
     # Simulated topic clusters
@@ -142,6 +144,7 @@ def _render_knowledge_map():
         title="Research Topic Landscape",
     )
     fig_topics.update_layout(height=450)
+    apply_plotly_theme(fig_topics)
     st.plotly_chart(fig_topics, use_container_width=True)
 
     st.dataframe(topic_data, use_container_width=True, hide_index=True)
@@ -173,8 +176,9 @@ def _render_knowledge_map():
         trial_phases.melt(id_vars="Phase", var_name="Status", value_name="Count"),
         x="Phase", y="Count", color="Status", barmode="group",
         title="Clinical Trials by Phase",
-        color_discrete_map={"Active Trials": "#3498db", "Completed": "#2ecc71"},
+        color_discrete_map={"Active Trials": COLORS["info"], "Completed": COLORS["success"]},
     )
+    apply_plotly_theme(fig_trials)
     st.plotly_chart(fig_trials, use_container_width=True)
 
 
@@ -245,7 +249,11 @@ def _render_results():
 
     results = st.session_state.get("lit_results")
     if not results:
-        st.info("Run a literature synthesis to see results here.")
+        render_empty_state(
+            headline="No results yet",
+            description="Run a literature synthesis from the AI Agent tab to see results here.",
+            icon="📑",
+        )
         return
 
     st.markdown(results["response"])

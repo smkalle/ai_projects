@@ -6,6 +6,7 @@ from datetime import datetime
 from utils.config import WorkbenchConfig
 from utils.celltype_agent import run_celltype_query, AgentResponse
 from utils.state import add_chat_message, save_session
+from components.design_system import render_empty_state
 
 
 EXAMPLE_QUERIES = {
@@ -39,8 +40,8 @@ def render_agent_chat():
 
     st.divider()
 
-    # Example queries
-    with st.expander("💡 Example Queries (click to use)", expanded=False):
+    # Example queries — verb-first button labels
+    with st.expander("Example queries", expanded=False):
         cols = st.columns(3)
         for i, (name, query) in enumerate(EXAMPLE_QUERIES.items()):
             with cols[i % 3]:
@@ -49,7 +50,14 @@ def render_agent_chat():
                     st.rerun()
 
     # Chat history display
-    _render_chat_history()
+    if not st.session_state.chat_history:
+        render_empty_state(
+            headline="Start a research conversation",
+            description="Type a question below or pick an example query above to get started.",
+            icon="🔬",
+        )
+    else:
+        _render_chat_history()
 
     # Input area
     st.divider()
@@ -71,14 +79,14 @@ def _render_chat_history():
             st.markdown(msg["content"])
             meta = msg.get("metadata", {})
             if meta.get("tools_used"):
-                with st.expander("🔧 Tools Used"):
+                with st.expander(f"Tools used ({len(meta['tools_used'])})"):
                     for t in meta["tools_used"]:
-                        st.markdown(f"- {t}")
+                        st.markdown(f"- `{t}`")
             if meta.get("duration"):
                 st.caption(
-                    f"⏱ {meta['duration']:.1f}s | "
-                    f"📊 {meta.get('tokens_input', 0):,} in / {meta.get('tokens_output', 0):,} out | "
-                    f"💰 ${meta.get('cost', 0):.4f}"
+                    f"{meta['duration']:.1f}s · "
+                    f"{meta.get('tokens_input', 0):,} in / {meta.get('tokens_output', 0):,} out · "
+                    f"${meta.get('cost', 0):.4f}"
                 )
 
 
@@ -90,7 +98,7 @@ def _handle_query(query: str, config: WorkbenchConfig, model: str, max_tokens: i
         st.markdown(query)
 
     with st.chat_message("assistant"):
-        with st.spinner("🧬 Agent is reasoning and executing tools..."):
+        with st.spinner("Agent is reasoning and executing tools..."):
             config.default_model = model
             config.max_tokens = max_tokens
             config.temperature = temperature
@@ -100,15 +108,14 @@ def _handle_query(query: str, config: WorkbenchConfig, model: str, max_tokens: i
         st.markdown(response.content)
 
         if response.tools_used:
-            with st.expander("🔧 Tools Used"):
+            with st.expander(f"Tools used ({len(response.tools_used)})"):
                 for t in response.tools_used:
-                    st.markdown(f"- {t}")
+                    st.markdown(f"- `{t}`")
 
         st.caption(
-            f"⏱ {response.duration:.1f}s | "
-            f"📊 {response.tokens_input:,} in / {response.tokens_output:,} out | "
-            f"💰 ${response.cost:.4f} | "
-            f"Status: {response.status}"
+            f"{response.duration:.1f}s · "
+            f"{response.tokens_input:,} in / {response.tokens_output:,} out · "
+            f"${response.cost:.4f} · {response.status}"
         )
 
     # Update session state

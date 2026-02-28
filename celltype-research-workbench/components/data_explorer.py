@@ -13,6 +13,7 @@ from utils.sample_data import (
     generate_biomarker_panel,
     generate_combination_data,
 )
+from components.design_system import apply_plotly_theme, COLORS
 
 
 def render_data_explorer():
@@ -57,7 +58,6 @@ def _explore_depmap():
     with col2:
         df = generate_dependency_scores(genes, n_lines)
 
-        # Heatmap
         fig = px.imshow(
             df.drop(columns=["Lineage"]).T,
             color_continuous_scale="RdBu_r",
@@ -65,14 +65,15 @@ def _explore_depmap():
             title="Dependency Score Heatmap",
         )
         fig.update_layout(height=400)
+        apply_plotly_theme(fig)
         st.plotly_chart(fig, use_container_width=True)
 
-        # Box plot
         melted = df.drop(columns=["Lineage"]).melt(var_name="Gene", value_name="Score")
         fig2 = px.box(melted, x="Gene", y="Score", color="Gene",
                        title="Score Distributions")
-        fig2.add_hline(y=threshold, line_dash="dash", line_color="red")
+        fig2.add_hline(y=threshold, line_dash="dash", line_color=COLORS["error"])
         fig2.update_layout(height=350, showlegend=False)
+        apply_plotly_theme(fig2)
         st.plotly_chart(fig2, use_container_width=True)
 
     # Lineage breakdown
@@ -83,6 +84,7 @@ def _explore_depmap():
         fig3 = px.box(lineage_df, x="Lineage", y=selected_gene, color="Lineage",
                        title=f"{selected_gene} Dependency by Lineage")
         fig3.update_layout(height=350, showlegend=False)
+        apply_plotly_theme(fig3)
         st.plotly_chart(fig3, use_container_width=True)
 
     # Summary stats
@@ -90,7 +92,7 @@ def _explore_depmap():
     stats = df.drop(columns=["Lineage"]).describe().round(3)
     st.dataframe(stats, use_container_width=True)
 
-    st.download_button("📥 Download Data", df.to_csv(index=True), "depmap_scores.csv", "text/csv")
+    st.download_button("Download data", df.to_csv(index=True), "depmap_scores.csv", "text/csv")
 
 
 def _explore_expression():
@@ -112,9 +114,9 @@ def _explore_expression():
         title="Expression Heatmap (log2 TPM+1)",
     )
     fig.update_layout(height=450)
+    apply_plotly_theme(fig)
     st.plotly_chart(fig, use_container_width=True)
 
-    # Bar chart by tissue
     if genes:
         selected = st.selectbox("Gene for tissue breakdown", genes)
         fig2 = px.bar(
@@ -124,10 +126,11 @@ def _explore_expression():
             color=df[selected],
             color_continuous_scale="Plasma",
         )
+        apply_plotly_theme(fig2)
         st.plotly_chart(fig2, use_container_width=True)
 
     st.dataframe(df, use_container_width=True)
-    st.download_button("📥 Download", df.to_csv(index=True), "expression.csv", "text/csv")
+    st.download_button("Download data", df.to_csv(index=True), "expression.csv", "text/csv")
 
 
 def _explore_prism():
@@ -141,19 +144,20 @@ def _explore_prism():
         title="Drug Viability Across Cell Lines",
     )
     fig.update_layout(height=500)
+    apply_plotly_theme(fig)
     st.plotly_chart(fig, use_container_width=True)
 
-    # Drug comparison
     selected_drugs = st.multiselect("Compare Drugs", df.columns.tolist(),
                                      default=df.columns[:3].tolist())
     if selected_drugs:
         melted = df[selected_drugs].melt(var_name="Drug", value_name="Viability")
         fig2 = px.violin(melted, x="Drug", y="Viability", color="Drug",
                           title="Viability Distribution Comparison")
+        apply_plotly_theme(fig2)
         st.plotly_chart(fig2, use_container_width=True)
 
     st.dataframe(df, use_container_width=True)
-    st.download_button("📥 Download", df.to_csv(index=True), "prism_viability.csv", "text/csv")
+    st.download_button("Download data", df.to_csv(index=True), "prism_viability.csv", "text/csv")
 
 
 def _explore_safety():
@@ -166,18 +170,18 @@ def _explore_safety():
     df = generate_safety_profile(gene_list)
     st.dataframe(df, use_container_width=True, hide_index=True)
 
-    # Safety summary chart
     pass_count = (df["Overall Safety"] == "Pass").sum()
     fail_count = (df["Overall Safety"] == "Fail").sum()
     fig = px.pie(
         values=[pass_count, fail_count],
         names=["Pass", "Fail"],
         title="Safety Assessment Summary",
-        color_discrete_sequence=["#2ecc71", "#e74c3c"],
+        color_discrete_sequence=[COLORS["success"], COLORS["error"]],
     )
+    apply_plotly_theme(fig)
     st.plotly_chart(fig, use_container_width=True)
 
-    st.download_button("📥 Download", df.to_csv(index=False), "safety_profile.csv", "text/csv")
+    st.download_button("Download data", df.to_csv(index=False), "safety_profile.csv", "text/csv")
 
 
 def _explore_biomarkers():
@@ -195,9 +199,10 @@ def _explore_biomarkers():
     )
     fig.update_traces(textposition="top center")
     fig.update_layout(height=500)
+    apply_plotly_theme(fig)
     st.plotly_chart(fig, use_container_width=True)
 
-    st.download_button("📥 Download", df.drop(columns=["neg_log10_pval"]).to_csv(index=False),
+    st.download_button("Download data", df.drop(columns=["neg_log10_pval"]).to_csv(index=False),
                         "biomarkers.csv", "text/csv")
 
 
@@ -215,6 +220,7 @@ def _explore_combinations():
         title="Synergy Scores: Bliss vs Loewe",
     )
     fig.update_traces(textposition="top center", marker=dict(size=15))
+    apply_plotly_theme(fig)
     st.plotly_chart(fig, use_container_width=True)
 
-    st.download_button("📥 Download", df.to_csv(index=False), "combinations.csv", "text/csv")
+    st.download_button("Download data", df.to_csv(index=False), "combinations.csv", "text/csv")
