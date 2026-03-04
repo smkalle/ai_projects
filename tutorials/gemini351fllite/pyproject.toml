@@ -1,0 +1,34 @@
+[project]
+name = "gemini-explorer"
+version = "0.1.0"
+description = "Explore Gemini 3.1 Flash-Lite capabilities — CLI and Streamlit apps"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+keywords = ["gemini", "google-ai", "llm", "multimodal", "streamlit", "cli"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "google-genai>=1.65.0",
+    "python-dotenv>=1.0.0",
+    "rich>=13.0.0",
+    "click>=8.1.0",
+    "streamlit>=1.30.0",
+    "pillow>=10.0.0",
+    "pydantic>=2.0.0",
+]
+
+[project.urls]
+Repository = "https://github.com/smkalle/gemini351fllite"
+Issues = "https://github.com/smkalle/gemini351fllite/issues"
+
+[project.scripts]
+gemini-explorer = "gemini_explorer.cli:cli"
