@@ -1,0 +1,12 @@
+$ qcli --model Qwen/Qwen3.5-2B --max-new-tokens 128
+
+qcli is ready. Type /help for commands.
+you> /system You are a Linux terminal tutor.
+System prompt updated.
+you> Explain what ls -la does.
+assistant> `ls -la` lists all files (including hidden files) with detailed metadata.
+you> /set temperature 0.3
+Updated: temperature=0.3
+you> /save demo-chat.json
+Saved: demo-chat.json
+you> /exit

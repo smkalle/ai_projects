@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qcli"
+version = "0.1.0"
+description = "Terminal chat app for local Hugging Face models (Qwen focused)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "qcli contributors" }]
+dependencies = [
+  "transformers>=4.45.0,<4.50.0",
+  "torch>=2.2.0",
+  "accelerate>=0.34.0,<1.0.0",
+  "safetensors>=0.4.3,<0.7.0",
+  "rich>=13.9.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0.0",
+  "ruff>=0.6.0"
+]
+quant = [
+  "bitsandbytes>=0.43.0"
+]
+
+[project.scripts]
+qcli = "qcli.cli:main"
+
+[tool.setuptools]
+packages = ["qcli"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
