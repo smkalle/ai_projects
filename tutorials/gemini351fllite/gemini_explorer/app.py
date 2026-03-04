@@ -11,8 +11,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import streamlit as st
 from google.genai import types
 from PIL import Image
-from pydantic import BaseModel
-
 from gemini_explorer.client import (
     EMBED_MODEL,
     MODEL,
@@ -25,6 +23,13 @@ from gemini_explorer.client import (
     traced_embed,
     traced_generate,
     traced_generate_stream,
+)
+from gemini_explorer.examples import (
+    AUDIO_MIME_TYPES,
+    DEFAULT_PROMPTS,
+    SCHEMAS,
+    calculate,
+    get_weather,
 )
 
 
@@ -156,7 +161,7 @@ elif page == "Vision":
     col1, col2 = st.columns([2, 1])
     with col2:
         level = st.selectbox("Thinking level", list(THINKING_LEVELS), index=2, key="vision_level")
-        prompt = st.text_area("Prompt", "Describe this image in detail. What do you observe?")
+        prompt = st.text_area("Prompt", DEFAULT_PROMPTS["vision"])
 
     with col1:
         upload = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png", "webp", "gif"])
@@ -190,7 +195,7 @@ elif page == "Audio":
     col1, col2 = st.columns([2, 1])
     with col2:
         level = st.selectbox("Thinking level", list(THINKING_LEVELS), index=2, key="audio_level")
-        prompt = st.text_area("Prompt", "Transcribe this audio. Then provide a summary.", key="audio_prompt")
+        prompt = st.text_area("Prompt", DEFAULT_PROMPTS["audio"], key="audio_prompt")
 
     with col1:
         upload = st.file_uploader("Upload audio", type=["mp3", "wav", "ogg", "flac"])
@@ -201,9 +206,8 @@ elif page == "Audio":
             client = init_client()
             config = make_config(thinking_level=level)
 
-            mime_map = {"mp3": "audio/mp3", "wav": "audio/wav", "ogg": "audio/ogg", "flac": "audio/flac"}
             ext = upload.name.rsplit(".", 1)[-1].lower()
-            mime = mime_map.get(ext, "audio/mp3")
+            mime = AUDIO_MIME_TYPES.get(ext, "audio/mp3")
 
             audio_bytes = upload.read()
             with st.spinner("Processing audio..."):
@@ -220,51 +224,15 @@ elif page == "Audio":
 elif page == "Structured Output":
     st.header("📋 Structured Output")
 
-    class Recipe(BaseModel):
-        name: str
-        cuisine: str
-        prep_time_minutes: int
-        ingredients: list[str]
-        steps: list[str]
-        difficulty: str
-
-    class MovieReview(BaseModel):
-        title: str
-        year: int
-        rating: float
-        genre: str
-        summary: str
-        pros: list[str]
-        cons: list[str]
-
-    class CodeAnalysis(BaseModel):
-        language: str
-        purpose: str
-        complexity: str
-        functions: list[str]
-        suggestions: list[str]
-
-    schemas = {
-        "Recipe": Recipe,
-        "Movie Review": MovieReview,
-        "Code Analysis": CodeAnalysis,
-    }
-
     col1, col2 = st.columns([2, 1])
     with col2:
         level = st.selectbox("Thinking level", list(THINKING_LEVELS), index=2, key="json_level")
-        schema_name = st.selectbox("Schema", list(schemas))
+        schema_name = st.selectbox("Schema", list(SCHEMAS))
 
-    selected_schema = schemas[schema_name]
+    selected_schema = SCHEMAS[schema_name]
     st.code(json.dumps(selected_schema.model_json_schema(), indent=2), language="json")
 
-    default_prompts = {
-        "Recipe": "Create a creative fusion recipe combining Thai and Italian cuisine.",
-        "Movie Review": "Write a review for a fictional sci-fi movie set in 2150.",
-        "Code Analysis": "Analyze this code:\ndef fib(n): return n if n<2 else fib(n-1)+fib(n-2)",
-    }
-
-    prompt = st.text_area("Prompt", default_prompts[schema_name], key="json_prompt")
+    prompt = st.text_area("Prompt", DEFAULT_PROMPTS[schema_name.lower().replace(" ", "_")], key="json_prompt")
 
     if st.button("Generate", type="primary"):
         client = init_client()
@@ -283,27 +251,6 @@ elif page == "Function Calling":
 
     st.info("The model can call Python functions as tools. Try queries that need weather or math.")
 
-    def get_weather(city: str) -> str:
-        """Get the current weather for a city."""
-        data = {
-            "tokyo": "22°C, partly cloudy, humidity 65%",
-            "new york": "18°C, sunny, humidity 45%",
-            "london": "14°C, rainy, humidity 80%",
-            "paris": "16°C, overcast, humidity 70%",
-            "sydney": "26°C, clear skies, humidity 55%",
-        }
-        return data.get(city.lower(), f"No weather data for {city}. Available: {', '.join(data)}")
-
-    def calculate(expression: str) -> str:
-        """Evaluate a math expression. Supports basic arithmetic (+, -, *, /, %)."""
-        allowed = set("0123456789+-*/.() %")
-        if not all(c in allowed for c in expression):
-            return "Error: invalid characters"
-        try:
-            return str(eval(expression))  # noqa: S307
-        except Exception as e:
-            return f"Error: {e}"
-
     col1, col2 = st.columns([3, 1])
     with col2:
         level = st.selectbox("Thinking level", list(THINKING_LEVELS), index=2, key="tools_level")
@@ -312,7 +259,7 @@ elif page == "Function Calling":
         st.markdown("**Available tools:** `get_weather(city)`, `calculate(expression)`")
         query = st.text_input(
             "Query",
-            "What's the weather in Tokyo and Paris? Also, what's 18% tip on a $127.50 bill?",
+            DEFAULT_PROMPTS["tools"],
         )
 
     if st.button("Run", type="primary"):
@@ -333,7 +280,7 @@ elif page == "Thinking Levels":
 
     prompt = st.text_area(
         "Prompt",
-        "A farmer has 17 sheep. All but 9 run away. How many sheep does the farmer have left?",
+        DEFAULT_PROMPTS["thinking"],
     )
     selected_levels = st.multiselect(
         "Levels to compare",
@@ -374,9 +321,9 @@ elif page == "Embeddings":
 
     col1, col2 = st.columns(2)
     with col1:
-        text1 = st.text_area("Text A", "The cat sat on the mat.", key="emb1")
+        text1 = st.text_area("Text A", DEFAULT_PROMPTS["embed_a"], key="emb1")
     with col2:
-        text2 = st.text_area("Text B", "A kitten was sitting on a rug.", key="emb2")
+        text2 = st.text_area("Text B", DEFAULT_PROMPTS["embed_b"], key="emb2")
 
     if st.button("Compute Similarity", type="primary"):
         client = init_client()
@@ -406,7 +353,7 @@ elif page == "Embeddings":
 elif page == "Benchmarks":
     st.header("📊 Benchmarks")
 
-    prompt = st.text_area("Test prompt", "Explain the concept of entropy in information theory.", key="bench_prompt")
+    prompt = st.text_area("Test prompt", DEFAULT_PROMPTS["bench"], key="bench_prompt")
     rounds = st.slider("Rounds per level", 1, 5, 1)
 
     if st.button("Run Benchmark", type="primary"):

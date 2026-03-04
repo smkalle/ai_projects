@@ -23,6 +23,7 @@ from .client import (
     traced_generate,
     traced_generate_stream,
 )
+from .examples import AUDIO_MIME_TYPES, DEFAULT_PROMPTS, Recipe, calculate, get_weather
 
 console = Console()
 
@@ -113,7 +114,7 @@ def think(prompt, levels):
 
 @cli.command()
 @click.argument("image_path", type=click.Path(exists=True))
-@click.option("--prompt", default="Describe this image in detail.", help="Prompt for the image")
+@click.option("--prompt", default=DEFAULT_PROMPTS["vision"], help="Prompt for the image")
 @click.option("--level", type=click.Choice(list(THINKING_LEVELS)), default="medium")
 def vision(image_path, prompt, level):
     """Analyze an image file."""
@@ -136,16 +137,15 @@ def vision(image_path, prompt, level):
 
 @cli.command()
 @click.argument("audio_path", type=click.Path(exists=True))
-@click.option("--prompt", default="Transcribe and summarize this audio.", help="Prompt for the audio")
+@click.option("--prompt", default=DEFAULT_PROMPTS["audio"], help="Prompt for the audio")
 @click.option("--level", type=click.Choice(list(THINKING_LEVELS)), default="medium")
 def audio(audio_path, prompt, level):
     """Transcribe/summarize an audio file."""
     client = get_client()
     config = make_config(thinking_level=level)
 
-    mime_map = {".mp3": "audio/mp3", ".wav": "audio/wav", ".ogg": "audio/ogg", ".flac": "audio/flac"}
-    ext = "." + audio_path.rsplit(".", 1)[-1].lower()
-    mime = mime_map.get(ext, "audio/mp3")
+    ext = audio_path.rsplit(".", 1)[-1].lower()
+    mime = AUDIO_MIME_TYPES.get(ext, "audio/mp3")
 
     with open(audio_path, "rb") as f:
         audio_bytes = f.read()
@@ -166,22 +166,12 @@ def audio(audio_path, prompt, level):
 @click.option("--level", type=click.Choice(list(THINKING_LEVELS)), default="medium")
 def json_cmd(prompt, level):
     """Demonstrate structured JSON output with a Pydantic schema."""
-    from pydantic import BaseModel
-
-    class Recipe(BaseModel):
-        name: str
-        cuisine: str
-        prep_time_minutes: int
-        ingredients: list[str]
-        steps: list[str]
-        difficulty: str
-
     client = get_client()
     config = make_config(
         thinking_level=level,
         json_schema=Recipe.model_json_schema(),
     )
-    prompt = prompt or "Generate a creative fusion recipe combining Japanese and Mexican cuisine."
+    prompt = prompt or DEFAULT_PROMPTS["recipe"]
 
     console.print(f"[dim]Schema: {Recipe.__name__}[/]")
     response = traced_generate(client, MODEL, prompt, config)
@@ -194,31 +184,10 @@ def json_cmd(prompt, level):
 
 
 @cli.command()
-@click.argument("query", default="What's the weather in Tokyo and how much is 15% tip on $85?")
+@click.argument("query", default=DEFAULT_PROMPTS["tools"])
 @click.option("--level", type=click.Choice(list(THINKING_LEVELS)), default="medium")
 def tools(query, level):
     """Demonstrate function calling with weather + calculator tools."""
-
-    def get_weather(city: str) -> str:
-        """Get the current weather for a city."""
-        weather_data = {
-            "tokyo": "22°C, partly cloudy",
-            "new york": "18°C, sunny",
-            "london": "14°C, rainy",
-            "paris": "16°C, overcast",
-        }
-        return weather_data.get(city.lower(), f"Weather data unavailable for {city}")
-
-    def calculate(expression: str) -> str:
-        """Evaluate a math expression safely. Supports basic arithmetic."""
-        allowed = set("0123456789+-*/.() %")
-        if not all(c in allowed for c in expression):
-            return "Error: invalid characters in expression"
-        try:
-            return str(eval(expression))  # noqa: S307
-        except Exception as e:
-            return f"Error: {e}"
-
     client = get_client()
     config = make_config(thinking_level=level, tools=[get_weather, calculate])
 
@@ -264,7 +233,7 @@ def embed(text1, text2):
 
 
 @cli.command()
-@click.argument("prompt", default="Explain the Riemann hypothesis in simple terms.")
+@click.argument("prompt", default=DEFAULT_PROMPTS["bench"])
 @click.option("--rounds", default=1, type=int, help="Number of rounds per level")
 def bench(prompt, rounds):
     """Benchmark latency and token usage across thinking levels."""
