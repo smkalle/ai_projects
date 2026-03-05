@@ -94,24 +94,72 @@ def register_medical_commands(medical_group):
         if output_fmt == "json":
             console.print_json(json.dumps({k: str(v) for k, v in state.items()}, indent=2))
         else:
-            # Rich output
-            table = Table(title=f"Pipeline Results — {case.case_name}")
-            table.add_column("Stage", style="cyan")
-            table.add_column("Output", max_width=80)
+            # Rich output — stage overview table
+            stage_labels = {
+                "triage_result": ("1. Triage", "cyan"),
+                "symptom_analysis": ("2a. Symptoms", "green"),
+                "imaging_findings": ("2b. Imaging", "green"),
+                "differential_dx": ("3. Diagnosis", "yellow"),
+                "specialist_opinion": ("4. Specialist", "magenta"),
+                "case_summary": ("5. Summary", "bold"),
+            }
 
-            for key in ["triage_result", "symptom_analysis", "imaging_findings", "differential_dx", "specialist_opinion", "case_summary"]:
+            table = Table(title=f"Pipeline Results — {case.case_name}")
+            table.add_column("Stage", style="cyan", min_width=15)
+            table.add_column("Output Preview", max_width=80)
+
+            for key, (label, style) in stage_labels.items():
                 value = state.get(key, "—")
-                if isinstance(value, str) and len(value) > 200:
-                    value = value[:200] + "..."
-                table.add_row(key, str(value))
+                preview = str(value).strip()
+                # Strip markdown code fences if present
+                if preview.startswith("```"):
+                    preview = preview.split("\n", 1)[1] if "\n" in preview else preview[3:]
+                    preview = preview.rsplit("```", 1)[0].strip()
+                # For JSON outputs, extract a key detail
+                try:
+                    parsed = json.loads(preview)
+                    if key == "triage_result" and "urgency_level" in parsed:
+                        preview = f"[bold]{parsed['urgency_level']}[/] — {parsed.get('category', '')} (confidence: {parsed.get('confidence', '?')})"
+                    elif key == "differential_dx" and "diagnoses" in parsed:
+                        top = parsed["diagnoses"][:2]
+                        preview = "; ".join(f"{d.get('condition', '?')} ({d.get('probability_pct', '?')}%)" for d in top)
+                        preview += f" [dim](confidence: {parsed.get('overall_confidence', '?')})[/]"
+                    elif key == "case_summary" and "assessment" in parsed:
+                        preview = str(parsed["assessment"])[:200] + "..."
+                    elif len(preview) > 200:
+                        preview = preview[:200] + "..."
+                except (json.JSONDecodeError, TypeError):
+                    if len(preview) > 200:
+                        preview = preview[:200] + "..."
+
+                table.add_row(f"[{style}]{label}[/]", preview)
 
             console.print(table)
             console.print(f"\n[dim]Total time: {elapsed:.1f}s | Events: {len(events)}[/]")
 
-            # Print case summary as markdown if available
+            # Print case summary — parse JSON for readable display
             summary = state.get("case_summary", "")
             if summary:
-                console.print(Panel(Markdown(str(summary)[:2000]), title="Case Summary", style="green"))
+                try:
+                    # Strip markdown code fences if present
+                    raw = str(summary).strip()
+                    if raw.startswith("```"):
+                        raw = raw.split("\n", 1)[1] if "\n" in raw else raw[3:]
+                        raw = raw.rsplit("```", 1)[0]
+                    parsed = json.loads(raw.strip())
+                    lines = []
+                    for key in ("subjective", "objective", "assessment", "plan"):
+                        if key in parsed:
+                            lines.append(f"**{key.upper()}**\n{parsed[key]}\n")
+                    if "medications" in parsed:
+                        lines.append("**MEDICATIONS**\n" + "\n".join(f"- {m}" for m in parsed["medications"]) + "\n")
+                    if "follow_up" in parsed:
+                        lines.append(f"**FOLLOW-UP**\n{parsed['follow_up']}\n")
+                    if "disclaimer" in parsed:
+                        lines.append(f"\n*{parsed['disclaimer']}*")
+                    console.print(Panel(Markdown("\n".join(lines)), title="Case Summary (SOAP)", style="green"))
+                except (json.JSONDecodeError, TypeError):
+                    console.print(Panel(Markdown(str(summary)[:2000]), title="Case Summary", style="green"))
 
         _print_disclaimer()
 

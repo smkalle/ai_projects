@@ -217,7 +217,7 @@ def traced_embed(client, model, contents, config=None):
 
 def get_client() -> genai.Client:
     """Initialize and return a Gemini API client."""
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     if not api_key:
         print("Error: GEMINI_API_KEY not set. Add it to .env or export it.", file=sys.stderr)
         sys.exit(1)
