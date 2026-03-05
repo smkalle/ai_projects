@@ -271,6 +271,27 @@ def bench(prompt, rounds):
     console.print(table)
 
 
+# ── Medical Subgroup ─────────────────────────────────────────────────────────
+
+
+@cli.group()
+def medical():
+    """Medical Diagnostic Workbench — agentic AI demo. NOT for clinical use."""
+    pass
+
+
+try:
+    from gemini_explorer.medical.cli_commands import register_medical_commands
+
+    register_medical_commands(medical)
+except ImportError:
+
+    @medical.command()
+    def status():
+        """Check if medical module dependencies are installed."""
+        console.print("[red]google-adk not installed. Run: pip install google-adk[/]")
+
+
 # ── Entry point ──────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
