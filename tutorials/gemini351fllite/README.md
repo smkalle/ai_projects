@@ -158,6 +158,14 @@ run_app.sh           # Launch Streamlit explorer
 run_medical.sh       # Launch Medical Workbench
 ```
 
+## Documentation
+
+Visual documentation in `docs/` — open HTML files in a browser:
+
+- **[Architecture Diagram](docs/architecture-technical.html)** — Agent hierarchy, data flow, tool dependencies, schema mapping, ADK pattern reference
+- **[End-User Overview](docs/overview-enduser.html)** — Plain-language pipeline explanation, chest pain case walkthrough, sample cases
+- **[Slide Deck](docs/medical-workbench-slides.html)** — 15-slide presentation (arrow keys to navigate)
+
 ## Requirements
 
 - Python 3.10+

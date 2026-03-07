@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Diagnostic Workbench — Technical Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --font-mono: 'Fira Code', 'SF Mono', Consolas, monospace;
+    --bg: #faf7f5;
+    --surface: #ffffff;
+    --surface2: #f5f0ec;
+    --surface-elevated: #fff9f5;
+    --border: rgba(0, 0, 0, 0.07);
+    --border-bright: rgba(0, 0, 0, 0.14);
+    --text: #292017;
+    --text-dim: #8a7e72;
+    --accent: #c2410c;
+    --accent-dim: rgba(194, 65, 12, 0.07);
+    --green: #4d7c0f;
+    --green-dim: rgba(77, 124, 15, 0.07);
+    --orange: #b45309;
+    --orange-dim: rgba(180, 83, 9, 0.07);
+    --sage: #65a30d;
+    --sage-dim: rgba(101, 163, 13, 0.07);
+    --teal: #0f766e;
+    --teal-dim: rgba(15, 118, 110, 0.07);
+    --plum: #9f1239;
+    --plum-dim: rgba(159, 18, 57, 0.07);
+    --blue: #1e40af;
+    --blue-dim: rgba(30, 64, 175, 0.07);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1412;
+      --surface: #231d1a;
+      --surface2: #2e2622;
+      --surface-elevated: #352d28;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-bright: rgba(255, 255, 255, 0.12);
+      --text: #ede5dd;
+      --text-dim: #a69889;
+      --accent: #fb923c;
+      --accent-dim: rgba(251, 146, 60, 0.12);
+      --green: #a3e635;
+      --green-dim: rgba(163, 230, 53, 0.1);
+      --orange: #fbbf24;
+      --orange-dim: rgba(251, 191, 36, 0.1);
+      --sage: #bef264;
+      --sage-dim: rgba(190, 242, 100, 0.1);
+      --teal: #5eead4;
+      --teal-dim: rgba(94, 234, 212, 0.1);
+      --plum: #fda4af;
+      --plum-dim: rgba(253, 164, 175, 0.1);
+      --blue: #93c5fd;
+      --blue-dim: rgba(147, 197, 253, 0.1);
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 20% 0%, var(--accent-dim) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, var(--sage-dim) 0%, transparent 40%);
+    color: var(--text);
+    font-family: var(--font-body);
+    padding: 40px;
+    min-height: 100vh;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section, .flow-arrow { animation: fadeUp 0.4s ease-out both; animation-delay: calc(var(--i, 0) * 0.06s); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
+    .mermaid-wrap .mermaid { transition: none; }
+  }
+
+  h1 { font-size: 38px; font-weight: 700; letter-spacing: -1px; margin-bottom: 6px; text-wrap: balance; }
+  .subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 40px; font-family: var(--font-mono); }
+
+  .diagram { display: grid; grid-template-columns: 1fr; gap: 24px; max-width: 1100px; margin: 0 auto; }
+
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
+  .section--hero { background: var(--surface-elevated); border-color: color-mix(in srgb, var(--border) 50%, var(--accent) 50%); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); padding: 28px 32px; }
+  .section--recessed { background: var(--surface2); box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04); }
+
+  .section-label { font-family: var(--font-mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .section-label .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  .section--accent { border-color: var(--accent-dim); }
+  .section--accent .section-label { color: var(--accent); }
+  .section--accent .section-label .dot { background: var(--accent); }
+
+  .section--green { border-color: var(--green-dim); }
+  .section--green .section-label { color: var(--green); }
+  .section--green .section-label .dot { background: var(--green); }
+
+  .section--orange { border-color: var(--orange-dim); }
+  .section--orange .section-label { color: var(--orange); }
+  .section--orange .section-label .dot { background: var(--orange); }
+
+  .section--sage { border-color: var(--sage-dim); }
+  .section--sage .section-label { color: var(--sage); }
+  .section--sage .section-label .dot { background: var(--sage); }
+
+  .section--teal { border-color: var(--teal-dim); }
+  .section--teal .section-label { color: var(--teal); }
+  .section--teal .section-label .dot { background: var(--teal); }
+
+  .section--plum { border-color: var(--plum-dim); }
+  .section--plum .section-label { color: var(--plum); }
+  .section--plum .section-label .dot { background: var(--plum); }
+
+  .section--blue { border-color: var(--blue-dim); }
+  .section--blue .section-label { color: var(--blue); }
+  .section--blue .section-label .dot { background: var(--blue); }
+
+  .inner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .inner-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  .inner-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; min-width: 0; }
+  .inner-card .title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .inner-card .desc { color: var(--text-dim); font-size: 12px; line-height: 1.5; }
+  .inner-card code { font-family: var(--font-mono); font-size: 11px; background: var(--accent-dim); color: var(--accent); padding: 1px 5px; border-radius: 3px; }
+
+  .flow-arrow { display: flex; justify-content: center; align-items: center; gap: 8px; color: var(--text-dim); font-family: var(--font-mono); font-size: 12px; padding: 4px 0; }
+  .flow-arrow svg { width: 20px; height: 20px; fill: none; stroke: var(--border-bright); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .pipeline { display: flex; gap: 0; align-items: stretch; overflow-x: auto; padding-bottom: 4px; }
+  .pipeline-step { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; min-width: 140px; flex-shrink: 0; text-align: center; }
+  .pipeline-step .step-num { font-family: var(--font-mono); font-size: 10px; font-weight: 600; margin-bottom: 4px; }
+  .pipeline-step .step-name { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+  .pipeline-step .step-detail { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
+
+  .pipeline-step--blue { border-color: var(--blue-dim); }
+  .pipeline-step--blue .step-num { color: var(--blue); }
+  .pipeline-step--green { border-color: var(--green-dim); }
+  .pipeline-step--green .step-num { color: var(--green); }
+  .pipeline-step--orange { border-color: var(--orange-dim); }
+  .pipeline-step--orange .step-num { color: var(--orange); }
+  .pipeline-step--plum { border-color: var(--plum-dim); }
+  .pipeline-step--plum .step-num { color: var(--plum); }
+  .pipeline-step--teal { border-color: var(--teal-dim); }
+  .pipeline-step--teal .step-num { color: var(--teal); }
+
+  .pipeline-arrow { display: flex; align-items: center; padding: 0 4px; color: var(--border-bright); font-size: 18px; flex-shrink: 0; }
+  .pipeline-parallel { display: flex; flex-direction: column; gap: 4px; }
+
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .four-col { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+
+  .node-list { list-style: none; font-size: 12px; line-height: 1.8; }
+  .node-list li { padding-left: 14px; position: relative; }
+  .node-list li::before { content: '\203A'; color: var(--text-dim); font-weight: 600; position: absolute; left: 0; }
+  .node-list code { font-family: var(--font-mono); font-size: 11px; background: var(--accent-dim); color: var(--accent); padding: 1px 5px; border-radius: 3px; }
+
+  .callout { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; font-size: 13px; line-height: 1.6; color: var(--text-dim); }
+  .callout strong { color: var(--text); font-weight: 600; }
+  .callout code { font-family: var(--font-mono); font-size: 11px; background: var(--accent-dim); color: var(--accent); padding: 1px 5px; border-radius: 3px; }
+  .callout--warning { border-left-color: var(--plum); }
+
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-dim); font-family: var(--font-mono); }
+  .legend-swatch { width: 12px; height: 12px; border-radius: 3px; }
+
+  .badge { display: inline-block; font-family: var(--font-mono); font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .badge--blue { background: var(--blue-dim); color: var(--blue); }
+  .badge--green { background: var(--green-dim); color: var(--green); }
+  .badge--orange { background: var(--orange-dim); color: var(--orange); }
+  .badge--plum { background: var(--plum-dim); color: var(--plum); }
+  .badge--teal { background: var(--teal-dim); color: var(--teal); }
+
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th { background: var(--surface2); font-family: var(--font-mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); text-align: left; padding: 10px 14px; border-bottom: 2px solid var(--border-bright); white-space: nowrap; }
+  .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .data-table tbody tr:nth-child(even) { background: var(--surface2); }
+  .data-table code { font-family: var(--font-mono); font-size: 11px; background: var(--accent-dim); color: var(--accent); padding: 1px 5px; border-radius: 3px; }
+
+  .mermaid-wrap { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 32px 24px; overflow: auto; margin-top: 12px; }
+  .mermaid-wrap .mermaid { display: flex; justify-content: center; transition: transform 0.2s ease; transform-origin: top center; }
+  .zoom-controls { position: absolute; top: 8px; right: 8px; display: flex; gap: 2px; z-index: 10; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 2px; }
+  .zoom-controls button { width: 28px; height: 28px; border: none; background: transparent; color: var(--text-dim); font-family: var(--font-mono); font-size: 14px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background 0.15s ease, color 0.15s ease; }
+  .zoom-controls button:hover { background: var(--border); color: var(--text); }
+  .mermaid-wrap.is-zoomed { cursor: grab; }
+  .mermaid-wrap.is-panning { cursor: grabbing; user-select: none; }
+  .mermaid .nodeLabel { font-family: var(--font-body) !important; font-size: 14px !important; }
+  .mermaid .edgeLabel { font-family: var(--font-mono) !important; font-size: 11px !important; }
+  .mermaid .node rect, .mermaid .node circle, .mermaid .node polygon { stroke-width: 1.5px !important; }
+  .mermaid .edge-pattern-solid { stroke-width: 1.5px !important; }
+
+  .section h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+
+  @media (max-width: 768px) {
+    body { padding: 20px; }
+    .inner-grid, .inner-grid-3 { grid-template-columns: 1fr; }
+    .three-col, .four-col { grid-template-columns: 1fr; }
+    .pipeline { flex-wrap: wrap; gap: 6px; }
+    .pipeline-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<h1 style="--i:0" class="section">Medical Diagnostic Workbench</h1>
+<p class="subtitle" style="--i:1">technical architecture &mdash; google adk + gemini flash-lite &mdash; educational demo only</p>
+
+<div class="diagram">
+
+  <!-- Disclaimer -->
+  <div class="callout callout--warning section--recessed" style="--i:2">
+    <strong>Educational Demo Only.</strong> This architecture diagram describes a simulated medical diagnostic pipeline
+    for developer education. All data is mock. Not for clinical use.
+  </div>
+
+  <!-- Pipeline Overview -->
+  <div class="section section--hero" style="--i:3">
+    <div class="section-label"><span class="dot" style="background:var(--accent)"></span> 5-Stage Sequential Pipeline</div>
+    <div class="legend" style="margin-bottom:14px">
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--blue-dim);border:1px solid var(--blue)"></div>LlmAgent</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--green-dim);border:1px solid var(--green)"></div>ParallelAgent</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--orange-dim);border:1px solid var(--orange)"></div>LoopAgent</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--plum-dim);border:1px solid var(--plum)"></div>LlmAgent (Router)</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--teal-dim);border:1px solid var(--teal)"></div>Summary</div>
+    </div>
+    <div class="pipeline">
+      <div class="pipeline-step pipeline-step--blue">
+        <div class="step-num">STAGE 1</div>
+        <div class="step-name">Triage</div>
+        <div class="step-detail">LlmAgent<br>thinking: LOW<br><code>triage_result</code></div>
+      </div>
+      <div class="pipeline-arrow">&rarr;</div>
+      <div class="pipeline-step pipeline-step--green">
+        <div class="step-num">STAGE 2</div>
+        <div class="step-name">Analysis</div>
+        <div class="step-detail">ParallelAgent<br>Symptom + Imaging<br>concurrent</div>
+      </div>
+      <div class="pipeline-arrow">&rarr;</div>
+      <div class="pipeline-step pipeline-step--orange">
+        <div class="step-num">STAGE 3</div>
+        <div class="step-name">Diagnosis</div>
+        <div class="step-detail">LoopAgent<br>max 3 iterations<br>Generator + Critic</div>
+      </div>
+      <div class="pipeline-arrow">&rarr;</div>
+      <div class="pipeline-step pipeline-step--plum">
+        <div class="step-num">STAGE 4</div>
+        <div class="step-name">Specialist</div>
+        <div class="step-detail">LlmAgent Router<br>4 specialists<br>transfer_to_agent</div>
+      </div>
+      <div class="pipeline-arrow">&rarr;</div>
+      <div class="pipeline-step pipeline-step--teal">
+        <div class="step-num">STAGE 5</div>
+        <div class="step-name">Summary</div>
+        <div class="step-detail">LlmAgent<br>SOAP note<br><code>case_summary</code></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow" style="--i:4">
+    <svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+    agent hierarchy detail
+  </div>
+
+  <!-- Agent Hierarchy Mermaid -->
+  <div class="section section--accent" style="--i:5">
+    <div class="section-label"><span class="dot"></span> Agent Hierarchy</div>
+    <p style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">
+      The outer <code>SequentialAgent</code> composes 5 stages. Each stage writes to a named <code>output_key</code>
+      in session state. Downstream agents read via <code>{var}</code> template interpolation.
+    </p>
+    <div class="mermaid-wrap">
+      <div class="zoom-controls">
+        <button onclick="zoomDiagram(this, 1.2)" title="Zoom in">+</button>
+        <button onclick="zoomDiagram(this, 0.8)" title="Zoom out">&minus;</button>
+        <button onclick="resetZoom(this)" title="Reset zoom">&#8634;</button>
+      </div>
+      <pre class="mermaid">
+graph TD
+  MP["MedicalPipeline\n(SequentialAgent)"]
+
+  MP --> TA["Stage 1: TriageAgent\n(LlmAgent)\noutput_key: triage_result"]
+  MP --> CA["Stage 2: ConcurrentAnalysis\n(ParallelAgent)"]
+  MP --> DRL["Stage 3: DiagnosisRefinementLoop\n(LoopAgent, max_iterations=3)"]
+  MP --> SR["Stage 4: SpecialistRouterAgent\n(LlmAgent coordinator)"]
+  MP --> CS["Stage 5: CaseSummaryAgent\n(LlmAgent)\noutput_key: case_summary"]
+
+  CA --> SA["SymptomAnalysisAgent\n(LlmAgent)\noutput_key: symptom_analysis"]
+  CA --> IA["ImagingAnalysisAgent\n(LlmAgent)\noutput_key: imaging_findings"]
+
+  DRL --> DG["DiagnosisGeneratorAgent\n(LlmAgent)\noutput_key: differential_dx"]
+  DRL --> DC["DiagnosisCriticAgent\n(LlmAgent)\noutput_key: diagnosis_critique"]
+
+  SR --> Card["CardiologyAgent\noutput_key: specialist_opinion"]
+  SR --> Derm["DermatologyAgent\noutput_key: specialist_opinion"]
+  SR --> Peds["PediatricsAgent\noutput_key: specialist_opinion"]
+  SR --> GenMed["GeneralMedicineAgent\noutput_key: specialist_opinion"]
+
+  classDef sequential fill:#c2410c11,stroke:#c2410c,stroke-width:2px
+  classDef llm fill:#1e40af11,stroke:#1e40af,stroke-width:1.5px
+  classDef parallel fill:#4d7c0f11,stroke:#4d7c0f,stroke-width:1.5px
+  classDef loop fill:#b4530911,stroke:#b45309,stroke-width:1.5px
+  classDef router fill:#9f123911,stroke:#9f1239,stroke-width:1.5px
+
+  class MP sequential
+  class TA,SA,IA,DG,DC,CS llm
+  class CA parallel
+  class DRL loop
+  class SR router
+  class Card,Derm,Peds,GenMed llm
+      </pre>
+    </div>
+  </div>
+
+  <div class="flow-arrow" style="--i:6">
+    <svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+    state flow between stages
+  </div>
+
+  <!-- Data Flow Sequence Diagram -->
+  <div class="section section--green" style="--i:7">
+    <div class="section-label"><span class="dot"></span> Data Flow &amp; State Passing</div>
+    <p style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">
+      All agents communicate through shared <strong>session state</strong>, not direct agent-to-agent passing.
+      Each agent writes to its <code>output_key</code>. Downstream agents read via <code>{key_name}</code> interpolation in their prompts.
+    </p>
+    <div class="mermaid-wrap">
+      <div class="zoom-controls">
+        <button onclick="zoomDiagram(this, 1.2)" title="Zoom in">+</button>
+        <button onclick="zoomDiagram(this, 0.8)" title="Zoom out">&minus;</button>
+        <button onclick="resetZoom(this)" title="Reset zoom">&#8634;</button>
+      </div>
+      <pre class="mermaid">
+sequenceDiagram
+  participant U as User / CLI / UI
+  participant S as Session State
+  participant T as TriageAgent
+  participant SY as SymptomAnalysis
+  participant IM as ImagingAnalysis
+  participant GN as DiagnosisGenerator
+  participant CR as DiagnosisCritic
+  participant RT as SpecialistRouter
+  participant SP as Selected Specialist
+  participant SM as CaseSummary
+
+  U->>S: Seed patient_intake JSON
+  Note over S: All keys pre-seeded as ""
+
+  S->>T: {patient_intake}
+  T->>S: triage_result
+
+  par Parallel Execution
+    S->>SY: {patient_intake}, {triage_result}
+    SY->>S: symptom_analysis
+  and
+    S->>IM: {patient_intake}
+    IM->>S: imaging_findings
+  end
+
+  loop max 3 iterations
+    S->>GN: {patient_intake}, {triage_result}, {symptom_analysis}, {imaging_findings}, {diagnosis_critique}
+    GN->>S: differential_dx
+    S->>CR: {differential_dx}, {patient_intake}
+    CR->>S: diagnosis_critique
+    Note over CR: If confidence >= 0.80: escalate = True
+  end
+
+  S->>RT: {differential_dx}, {patient_intake}, {triage_result}
+  RT->>SP: transfer_to_agent
+  SP->>S: specialist_opinion
+
+  S->>SM: All prior output_keys
+  SM->>S: case_summary
+      </pre>
+    </div>
+  </div>
+
+  <div class="flow-arrow" style="--i:8">
+    <svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+    tool dependencies
+  </div>
+
+  <!-- Tool Dependency Map -->
+  <div class="section section--orange" style="--i:9">
+    <div class="section-label"><span class="dot"></span> Tool Dependencies by Stage</div>
+    <div class="mermaid-wrap">
+      <div class="zoom-controls">
+        <button onclick="zoomDiagram(this, 1.2)" title="Zoom in">+</button>
+        <button onclick="zoomDiagram(this, 0.8)" title="Zoom out">&minus;</button>
+        <button onclick="resetZoom(this)" title="Reset zoom">&#8634;</button>
+      </div>
+      <pre class="mermaid">
+graph LR
+  subgraph S1["Stage 1 &mdash; Triage"]
+    TA["TriageAgent"] --> bmi["calculate_bmi"]
+  end
+  subgraph S2["Stage 2 &mdash; Analysis"]
+    SY["SymptomAnalysis"] --> egfr["calculate_egfr"]
+    IM["ImagingAnalysis"]
+  end
+  subgraph S3["Stage 3 &mdash; Diagnosis Loop"]
+    GN["DiagnosisGenerator"] --> icd["lookup_icd_code"]
+    CR["DiagnosisCritic"] --> exit["exit_diagnosis_loop"]
+  end
+  subgraph S4["Stage 4 &mdash; Specialist"]
+    CARD["CardiologyAgent"] --> drug["lookup_drug_interaction"]
+    CARD --> contra["check_contraindication"]
+    PEDS["PediatricsAgent"] --> contra2["check_contraindication"]
+    GEN["GeneralMedicine"] --> drug2["lookup_drug_interaction"]
+    GEN --> contra3["check_contraindication"]
+    DERM["DermatologyAgent"]
+  end
+  subgraph S5["Stage 5 &mdash; Summary"]
+    CS["CaseSummaryAgent"] --> risk["calculate_risk_score"]
+  end
+
+  classDef agent fill:#1e40af11,stroke:#1e40af,stroke-width:1.5px
+  classDef tool fill:#b4530911,stroke:#b45309,stroke-width:1.5px
+
+  class TA,SY,IM,GN,CR,CARD,PEDS,GEN,DERM,CS agent
+  class bmi,egfr,icd,exit,drug,contra,drug2,contra2,contra3,risk tool
+      </pre>
+    </div>
+  </div>
+
+  <div class="flow-arrow" style="--i:10">
+    <svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+    schema mapping
+  </div>
+
+  <!-- Schema Relationships Table -->
+  <div class="section section--teal" style="--i:11">
+    <div class="section-label"><span class="dot"></span> Schema &amp; Output Mapping</div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>Agent</th>
+            <th>ADK Type</th>
+            <th>Output Key</th>
+            <th>Schema</th>
+            <th>Key Fields</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>TriageAgent</td>
+            <td><span class="badge badge--blue">LlmAgent</span></td>
+            <td><code>triage_result</code></td>
+            <td>TriageResult</td>
+            <td>urgency_level, category, red_flags[], confidence</td>
+          </tr>
+          <tr>
+            <td>2a</td>
+            <td>SymptomAnalysisAgent</td>
+            <td><span class="badge badge--blue">LlmAgent</span></td>
+            <td><code>symptom_analysis</code></td>
+            <td>Free text</td>
+            <td>Structured symptom clusters, lab interpretation</td>
+          </tr>
+          <tr>
+            <td>2b</td>
+            <td>ImagingAnalysisAgent</td>
+            <td><span class="badge badge--blue">LlmAgent</span></td>
+            <td><code>imaging_findings</code></td>
+            <td>ImagingObservation</td>
+            <td>findings[], impression, differential_from_image[]</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>DiagnosisGeneratorAgent</td>
+            <td><span class="badge badge--blue">LlmAgent</span></td>
+            <td><code>differential_dx</code></td>
+            <td>DifferentialDiagnosis</td>
+            <td>diagnoses[] (ranked), overall_confidence, iteration_number</td>
+          </tr>
+          <tr>
+            <td>3*</td>
+            <td>DiagnosisCriticAgent</td>
+            <td><span class="badge badge--blue">LlmAgent</span></td>
+            <td><code>diagnosis_critique</code></td>
+            <td>Free text</td>
+            <td>Evaluation + constructive feedback</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>[Selected Specialist]</td>
+            <td><span class="badge badge--plum">Router</span></td>
+            <td><code>specialist_opinion</code></td>
+            <td>Free text</td>
+            <td>Domain-specific consultation</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>CaseSummaryAgent</td>
+            <td><span class="badge badge--blue">LlmAgent</span></td>
+            <td><code>case_summary</code></td>
+            <td>CaseSummary</td>
+            <td>subjective, objective, assessment, plan, medications[]</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="flow-arrow" style="--i:12">
+    <svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+    adk patterns
+  </div>
+
+  <!-- ADK Pattern Cards -->
+  <div class="section section--blue" style="--i:13">
+    <div class="section-label"><span class="dot"></span> ADK Pattern Reference</div>
+    <div class="four-col">
+      <div class="inner-card">
+        <div class="title"><span class="badge badge--blue">SequentialAgent</span></div>
+        <div class="desc">
+          Outer pipeline. Runs 5 stages in strict order. Each stage completes before the next starts.
+          State flows forward via <code>output_key</code>.
+        </div>
+      </div>
+      <div class="inner-card">
+        <div class="title"><span class="badge badge--green">ParallelAgent</span></div>
+        <div class="desc">
+          Stage 2. Two agents run concurrently. Both use <code>include_contents='none'</code> for
+          stateless isolation &mdash; they read only from session state.
+        </div>
+      </div>
+      <div class="inner-card">
+        <div class="title"><span class="badge badge--orange">LoopAgent</span></div>
+        <div class="desc">
+          Stage 3. Generator + Critic loop, max 3 iterations. Critic calls <code>exit_diagnosis_loop</code>
+          which sets <code>tool_context.actions.escalate = True</code> to exit.
+        </div>
+      </div>
+      <div class="inner-card">
+        <div class="title"><span class="badge badge--plum">LLM Router</span></div>
+        <div class="desc">
+          Stage 4. LlmAgent with <code>sub_agents</code>. The LLM decides which specialist to route to.
+          ADK's <code>transfer_to_agent</code> handles routing automatically.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow" style="--i:14">
+    <svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+    session state
+  </div>
+
+  <!-- Session State -->
+  <div class="section section--sage" style="--i:15">
+    <div class="section-label"><span class="dot"></span> Session State Model</div>
+    <p style="font-size:13px;color:var(--text-dim);margin-bottom:12px;">
+      All keys are <strong>pre-seeded as empty strings</strong> before the pipeline starts. This prevents
+      template interpolation failures when agents reference keys that haven't been populated yet
+      (e.g., <code>{diagnosis_critique}</code> on the first loop iteration).
+    </p>
+    <div class="inner-grid-3">
+      <div class="inner-card">
+        <div class="title">Input</div>
+        <ul class="node-list">
+          <li><code>patient_intake</code> PatientIntake JSON</li>
+        </ul>
+      </div>
+      <div class="inner-card">
+        <div class="title">Stage Outputs</div>
+        <ul class="node-list">
+          <li><code>triage_result</code> Stage 1</li>
+          <li><code>symptom_analysis</code> Stage 2a</li>
+          <li><code>imaging_findings</code> Stage 2b</li>
+          <li><code>differential_dx</code> Stage 3</li>
+          <li><code>diagnosis_critique</code> Stage 3 (internal)</li>
+        </ul>
+      </div>
+      <div class="inner-card">
+        <div class="title">Final Outputs</div>
+        <ul class="node-list">
+          <li><code>specialist_routing</code> Stage 4 decision</li>
+          <li><code>specialist_opinion</code> Stage 4 result</li>
+          <li><code>case_summary</code> Stage 5 SOAP note</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow" style="--i:16">
+    <svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+    tool specifications
+  </div>
+
+  <!-- Mock Tools Table -->
+  <div class="section section--plum" style="--i:17">
+    <div class="section-label"><span class="dot"></span> Mock Tools (7 Functions)</div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Tool</th>
+            <th>Stage</th>
+            <th>Parameters</th>
+            <th>Returns</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>calculate_bmi</code></td>
+            <td>1</td>
+            <td>weight_kg, height_cm</td>
+            <td>BMI value + category (Underweight / Normal / Overweight / Obese)</td>
+          </tr>
+          <tr>
+            <td><code>calculate_egfr</code></td>
+            <td>2a</td>
+            <td>creatinine_mg_dl, age, sex</td>
+            <td>eGFR value + CKD stage (G1&ndash;G5)</td>
+          </tr>
+          <tr>
+            <td><code>lookup_icd_code</code></td>
+            <td>3</td>
+            <td>condition</td>
+            <td>ICD-10 code, description, category (19 conditions)</td>
+          </tr>
+          <tr>
+            <td><code>exit_diagnosis_loop</code></td>
+            <td>3</td>
+            <td>confidence_sufficient, reason, tool_context</td>
+            <td>Sets <code>tool_context.actions.escalate = True</code></td>
+          </tr>
+          <tr>
+            <td><code>lookup_drug_interaction</code></td>
+            <td>4</td>
+            <td>drug_a, drug_b</td>
+            <td>Severity, description, clinical significance (6 pairs)</td>
+          </tr>
+          <tr>
+            <td><code>check_contraindication</code></td>
+            <td>4</td>
+            <td>medication, condition</td>
+            <td>Is contraindicated, severity, alternatives (6 pairs)</td>
+          </tr>
+          <tr>
+            <td><code>calculate_risk_score</code></td>
+            <td>5</td>
+            <td>score_type, parameters</td>
+            <td>Score + risk category (Wells PE, CHADS2-VASc, CURB-65, TIMI)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="flow-arrow" style="--i:18">
+    <svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+    file map
+  </div>
+
+  <!-- File Map -->
+  <div class="section section--recessed" style="--i:19">
+    <div class="section-label"><span class="dot" style="background:var(--text-dim)"></span> Source File Map</div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr><th>File</th><th>Purpose</th><th>Key Exports</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>medical/agents.py</code></td>
+            <td>Pipeline composition + runner</td>
+            <td>build_pipeline(), MedicalPipelineRunner</td>
+          </tr>
+          <tr>
+            <td><code>medical/schemas.py</code></td>
+            <td>Pydantic data models</td>
+            <td>PatientIntake, TriageResult, DifferentialDiagnosis, CaseSummary, ImagingObservation</td>
+          </tr>
+          <tr>
+            <td><code>medical/tools.py</code></td>
+            <td>Mock tools + red flag detection</td>
+            <td>7 tool functions + check_hardcoded_red_flags()</td>
+          </tr>
+          <tr>
+            <td><code>medical/prompts.py</code></td>
+            <td>Agent system instructions</td>
+            <td>11 prompt strings (TRIAGE_PROMPT, etc.)</td>
+          </tr>
+          <tr>
+            <td><code>medical/cases.py</code></td>
+            <td>Sample patient cases</td>
+            <td>SAMPLE_CASES dict (4 cases)</td>
+          </tr>
+          <tr>
+            <td><code>medical/cli_commands.py</code></td>
+            <td>Click CLI commands</td>
+            <td>diagnose, triage, analyze-image, drug-check</td>
+          </tr>
+          <tr>
+            <td><code>app_medical.py</code></td>
+            <td>Streamlit UI</td>
+            <td>3-page medical web app</td>
+          </tr>
+          <tr>
+            <td><code>client.py</code></td>
+            <td>Gemini client wrapper</td>
+            <td>traced_generate, MODEL, trace_log</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Safety Callout -->
+  <div class="callout section--recessed" style="--i:20">
+    <strong>Red Flag Detection</strong> &mdash; Before any AI call, <code>check_hardcoded_red_flags()</code>
+    performs deterministic keyword matching for life-threatening symptom combinations
+    (chest pain + SOB + diaphoresis, facial droop + arm weakness, etc.).
+    This is <strong>not AI-dependent</strong> &mdash; it always triggers for matching patterns.
+  </div>
+
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    look: 'classic',
+    themeVariables: {
+      primaryColor: isDark ? '#352d28' : '#fef3e0',
+      primaryBorderColor: isDark ? '#fb923c' : '#c2410c',
+      primaryTextColor: isDark ? '#ede5dd' : '#292017',
+      secondaryColor: isDark ? '#1e293b' : '#f0fdf4',
+      secondaryBorderColor: isDark ? '#a3e635' : '#4d7c0f',
+      secondaryTextColor: isDark ? '#ede5dd' : '#292017',
+      tertiaryColor: isDark ? '#27201a' : '#fffbeb',
+      tertiaryBorderColor: isDark ? '#fbbf24' : '#b45309',
+      tertiaryTextColor: isDark ? '#ede5dd' : '#292017',
+      lineColor: isDark ? '#a69889' : '#8a7e72',
+      fontSize: '14px',
+      fontFamily: "'DM Sans', system-ui, sans-serif",
+      noteBkgColor: isDark ? '#2e2622' : '#fef3e0',
+      noteTextColor: isDark ? '#ede5dd' : '#292017',
+      noteBorderColor: isDark ? '#fbbf24' : '#b45309',
+    }
+  });
+</script>
+<script>
+  function updateZoomState(w){var t=w.querySelector('.mermaid');var z=parseFloat(t.dataset.zoom||'1');w.classList.toggle('is-zoomed',z>1);}
+  function zoomDiagram(b,f){var w=b.closest('.mermaid-wrap');var t=w.querySelector('.mermaid');var c=parseFloat(t.dataset.zoom||'1');var n=Math.min(Math.max(c*f,0.3),5);t.dataset.zoom=n;t.style.transform='scale('+n+')';updateZoomState(w);}
+  function resetZoom(b){var w=b.closest('.mermaid-wrap');var t=w.querySelector('.mermaid');t.dataset.zoom='1';t.style.transform='scale(1)';updateZoomState(w);}
+  document.querySelectorAll('.mermaid-wrap').forEach(function(w){w.addEventListener('wheel',function(e){if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();var t=w.querySelector('.mermaid');var c=parseFloat(t.dataset.zoom||'1');var f=e.deltaY<0?1.1:0.9;var n=Math.min(Math.max(c*f,0.3),5);t.dataset.zoom=n;t.style.transform='scale('+n+')';updateZoomState(w);},{passive:false});var sX,sY,sL,sT;w.addEventListener('mousedown',function(e){if(e.target.closest('.zoom-controls'))return;var t=w.querySelector('.mermaid');if(parseFloat(t.dataset.zoom||'1')<=1)return;w.classList.add('is-panning');sX=e.clientX;sY=e.clientY;sL=w.scrollLeft;sT=w.scrollTop;});window.addEventListener('mousemove',function(e){if(!w.classList.contains('is-panning'))return;w.scrollLeft=sL-(e.clientX-sX);w.scrollTop=sT-(e.clientY-sY);});window.addEventListener('mouseup',function(){w.classList.remove('is-panning');});});
+</script>
+
+</body>
+</html>

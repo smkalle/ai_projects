@@ -49,6 +49,9 @@ htmlcov/
 .coverage
 .coverage.*
 
+# Skills/tools
+*.skill
+
 # OS junk
 *.log
 *.tmp
