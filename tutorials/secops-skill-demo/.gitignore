@@ -1,0 +1,18 @@
+# Environment
+.env
+.env.local
+*.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Reports (keep sample, ignore generated)
+reports/*.md
+!reports/sample_report.md
+
+# OS
+.DS_Store
+Thumbs.db
