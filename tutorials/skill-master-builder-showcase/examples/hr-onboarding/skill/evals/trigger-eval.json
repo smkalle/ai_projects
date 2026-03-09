@@ -1,0 +1,111 @@
+{
+  "skill": "hr-onboarding-manager",
+  "version": "1.0.0",
+  "eval_set": [
+    {
+      "id": "trigger-001",
+      "type": "trigger",
+      "query": "I need to onboard a new software engineer starting Monday.",
+      "should_trigger": true,
+      "rationale": "Direct use case — new employee onboarding request with role and start date"
+    },
+    {
+      "id": "trigger-002",
+      "type": "trigger",
+      "query": "Help me create a 30-60-90 day plan for a new sales rep.",
+      "should_trigger": true,
+      "rationale": "30-60-90 day plan is a core skill trigger phrase"
+    },
+    {
+      "id": "trigger-003",
+      "type": "trigger",
+      "query": "What paperwork does a new hire need to complete before starting?",
+      "should_trigger": true,
+      "rationale": "Compliance paperwork question — directly in skill scope"
+    },
+    {
+      "id": "trigger-004",
+      "type": "trigger",
+      "query": "Our new marketing manager starts next week — what do I need to do to prepare?",
+      "should_trigger": true,
+      "rationale": "Implicit onboarding request from manager perspective"
+    },
+    {
+      "id": "trigger-005",
+      "type": "trigger",
+      "query": "Give me a new employee onboarding checklist for a remote worker in California.",
+      "should_trigger": true,
+      "rationale": "Explicit onboarding checklist request with state and work type specified"
+    },
+    {
+      "id": "trigger-006",
+      "type": "trigger",
+      "query": "We have someone starting tomorrow and I haven't set anything up yet. Help!",
+      "should_trigger": true,
+      "rationale": "Urgent implicit onboarding — compressed timeline scenario"
+    },
+    {
+      "id": "trigger-false-001",
+      "type": "trigger",
+      "query": "What is the current unemployment rate in the US?",
+      "should_trigger": false,
+      "rationale": "Labor statistics question — not an onboarding workflow request"
+    },
+    {
+      "id": "trigger-false-002",
+      "type": "trigger",
+      "query": "Help me write a performance improvement plan for an underperforming employee.",
+      "should_trigger": false,
+      "rationale": "PIP is for existing employees — not new hire onboarding"
+    },
+    {
+      "id": "trigger-false-003",
+      "type": "trigger",
+      "query": "How do I terminate an employee in California?",
+      "should_trigger": false,
+      "rationale": "Offboarding / termination — opposite of onboarding, out of scope"
+    },
+    {
+      "id": "functional-001",
+      "type": "functional",
+      "query": "Onboard a new software engineer named Alex Chen starting March 17, hybrid work, based in New York. We use BambooHR and have a buddy program.",
+      "expected_behavior": "Skill runs all 6 phases in sequence: (0) collects and displays New Hire Card, (1) Pre-Boarding Checklist with NY compliance flagged, (2) Day 1 Run-of-Show, (3) Week 1 plan, (4) 30-day agenda, (5) 60-day review, (6) 90-day close checklist",
+      "assertions": [
+        "New Hire Card is displayed with all required fields before plan generation",
+        "I-9 Day 3 deadline is explicitly called out in Day 1 section",
+        "New York state new hire report requirement is mentioned",
+        "IT provisioning checklist is included or referenced",
+        "Buddy assignment form is referenced",
+        "All 6 phases are present with distinct sections",
+        "Owner (HR/Manager/IT/Buddy) assigned to every major action item",
+        "30-day check-in agenda is included or referenced"
+      ]
+    },
+    {
+      "id": "functional-002",
+      "type": "functional",
+      "query": "New hire starts tomorrow, remote position in Texas. I haven't done anything yet.",
+      "expected_behavior": "Skill detects compressed timeline (less than 5 business days pre-boarding), flags IT provisioning as critical risk, reprioritizes checklist by urgency, provides emergency Day 1 and Week 1 plan, notes items that are at risk due to timeline",
+      "assertions": [
+        "Timeline risk is explicitly flagged",
+        "IT provisioning is identified as highest urgency",
+        "I-9 remote completion options are mentioned (authorized representative or remote I-9 service)",
+        "Texas-specific notes included (no state income tax, new hire report deadline)",
+        "Prioritized triage checklist produced rather than standard sequential checklist",
+        "Day 1 emergency plan is included"
+      ]
+    },
+    {
+      "id": "functional-003",
+      "type": "functional",
+      "query": "Onboard a new employee.",
+      "expected_behavior": "Skill recognizes incomplete information and asks for required inputs: new hire name/role, start date, work type, and state of employment before generating any plan",
+      "assertions": [
+        "Skill does NOT generate a plan without collecting required inputs",
+        "Skill asks for: name/role, start date, work type, state of employment",
+        "Response is concise and does not fill in assumed values",
+        "Skill does not proceed past Phase 0 intake without user-provided information"
+      ]
+    }
+  ]
+}
