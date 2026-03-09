@@ -195,6 +195,22 @@ The skill was then used as the intelligence layer for a Streamlit + SQLite workb
 
 ---
 
+## Relationship to the Official Anthropic Spec
+
+skill-master-builder implements the rules and patterns from Anthropic's official guide: [*The Complete Guide to Building Skills for Claude*](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf) (January 2026).
+
+The spec defines the skill format (folder structure, YAML frontmatter, progressive disclosure), three skill categories (Document & Asset Creation, Workflow Automation, MCP Enhancement), five workflow patterns, testing methodology, and distribution model.
+
+skill-master-builder encodes these as enforceable rules rather than suggestions:
+- The plan-mode interview maps directly to the spec's "Start with use cases" and "Define success criteria" sections
+- Phase 3 writing rules enforce the spec's frontmatter requirements, description structure, and instruction best practices
+- Phase 5 eval generation follows the spec's three testing areas (triggering, functional, performance)
+- Phase 6 validation catches every structural and security violation the spec prohibits
+
+For a complete summary of the spec, see [anthropic-skill-spec-summary.md](anthropic-skill-spec-summary.md).
+
+---
+
 ## Building Your Own Skill
 
 See [building-your-own-skill.md](building-your-own-skill.md).

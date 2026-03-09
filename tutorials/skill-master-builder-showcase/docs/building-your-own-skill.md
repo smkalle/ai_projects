@@ -1,5 +1,9 @@
 # Building Your Own Skill with skill-master-builder
 
+> This workflow implements Anthropic's official skill-building guide.
+> For the full spec summary, see [anthropic-skill-spec-summary.md](anthropic-skill-spec-summary.md).
+> For the original PDF: [The Complete Guide to Building Skills for Claude](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf)
+
 ## Prerequisites
 
 1. Install skill-master-builder on Claude.ai:

@@ -270,11 +270,23 @@ MIT — see [LICENSE](LICENSE).
 
 ---
 
-## Acknowledgements
+## Based on the Official Anthropic Skill Specification
 
 `skill-master-builder` automates and systematizes the best practices from Anthropic's official guide:
 **[The Complete Guide to Building Skills for Claude (PDF)](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf)**
 
-Every skill it produces is compliant with that spec by default — enforced at Phase 6 validation before packaging.
+That spec (published January 2026) defines the skill format, YAML frontmatter rules, progressive disclosure system, three skill categories, five workflow patterns, testing methodology, and distribution model. Every skill produced by `skill-master-builder` is compliant with that spec by default — enforced at Phase 6 validation before packaging.
+
+For a structured summary of the spec, see [`docs/anthropic-skill-spec-summary.md`](docs/anthropic-skill-spec-summary.md).
+
+### Key concepts from the spec that skill-master-builder enforces
+
+| Concept | Spec Rule | How skill-master-builder Enforces It |
+|---------|-----------|--------------------------------------|
+| Progressive Disclosure | 3-level loading: frontmatter → SKILL.md body → linked files | Keeps SKILL.md under 500 lines; pushes detail to `references/` |
+| Description Field | Must include WHAT + WHEN + trigger phrases; under 1024 chars | Phase 3 generates descriptions with 4–6 trigger phrases |
+| Folder Naming | kebab-case, no spaces/capitals/underscores | Phase 6 `validate_skill.py` rejects non-conforming names |
+| No XML in Frontmatter | Angle brackets forbidden (security) | Validator checks for `< >` in frontmatter |
+| Testing | Trigger tests + functional tests + performance comparison | Phase 5 generates eval suite with minimum coverage |
 
 `hr-onboarding-manager` domain research sourced from SHRM, Paycom, BambooHR, and federal compliance resources.
