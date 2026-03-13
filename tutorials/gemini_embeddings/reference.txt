@@ -1,0 +1,300 @@
+As a Google SDE3 AI engineer specializing in multimodal foundation models and developer tooling, I've been closely involved with the Gemini ecosystem since its early days. The recent launch of **Gemini Embedding 2** (model ID: `gemini-embedding-2-preview`)—announced around March 10, 2026—marks a major milestone: our first **natively multimodal embedding model** that projects text, images, video, audio, and PDF documents into a single unified semantic vector space.
+To view keyboard shortcuts, press question mark
+View keyboard shortcuts
+Gemini Embedding 2: Our first natively multimodal embedding model
+Google AI Studio
+@GoogleAIStudio
+·
+19h
+·
+Gemini Embedding 2 is our first natively multimodal embedding model that maps text, images, video, audio and documents into a single embedding space, enabling multimodal retrieval and classification across different types of media — and it’s available now in public preview.
+Today we’re releasing Gemini Embedding 2, our first fully multimodal embedding model built on the Gemini architecture, in Public Preview via the Gemini API and Vertex AI.
+Expanding on our previous text-only foundation, Gemini Embedding 2 maps text, images, videos, audio and documents into a single, unified embedding space, and captures semantic intent across over 100 languages. This simplifies complex pipelines and enhances a wide variety of multimodal downstream tasks—from Retrieval-Augmented Generation (RAG) and semantic search to sentiment analysis and data clustering.
+New modalities and flexible output dimensions
+The model is based on Gemini and leverages its best-in-class multimodal understanding capabilities to create high-quality embeddings across:
+Text: supports an expansive context of up to 8192 input tokens
+Images: capable of processing up to 6 images per request, supporting PNG and JPEG formats
+Videos: supports up to 120 seconds of video input in MP4 and MOV formats
+Audio: natively ingests and embeds audio data without needing intermediate text transcriptions
+Documents: directly embed PDFs up to 6 pages long
+Beyond processing one modality at a time, this model natively understands interleaved input so you can pass multiple modalities of input (e.g., image + text) in a single request. This allows the model to capture the complex, nuanced relationships between different media types, unlocking more accurate understanding of complex, real-world data.
+
+Like our previous embedding models, Gemini Embedding 2 incorporates Matryoshka Representation Learning (MRL), a technique that “nests” information by dynamically scaling down dimensions. This enables flexible output dimensions scaling down from the default 3072 so developers can balance performance and storage costs. We recommend using 3072, 1536, 768 dimensions for highest quality. 
+State-of-the-art performance
+Gemini Embedding 2 doesn't just improve on legacy models. It establishes a new performance standard for multimodal depth, introducing strong speech capabilities and outperforming leading models in text, image, and video tasks. This measurable improvement and unique multimodal coverage give developers exactly what they need for their diverse embedding needs.
+Unlocking deeper meaning for data
+Embeddings are the technology that power experiences in many Google products. From RAG where embeddings can play a crucial role in context engineering to large-scale data management and classic search/analysis, some of our early access partners are already using Gemini Embedding 2 to unlock high-value multimodal applications:
+
+"We chose Gemini embeddings to help legal professionals find critical information during the discovery process in litigation -- a highly technical challenge in a high-stakes setting, and one Gemini excels at. In our most recent tests, Gemini's multi-modal embedding model improves precision and recall across millions of records, while unlocking powerful new search functionality for images and videos. For legal professionals, these new capabilities open up entirely novel ways to quickly understand case materials in even the largest matters."
+
+Max Christoff
+CTO
+Everlaw
+
+"Gemini Embedding 2 is the foundation for Sparkonomy’s Creator Economic Equality Engine. Its native multi-modality slashes our latency by up to 70% by removing LLM inference and nearly doubles semantic similarity scores for text-image and text-video pairs—leaping from 0.4 to 0.8. This powers our proprietary Creator Genome to index millions of minutes of video, alongside images and text, with unprecedented precision—unlocking unbiased brand collaborations and democratizing economic success for every creator."
+
+Guneet Singh
+Co-founder
+Sparkonomy
+
+"The API continuity is excellent. Gemini Embedding 2 drops right into our existing workflow with minimal changes. We’re testing new ways to embed text-based conversational memories together with audio and visual embeddings, especially assistant question-and-answer pairs, and seeing a 20% lift in top-1 recall for our personal wellness app."
+
+Ertuğrul Çavuşoğlu
+Co-founder
+Mindlid
+Start building today
+Get started with the Gemini Embedding 2 model through Gemini API or Vertex AI.
+python
+from google import genai
+from google.genai import types
+
+# For Vertex AI:
+# PROJECT_ID='<add_here>'
+# client = genai.Client(vertexai=True, project=PROJECT_ID, location='us-central1')
+
+client = genai.Client()
+
+with open("example.png", "rb") as f:
+    image_bytes = f.read()
+
+with open("sample.mp3", "rb") as f:
+    audio_bytes = f.read()
+
+# Embed text, image, and audio 
+result = client.models.embed_content(
+    model="gemini-embedding-2-preview",
+    contents=[
+        "What is the meaning of life?",
+        types.Part.from_bytes(
+            data=image_bytes,
+            mime_type="image/png",
+        ),
+        types.Part.from_bytes(
+            data=audio_bytes,
+            mime_type="audio/mpeg",
+        ),
+    ],
+)
+
+print(result.embeddings)
+Learn how to use the model in our interactive Gemini API and Vertex AI Colab notebooks. You can also use it through LangChain, LlamaIndex, Haystack, Weaviate, QDrant, ChromaDB, and Vector Search.
+By bringing semantic meaning to the diverse data around us, Gemini Embedding 2 provides the essential multimodal foundation for the next era of advanced AI experiences. We can’t wait to see what you build.
+
+This enables true cross-modal retrieval (e.g., text query → relevant video clip, image query → semantically similar document page) without modality-specific pipelines, which is transformative for RAG, semantic search, recommendation systems, clustering, and classification across media types.
+
+Key highlights from the official release and docs:
+- **Unified space** across modalities (text, image, video ≤120s, audio ≤80s, PDF ≤6 pages)
+- **8192 input tokens** max (shared across modalities)
+- **3072-dimensional** vectors by default, with **Matryoshka Representation Learning** (MRL) support for truncation to 1536, 768, 512, etc. → great for storage & latency trade-offs
+- **Task types** supported (RETRIEVAL_QUERY, RETRIEVAL_DOCUMENT, SEMANTIC_SIMILARITY, etc.)
+- **Preview status** → rate limits and possible spec changes; use cautiously in production
+- Community notes limitations (e.g., max 6 images, 1 video per request, 6-page PDFs) but praises the cross-modal coherence
+
+This hands-on tutorial walks AI engineers through practical usage with the **Gemini API** (free tier via Google AI Studio keys) using the official Python SDK. We'll build up from basics to a production-style multimodal RAG pipeline.
+
+### Prerequisites
+- Python 3.10+
+- API key from https://aistudio.google.com/app/apikey (free tier: generous for dev, but check rate-limits page)
+- Install packages:
+  ```bash
+  pip install --upgrade google-generativeai pillow numpy scipy chromadb requests
+  ```
+- Prepare sample files in a `./media/` folder:
+  - `dog.jpg` (image)
+  - `puppy.mp4` (short video < 120s)
+  - `greeting.mp3` (short audio < 80s)
+  - `research.pdf` (≤6 pages)
+  - `cat.png` (another image)
+
+### Step 1: Basic Setup & Text Embedding
+```python
+import os
+import google.generativeai as genai
+import numpy as np
+
+# Configure (use env var in production)
+genai.configure(api_key=os.getenv("GEMINI_API_KEY") or "YOUR_API_KEY_HERE")
+
+MODEL = "models/gemini-embedding-2-preview"
+
+# Simple text embedding
+result = genai.embed_content(
+    model=MODEL,
+    content="What makes a good RAG system?",
+    task_type="RETRIEVAL_DOCUMENT"   # or RETRIEVAL_QUERY for queries
+)
+
+emb = np.array(result["embedding"])
+print(f"Dimension: {emb.shape}")           # → (3072,)
+print(f"Norm: {np.linalg.norm(emb):.4f}") # usually ~1 after internal normalization
+```
+
+**Tip**: For best cosine similarity, normalize if you truncate dimensions later.
+
+### Step 2: Matryoshka → Flexible Dimensions
+Reduce storage/latency while preserving most quality (MRL property).
+
+```python
+# Same text, but request smaller vector
+result_768 = genai.embed_content(
+    model=MODEL,
+    content="What makes a good RAG system?",
+    task_type="RETRIEVAL_DOCUMENT",
+    output_dimensionality=768           # valid: 128–3072
+)
+
+emb_768 = np.array(result_768["embedding"])
+print(f"Reduced dim: {emb_768.shape}")     # → (768,)
+```
+
+Common sweet spots: 768 (fast & cheap), 1536 (good balance), 3072 (max quality).
+
+### Step 3: Multimodal – Images, Mixed Content
+```python
+from PIL import Image
+
+img = Image.open("./media/dog.jpg")
+
+# Single image
+res_img = genai.embed_content(model=MODEL, content=img)
+print("Image embedding shape:", np.array(res_img["embedding"]).shape)
+
+# Text + image (interleaved → aggregated embedding)
+mixed = [
+    "A happy golden retriever running in a park",  # describes the image
+    img
+]
+
+res_mixed = genai.embed_content(model=MODEL, content=mixed)
+emb_mixed = np.array(res_mixed["embedding"][0])  # first (and only) item
+```
+
+You can interleave up to 6 images + text in one call.
+
+### Step 4: Video, Audio, PDF (File API – Async Upload)
+Larger files require the **File API** (upload once, reference by URI).
+
+```python
+import time
+
+def upload_and_embed(path: str):
+    mime = ""
+    if path.endswith(".mp4"): mime = "video/mp4"
+    elif path.endswith(".mp3"): mime = "audio/mp3"
+    elif path.endswith(".pdf"): mime = "application/pdf"
+    else: raise ValueError("Unsupported file")
+
+    file = genai.upload_file(path, mime_type=mime)
+    
+    # Poll until ACTIVE
+    while file.state.name == "PROCESSING":
+        print(f"Processing {path}...")
+        time.sleep(4)
+        file = genai.get_file(file.name)
+    
+    if file.state.name != "ACTIVE":
+        raise RuntimeError(f"File failed: {file.state.name}")
+    
+    res = genai.embed_content(model=MODEL, content=file)
+    emb = np.array(res["embedding"])
+    print(f"{path} → {emb.shape}")
+    return emb, file  # keep file ref if needed later
+
+# Examples
+vid_emb, vid_file   = upload_and_embed("./media/puppy.mp4")   # ≤120s
+audio_emb, _        = upload_and_embed("./media/greeting.mp3") # ≤80s
+pdf_emb, pdf_file   = upload_and_embed("./media/research.pdf") # ≤6 pages
+```
+
+**Important limits**:
+- 1 video per request
+- Audio + video together limited by total tokens
+- PDFs auto-converted; max 6 pages
+
+### Step 5: Cross-Modal Similarity – Quick Demo
+```python
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Assume we have embeddings from above
+query_text = "cute puppy playing outside"
+q_res = genai.embed_content(model=MODEL, content=query_text, task_type="RETRIEVAL_QUERY")
+q_emb = np.array(q_res["embedding"])
+
+# Normalize (recommended when using truncated dims)
+q_emb /= np.linalg.norm(q_emb)
+
+candidates = {
+    "text":   genai.embed_content(model=MODEL, content="A dog runs happily", task_type="RETRIEVAL_DOCUMENT")["embedding"],
+    "image":  res_img["embedding"],
+    "video":  vid_emb,
+    "pdf":    pdf_emb
+}
+
+for name, emb_raw in candidates.items():
+    emb = np.array(emb_raw)
+    emb /= np.linalg.norm(emb)
+    sim = cosine_similarity([q_emb], [emb])[0][0]
+    print(f"{name:8} similarity: {sim:.4f}")
+```
+
+You should see high similarity between semantically related items regardless of modality.
+
+### Step 6: Full Multimodal RAG Pipeline (ChromaDB)
+Real-world example: index mixed documents → retrieve → augment LLM.
+
+```python
+import chromadb
+from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction  # fallback; we use custom
+
+client = chromadb.PersistentClient(path="./multimodal_db")
+collection = client.get_or_create_collection(
+    name="gemini_multimodal_rag",
+    metadata={"hnsw:space": "cosine"}
+)
+
+# Helper to add item
+def index_item(id: str, content, metadata=None):
+    if isinstance(content, (str, Image.Image)):
+        res = genai.embed_content(model=MODEL, content=content)
+    else:  # uploaded file
+        res = genai.embed_content(model=MODEL, content=content)
+    
+    emb = res["embedding"]
+    
+    collection.add(
+        ids=[id],
+        embeddings=[emb],
+        metadatas=[metadata or {}],
+        documents=[str(content) if isinstance(content, str) else "[media]"]  # placeholder
+    )
+
+# Index examples
+index_item("doc1", "RAG combines retrieval + generation for grounded answers")
+index_item("img1", Image.open("./media/dog.jpg"), {"type": "image", "desc": "golden retriever"})
+index_item("vid1", vid_file, {"type": "video", "duration": "45s"})
+index_item("pdf1", pdf_file, {"type": "document"})
+
+# Query → retrieve top-k
+query = "animals having fun outdoors"
+q_res = genai.embed_content(model=MODEL, content=query, task_type="RETRIEVAL_QUERY")
+q_emb = q_res["embedding"]
+
+results = collection.query(query_embeddings=[q_emb], n_results=3)
+
+for i, (id, dist, meta) in enumerate(zip(results["ids"][0], results["distances"][0], results["metadatas"][0])):
+    print(f"#{i+1}  ID: {id}  dist: {dist:.4f}  meta: {meta}")
+```
+
+Use the retrieved items (text + metadata + original files) to augment a Gemini generation call.
+
+### Best Practices & Gotchas (2026 Preview)
+- Always set `task_type` → RETRIEVAL_QUERY for user queries, RETRIEVAL_DOCUMENT for corpus items
+- Normalize vectors when using output_dimensionality < 3072
+- Handle File API cleanup: `genai.delete_file(file.name)`
+- Batch embedding calls when possible (pass list to `content=`)
+- Preview → monitor https://ai.google.dev/gemini-api/docs/changelog
+- For scale → consider Vertex AI (paid, higher quotas, enterprise SLAs)
+- Cost awareness: multimodal inputs are priced per modality (check pricing page)
+
+This should give you a solid foundation to build production-grade multimodal search & RAG apps. Experiment in Google AI Studio first, then move to code. Feel free to ask for extensions (e.g., hybrid search, re-ranking, evaluation metrics)!
+
