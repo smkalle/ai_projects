@@ -1,0 +1,36 @@
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+
+# Python virtual environments
+.venv/
+venv/
+*/.venv/
+
+# Python byte-code
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE and editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Claude Code settings (user-specific)
+.claude/
+*/.claude/
+
+# Logs
+logs/
+*.log
+
+# Node (if any frontend)
+node_modules/

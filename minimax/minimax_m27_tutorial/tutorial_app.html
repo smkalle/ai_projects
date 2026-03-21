@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiniMax M2.7 — Interactive Tutorial Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700;800&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ══ Reset & Variables ══════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --ink:       #0d1117;
+  --ink2:      #1a2030;
+  --ink3:      #2a3348;
+  --surface:   #f5f2ec;
+  --surface2:  #ede9e0;
+  --surface3:  #e4dfd4;
+  --border:    rgba(13,17,23,0.10);
+  --border2:   rgba(13,17,23,0.20);
+  --text:      #1a2030;
+  --text-dim:  #5a6a80;
+  --text-faint:#8a9ab0;
+
+  --amber:     #c47c12;
+  --amber-bg:  rgba(196,124,18,0.10);
+  --amber-bd:  rgba(196,124,18,0.25);
+  --teal:      #0c7a6e;
+  --teal-bg:   rgba(12,122,110,0.08);
+  --teal-bd:   rgba(12,122,110,0.25);
+  --rust:      #b03020;
+  --rust-bg:   rgba(176,48,32,0.08);
+  --rust-bd:   rgba(176,48,32,0.25);
+  --cobalt:    #1e3a8a;
+  --cobalt-bg: rgba(30,58,138,0.07);
+
+  --code-bg:   #12181f;
+  --code-text: #c9d4e4;
+  --c-kw:      #d4a0f0;
+  --c-fn:      #80b4f0;
+  --c-str:     #f0d070;
+  --c-cmt:     #5a7080;
+  --c-ok:      #80d4a0;
+  --c-num:     #f0a060;
+  --c-type:    #80d4c0;
+
+  --sidebar-w: 260px;
+  --header-h:  60px;
+  --chat-w:    360px;
+
+  --font-display: 'Bricolage Grotesque', sans-serif;
+  --font-mono:    'Fragment Mono', monospace;
+}
+
+html,body{height:100%;overflow:hidden}
+body{
+  font-family: var(--font-display);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ══ Layout ═════════════════════════════════════════════════════════════════ */
+.app{display:grid;height:100vh;
+  grid-template-rows: var(--header-h) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr var(--chat-w);
+  grid-template-areas:
+    "header  header  header"
+    "sidebar content chat";
+}
+
+/* ══ Header ════════════════════════════════════════════════════════════════ */
+.header{
+  grid-area: header;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.header-logo{
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+.header-logo span{color: #f0d070;}
+.header-sep{flex:1}
+.header-badge{
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+.header-badge.amber{background:rgba(196,124,18,0.15);color:#f0d070;border-color:rgba(196,124,18,0.3)}
+
+/* ══ Sidebar ════════════════════════════════════════════════════════════════ */
+.sidebar{
+  grid-area: sidebar;
+  background: var(--surface2);
+  border-right: 1px solid var(--border2);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-section{
+  padding: 14px 16px 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.module-btn{
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  transition: background .15s;
+  border-left: 2px solid transparent;
+}
+.module-btn:hover{background: var(--surface3)}
+.module-btn.active{
+  background: var(--surface);
+  border-left-color: var(--amber);
+}
+.mod-num{
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--amber);
+  font-weight: 600;
+  padding-top: 1px;
+  min-width: 24px;
+}
+.mod-info{}
+.mod-name{
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.mod-tag{
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}
+
+/* ══ Content ════════════════════════════════════════════════════════════════ */
+.content{
+  grid-area: content;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.content-header{
+  padding: 28px 32px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.content-eyebrow{
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 8px;
+}
+.content-title{
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+.content-desc{
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  max-width: 600px;
+}
+.content-body{
+  padding: 24px 32px;
+  flex: 1;
+}
+
+/* ══ Covers list ════════════════════════════════════════════════════════════ */
+.covers{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.cover-chip{
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 3px;
+  background: var(--teal-bg);
+  color: var(--teal);
+  border: 1px solid var(--teal-bd);
+}
+
+/* ══ Code block ════════════════════════════════════════════════════════════ */
+.code-wrap{
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.04);
+  margin-bottom: 20px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+}
+.code-topbar{
+  background: #1e2533;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.code-dots{display:flex;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot-r{background:#ff5f57}.dot-y{background:#febc2e}.dot-g{background:#28c840}
+.code-filename{
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  flex:1;
+  text-align: center;
+}
+.code-copy-btn{
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.10);
+  cursor: pointer;
+  transition: background .2s;
+}
+.code-copy-btn:hover{background:rgba(255,255,255,0.14);color:#fff}
+
+pre.code{
+  background: var(--code-bg);
+  padding: 20px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.75;
+  color: var(--code-text);
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+/* syntax */
+.kw   {color:var(--c-kw)}
+.fn   {color:var(--c-fn)}
+.str  {color:var(--c-str)}
+.cmt  {color:var(--c-cmt);font-style:italic}
+.ok   {color:var(--c-ok)}
+.num  {color:var(--c-num)}
+.typ  {color:var(--c-type)}
+.deco {color:#f0a0d0}
+
+/* ══ Ask Chip ════════════════════════════════════════════════════════════════ */
+.ask-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.ask-chip{
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all .15s;
+}
+.ask-chip:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ══ Chat panel ════════════════════════════════════════════════════════════ */
+.chat{
+  grid-area: chat;
+  background: var(--surface);
+  border-left: 1px solid var(--border2);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.chat-header{
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.chat-indicator{
+  width: 8px;height:8px;border-radius:50%;
+  background: var(--teal);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.chat-title{
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.chat-subtitle{
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-faint);
+  margin-left: auto;
+}
+
+.messages{
+  flex:1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.msg{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: fadeUp .25s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg-role{
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-faint);
+  padding: 0 2px;
+}
+.msg-bubble{
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.msg.user .msg-bubble{
+  background: var(--ink);
+  color: #f0ede5;
+  border-radius: 8px 8px 2px 8px;
+  align-self: flex-end;
+  max-width: 88%;
+}
+.msg.assistant .msg-bubble{
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 2px 8px 8px 8px;
+  align-self: flex-start;
+  max-width: 100%;
+}
+.msg.assistant .msg-bubble code{
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: rgba(0,0,0,0.06);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.msg.assistant .msg-bubble pre{
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: rgba(0,0,0,0.07);
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 8px 0;
+  white-space: pre-wrap;
+}
+
+.msg-thinking{
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  padding: 8px 12px;
+  background: var(--surface3);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.spinner{
+  width:12px;height:12px;border:2px solid var(--border2);
+  border-top-color:var(--amber);border-radius:50%;
+  animation: spin .7s linear infinite;
+  flex-shrink:0;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.chat-input-area{
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.chat-input{
+  flex:1;
+  padding: 9px 12px;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  background: var(--surface2);
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--text);
+  resize: none;
+  height: 80px;
+  outline: none;
+  transition: border-color .2s;
+}
+.chat-input:focus{border-color: var(--amber)}
+.send-btn{
+  align-self: flex-end;
+  padding: 9px 16px;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+.send-btn:hover{background: var(--ink3)}
+.send-btn:disabled{background: var(--surface3);color:var(--text-faint);cursor:not-allowed}
+
+/* ══ Concept cards ══════════════════════════════════════════════════════════ */
+.concept-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+.concept-card{
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+.concept-label{
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--amber);
+  margin-bottom: 4px;
+}
+.concept-value{
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+}
+.concept-sub{font-size:11px;color:var(--text-dim);margin-top:2px}
+
+/* ══ Scrollbar ══════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-logo">MiniMax <span>M2.7</span> Tutorial Suite</div>
+    <div class="header-sep"></div>
+    <div class="header-badge amber">8 Modules</div>
+    <div class="header-badge">anthropic-sdk compat</div>
+    <div class="header-badge">$0.30/$1.20 per 1M</div>
+    <div class="header-badge">204,800 ctx</div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-section">Modules</div>
+    <button class="module-btn active" onclick="selectModule(0)" id="btn-0">
+      <span class="mod-num">01</span>
+      <div class="mod-info">
+        <div class="mod-name">Hello World</div>
+        <div class="mod-tag">basic</div>
+      </div>
+    </button>
+    <button class="module-btn" onclick="selectModule(1)" id="btn-1">
+      <span class="mod-num">02</span>
+      <div class="mod-info">
+        <div class="mod-name">Streaming</div>
+        <div class="mod-tag">streaming</div>
+      </div>
+    </button>
+    <button class="module-btn" onclick="selectModule(2)" id="btn-2">
+      <span class="mod-num">03</span>
+      <div class="mod-info">
+        <div class="mod-name">Multi-Turn Chat</div>
+        <div class="mod-tag">conversation</div>
+      </div>
+    </button>
+    <button class="module-btn" onclick="selectModule(3)" id="btn-3">
+      <span class="mod-num">04</span>
+      <div class="mod-info">
+        <div class="mod-name">Tool Use</div>
+        <div class="mod-tag">agentic</div>
+      </div>
+    </button>
+    <button class="module-btn" onclick="selectModule(4)" id="btn-4">
+      <span class="mod-num">05</span>
+      <div class="mod-info">
+        <div class="mod-name">Extended Thinking</div>
+        <div class="mod-tag">reasoning</div>
+      </div>
+    </button>
+    <button class="module-btn" onclick="selectModule(5)" id="btn-5">
+      <span class="mod-num">06</span>
+      <div class="mod-info">
+        <div class="mod-name">System Prompting</div>
+        <div class="mod-tag">prompting</div>
+      </div>
+    </button>
+    <button class="module-btn" onclick="selectModule(6)" id="btn-6">
+      <span class="mod-num">07</span>
+      <div class="mod-info">
+        <div class="mod-name">Cost Tracking</div>
+        <div class="mod-tag">production</div>
+      </div>
+    </button>
+    <button class="module-btn" onclick="selectModule(7)" id="btn-7">
+      <span class="mod-num">08</span>
+      <div class="mod-info">
+        <div class="mod-name">Agent ReAct Loop</div>
+        <div class="mod-tag">agentic</div>
+      </div>
+    </button>
+
+    <div class="sidebar-section" style="margin-top:12px">Quick Stats</div>
+    <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+      <div class="concept-card">
+        <div class="concept-label">Context</div>
+        <div class="concept-value">204K</div>
+        <div class="concept-sub">tokens</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-label">Input price</div>
+        <div class="concept-value">$0.30</div>
+        <div class="concept-sub">per 1M tokens</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-label">Output price</div>
+        <div class="concept-value">$1.20</div>
+        <div class="concept-sub">per 1M tokens</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <main class="content" id="content">
+    <!-- Injected by JS -->
+  </main>
+
+  <!-- CHAT -->
+  <aside class="chat">
+    <div class="chat-header">
+      <div class="chat-indicator" id="chat-indicator"></div>
+      <div class="chat-title">Ask Claude</div>
+      <div class="chat-subtitle">claude-sonnet-4-20250514</div>
+    </div>
+    <div class="messages" id="messages">
+      <div class="msg assistant">
+        <div class="msg-role">Claude</div>
+        <div class="msg-bubble">
+          Welcome to the MiniMax M2.7 Tutorial Suite! I'm here to explain any concept, code snippet, or pattern from the modules.<br><br>
+          Select a module on the left and use the quick questions or ask me anything about M2.7, the Anthropic SDK, or agentic AI patterns.
+        </div>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <textarea class="chat-input" id="chat-input" placeholder="Ask about this module…" onkeydown="handleKey(event)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+/* ── Module data ─────────────────────────────────────────────────────────── */
+const MODULES = [
+  {
+    id: "01", name: "Hello World", tag: "basic",
+    subtitle: "Single-turn message, response metadata, content blocks",
+    covers: ["anthropic.Anthropic client", "messages.create()", "content blocks", "response metadata", "token masking"],
+    description: "The entry point for every MiniMax integration. Learn how the Anthropic-compatible client is initialised, how messages are structured, and how to read back text blocks and metadata from the response.",
+    concepts: [
+      {label:"Pattern", value:"Request/Response", sub:"Synchronous, single-turn"},
+      {label:"Key API", value:"messages.create()", sub:"Core SDK method"},
+    ],
+    chips: ["Explain content blocks", "What is stop_reason?", "How does base_url routing work?", "Why mask the API key?"],
+    code: `<span class="kw">from</span> anthropic <span class="kw">import</span> Anthropic
+
+client = Anthropic(
+    api_key=api_key,
+    base_url=<span class="str">"https://api.minimax.io/anthropic"</span>
+)
+
+<span class="cmt"># Single-turn request</span>
+response = client.messages.create(
+    model=<span class="str">"MiniMax-M2.7"</span>,
+    max_tokens=<span class="num">512</span>,
+    system=<span class="str">"You are a helpful assistant."</span>,
+    messages=[{
+        <span class="str">"role"</span>: <span class="str">"user"</span>,
+        <span class="str">"content"</span>: user_text
+    }]
+)
+
+<span class="cmt"># Read content blocks</span>
+<span class="kw">for</span> block <span class="kw">in</span> response.content:
+    <span class="kw">if</span> block.type == <span class="str">"text"</span>:
+        print(block.text)
+
+<span class="cmt"># Token usage</span>
+print(response.usage.input_tokens)
+print(response.usage.output_tokens)`,
+    file: "modules/01_hello.py"
+  },
+  {
+    id: "02", name: "Streaming", tag: "streaming",
+    subtitle: "Real-time token output, TTFT measurement, stream final_message",
+    covers: ["client.messages.stream()", "text_stream iterator", "get_final_message()", "TTFT measurement", "latency profiling"],
+    description: "Streaming dramatically improves perceived latency — your UI can render tokens as they arrive rather than waiting for the full response. M2.7 supports streaming natively with ~100 TPS on the highspeed variant.",
+    concepts: [
+      {label:"Pattern", value:"Stream", sub:"Server-sent events"},
+      {label:"Highspeed TPS", value:"~100", sub:"MiniMax-M2.7-highspeed"},
+    ],
+    chips: ["How does text_stream work?", "What is TTFT?", "When to use streaming vs batch?", "How to handle stream errors?"],
+    code: `<span class="kw">import</span> time
+
+start = time.perf_counter()
+ttft = <span class="kw">None</span>
+
+<span class="kw">with</span> client.messages.<span class="fn">stream</span>(
+    model=<span class="str">"MiniMax-M2.7"</span>,
+    max_tokens=<span class="num">800</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}],
+) <span class="kw">as</span> stream:
+
+    <span class="kw">for</span> text <span class="kw">in</span> stream.text_stream:
+        <span class="kw">if</span> ttft <span class="kw">is</span> <span class="kw">None</span>:
+            ttft = time.perf_counter() - start
+        print(text, end=<span class="str">""</span>, flush=<span class="kw">True</span>)
+
+    <span class="cmt"># Final message with usage stats</span>
+    final = stream.<span class="fn">get_final_message</span>()
+
+total = time.perf_counter() - start
+print(f<span class="str">"TTFT: {ttft*1000:.0f}ms  Total: {total:.2f}s"</span>)
+print(final.usage.output_tokens, <span class="str">"tokens"</span>)`,
+    file: "modules/02_streaming.py"
+  },
+  {
+    id: "03", name: "Multi-Turn Chat", tag: "conversation",
+    subtitle: "Context management, history building, cumulative usage tracking",
+    covers: ["messages history list", "response.content as history entry", "thinking block preservation", "cumulative cost tracking"],
+    description: "Multi-turn conversations require careful history management. The critical insight for M2-series models: always append the full response.content list (not extracted text) to preserve interleaved thinking tokens.",
+    concepts: [
+      {label:"Critical Rule", value:"Keep blocks", sub:"Don't strip thinking tokens"},
+      {label:"History", value:"Full content", sub:"response.content, not text"},
+    ],
+    chips: ["Why preserve thinking blocks?", "What happens if you strip thinking?", "How to limit history length?", "Build a REPL chat loop"],
+    code: `history = []
+
+<span class="kw">for</span> user_text <span class="kw">in</span> conversation_turns:
+    history.append({<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: user_text})
+
+    response = client.messages.create(
+        model=<span class="str">"MiniMax-M2.7"</span>,
+        max_tokens=<span class="num">512</span>,
+        system=system,
+        messages=history,
+    )
+
+    <span class="cmt"># ✓ CORRECT: preserve full blocks (including thinking)</span>
+    history.append({
+        <span class="str">"role"</span>: <span class="str">"assistant"</span>,
+        <span class="str">"content"</span>: response.content,  <span class="cmt"># ← full list</span>
+    })
+
+    <span class="cmt"># ✗ WRONG: strips thinking tokens → degrades M2 performance</span>
+    <span class="cmt"># history.append({"role":"assistant", "content": text_only})</span>`,
+    file: "modules/03_multi_turn.py"
+  },
+  {
+    id: "04", name: "Tool Use", tag: "agentic",
+    subtitle: "Function calling, tool_result loop, multi-tool orchestration",
+    covers: ["tool schema definition", "tool_use blocks", "tool_result messages", "agentic loop", "dispatch pattern"],
+    description: "M2.7 is a first-class agentic model — tool use is core to its design, not an afterthought. The loop is: send request → detect tool_use blocks → execute tools → append results → repeat until end_turn.",
+    concepts: [
+      {label:"SWE-Pro", value:"56.22%", sub:"Code & tool benchmark"},
+      {label:"Skill Rate", value:"97%", sub:"Complex tool adherence"},
+    ],
+    chips: ["Explain the tool loop", "How to define tool schemas?", "What is tool_use_id?", "Parallel tool calling?"],
+    code: `TOOLS = [{
+    <span class="str">"name"</span>: <span class="str">"calculator"</span>,
+    <span class="str">"description"</span>: <span class="str">"Arithmetic calculator."</span>,
+    <span class="str">"input_schema"</span>: {
+        <span class="str">"type"</span>: <span class="str">"object"</span>,
+        <span class="str">"properties"</span>: {
+            <span class="str">"operation"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+            <span class="str">"a"</span>: {<span class="str">"type"</span>: <span class="str">"number"</span>},
+            <span class="str">"b"</span>: {<span class="str">"type"</span>: <span class="str">"number"</span>},
+        },
+        <span class="str">"required"</span>: [<span class="str">"operation"</span>, <span class="str">"a"</span>],
+    }
+}]
+
+<span class="cmt"># Tool loop</span>
+<span class="kw">while</span> response.stop_reason == <span class="str">"tool_use"</span>:
+    tool_calls = [b <span class="kw">for</span> b <span class="kw">in</span> response.content
+                  <span class="kw">if</span> b.type == <span class="str">"tool_use"</span>]
+
+    messages.append({<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: response.content})
+    messages.append({
+        <span class="str">"role"</span>: <span class="str">"user"</span>,
+        <span class="str">"content"</span>: [{
+            <span class="str">"type"</span>: <span class="str">"tool_result"</span>,
+            <span class="str">"tool_use_id"</span>: tc.id,
+            <span class="str">"content"</span>: dispatch(tc.name, tc.input),
+        } <span class="kw">for</span> tc <span class="kw">in</span> tool_calls]
+    })
+    response = client.messages.create(...)`,
+    file: "modules/04_tool_use.py"
+  },
+  {
+    id: "05", name: "Extended Thinking", tag: "reasoning",
+    subtitle: "Reasoning tokens, thinking budget, before/after comparison",
+    covers: ["thinking parameter", "budget_tokens", "thinking content blocks", "CoT preservation", "latency vs accuracy tradeoff"],
+    description: "M2-series models use interleaved <think>…</think> tokens. Enabling extended thinking exposes the model's reasoning chain, improves accuracy on hard problems, and is critical to preserve in conversation history.",
+    concepts: [
+      {label:"Thinking", value:"Enabled", sub:"Via thinking parameter"},
+      {label:"Budget", value:"Custom", sub:"budget_tokens controls depth"},
+    ],
+    chips: ["What is extended thinking?", "When to use thinking budget?", "Thinking vs no-thinking accuracy?", "Thinking token cost?"],
+    code: `<span class="cmt"># Enable extended thinking</span>
+response = client.messages.create(
+    model=<span class="str">"MiniMax-M2.7"</span>,
+    max_tokens=<span class="num">4096</span>,  <span class="cmt"># must exceed budget</span>
+    thinking={
+        <span class="str">"type"</span>: <span class="str">"enabled"</span>,
+        <span class="str">"budget_tokens"</span>: <span class="num">3000</span>,
+    },
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: hard_question}]
+)
+
+<span class="cmt"># Separate thinking vs answer blocks</span>
+<span class="kw">for</span> block <span class="kw">in</span> response.content:
+    <span class="kw">if</span> block.type == <span class="str">"thinking"</span>:
+        print(<span class="str">"CoT:"</span>, block.thinking)
+    <span class="kw">elif</span> block.type == <span class="str">"text"</span>:
+        print(<span class="str">"Answer:"</span>, block.text)
+
+<span class="cmt"># In history: ALWAYS pass response.content (not text only)</span>
+<span class="cmt"># Removing thinking blocks degrades M2 performance</span>`,
+    file: "modules/05_thinking.py"
+  },
+  {
+    id: "06", name: "System Prompting", tag: "prompting",
+    subtitle: "Structured prompts, XML tags, few-shot examples, dynamic construction",
+    covers: ["system parameter", "XML constraint tags", "few-shot in system", "persona / scope / format", "dynamic prompt builder"],
+    description: "The system prompt is your primary lever for reliable model behaviour. Structured XML tags (persona, scope, output_format, constraints) dramatically improve consistency versus bare instructions.",
+    concepts: [
+      {label:"Best Practice", value:"XML tags", sub:"Reliable structure"},
+      {label:"Pattern", value:"Few-shot", sub:"Examples in system"},
+    ],
+    chips: ["Bare vs structured prompt?", "XML tag patterns", "Few-shot in system prompt", "Dynamic prompt building"],
+    code: `<span class="cmt"># Structured system prompt with XML tags</span>
+SYSTEM = <span class="str">"""You are CodeReview-GPT, an expert code reviewer.
+
+&lt;persona&gt;
+Principal engineer, 15 years Python experience.
+Direct, values correctness over style.
+&lt;/persona&gt;
+
+&lt;output_format&gt;
+1. VERDICT: APPROVE / REQUEST_CHANGES
+2. ISSUES: bullet list (CRITICAL / HIGH / MEDIUM / LOW)
+3. SCORE: /10 with justification
+&lt;/output_format&gt;
+
+&lt;constraints&gt;
+- Be concise, max 2 sentences per issue.
+- Do not rewrite code unless asked.
+&lt;/constraints&gt;"""</span>
+
+response = client.messages.create(
+    model=<span class="str">"MiniMax-M2.7"</span>,
+    system=SYSTEM,
+    messages=[{<span class="str">"role"</span>:<span class="str">"user"</span>, <span class="str">"content"</span>: f<span class="str">"Review: {code}"</span>}],
+    max_tokens=<span class="num">400</span>,
+)`,
+    file: "modules/06_system_prompt.py"
+  },
+  {
+    id: "07", name: "Cost Tracking", tag: "production",
+    subtitle: "CostLedger, budget guards, cache savings, per-call breakdown",
+    covers: ["CostLedger class", "usage.input_tokens / output_tokens", "cache_read_input_tokens", "budget enforcement", "cost projection"],
+    description: "Production deployments need cost visibility. The CostLedger pattern tracks every call, detects cache hits, enforces budget limits, and projects monthly costs — critical at $0.30/$1.20 per 1M tokens.",
+    concepts: [
+      {label:"Input price", value:"$0.30", sub:"per 1M tokens"},
+      {label:"Cache", value:"Auto", sub:"No config needed"},
+    ],
+    chips: ["What is prompt caching?", "How to detect cache hits?", "Build a budget guard", "Project monthly costs"],
+    code: `<span class="kw">from</span> config <span class="kw">import</span> PRICE_INPUT_PER_1M, PRICE_OUTPUT_PER_1M
+
+<span class="kw">class</span> <span class="typ">CostLedger</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, budget_usd=<span class="kw">None</span>):
+        self.records = []
+        self.budget_usd = budget_usd
+        self._spent = <span class="num">0.0</span>
+
+    <span class="kw">def</span> <span class="fn">record</span>(self, label, usage):
+        inp  = usage.input_tokens
+        out  = usage.output_tokens
+        cr   = getattr(usage, <span class="str">"cache_read_input_tokens"</span>, <span class="num">0</span>)
+        cost = (inp/<span class="num">1e6</span>)*PRICE_INPUT_PER_1M \
+             + (out/<span class="num">1e6</span>)*PRICE_OUTPUT_PER_1M
+        self._spent += cost
+        self.records.append({
+            <span class="str">"label"</span>: label, <span class="str">"cost"</span>: cost, <span class="str">"cache_read"</span>: cr
+        })
+
+    <span class="kw">def</span> <span class="fn">check_budget</span>(self):
+        <span class="kw">if</span> self.budget_usd <span class="kw">and</span> self._spent >= self.budget_usd:
+            <span class="kw">raise</span> RuntimeError(<span class="str">f"Budget exceeded: ${self._spent:.6f}"</span>)`,
+    file: "modules/07_cost_tracker.py"
+  },
+  {
+    id: "08", name: "Agent ReAct Loop", tag: "agentic",
+    subtitle: "Reason+Act pattern, scratchpad memory, multi-tool orchestration",
+    covers: ["ReAct pattern", "scratchpad memory", "finish() sentinel", "max_iter guard", "execution trace", "multi-tool routing"],
+    description: "The ReAct (Reasoning + Acting) loop is the core agentic pattern. The agent reasons about what to do, calls tools, observes results, and repeats until it calls finish(). M2.7's 97% skill adherence rate makes it ideal for these loops.",
+    concepts: [
+      {label:"Pattern", value:"ReAct", sub:"Reason + Act"},
+      {label:"Adherence", value:"97%", sub:"Complex skill retention"},
+    ],
+    chips: ["What is ReAct?", "Scratchpad memory pattern", "How to handle max_iter?", "Tool routing design"],
+    code: `AGENT_TOOLS = [
+    {<span class="str">"name"</span>: <span class="str">"search"</span>,     <span class="cmt">/* web search */</span>},
+    {<span class="str">"name"</span>: <span class="str">"calculator"</span>, <span class="cmt">/* arithmetic */</span>},
+    {<span class="str">"name"</span>: <span class="str">"remember"</span>,   <span class="cmt">/* scratchpad write */</span>},
+    {<span class="str">"name"</span>: <span class="str">"recall"</span>,     <span class="cmt">/* scratchpad read */</span>},
+    {<span class="str">"name"</span>: <span class="str">"finish"</span>,    <span class="cmt">/* signal completion */</span>},
+]
+
+<span class="kw">for</span> step <span class="kw">in</span> range(<span class="num">1</span>, max_iter + <span class="num">1</span>):
+    response = client.messages.create(
+        model=<span class="str">"MiniMax-M2.7"</span>, tools=AGENT_TOOLS, messages=messages
+    )
+    tool_calls = [b <span class="kw">for</span> b <span class="kw">in</span> response.content <span class="kw">if</span> b.type==<span class="str">"tool_use"</span>]
+
+    messages.append({<span class="str">"role"</span>:<span class="str">"assistant"</span>, <span class="str">"content"</span>: response.content})
+    results = [{
+        <span class="str">"type"</span>: <span class="str">"tool_result"</span>,
+        <span class="str">"tool_use_id"</span>: tc.id,
+        <span class="str">"content"</span>: dispatch(tc.name, tc.input)
+    } <span class="kw">for</span> tc <span class="kw">in</span> tool_calls]
+    messages.append({<span class="str">"role"</span>:<span class="str">"user"</span>, <span class="str">"content"</span>: results})`,
+    file: "modules/08_agent_loop.py"
+  },
+];
+
+/* ── State ───────────────────────────────────────────────────────────────── */
+let currentModule = 0;
+let isLoading = false;
+let conversationHistory = [];
+
+/* ── Module render ───────────────────────────────────────────────────────── */
+function selectModule(idx) {
+  currentModule = idx;
+  document.querySelectorAll('.module-btn').forEach((b,i) =>
+    b.classList.toggle('active', i === idx)
+  );
+  renderModule(MODULES[idx]);
+  // Reset context hint for chat
+  addContextMessage(MODULES[idx]);
+}
+
+function addContextMessage(mod) {
+  // Inject a context message into the chat when switching modules
+  const contextMsg = document.createElement('div');
+  contextMsg.className = 'msg assistant';
+  contextMsg.innerHTML = `
+    <div class="msg-role">Claude</div>
+    <div class="msg-bubble">Now viewing <strong>Module ${mod.id}: ${mod.name}</strong>. Ask me anything about ${mod.covers.slice(0,3).join(', ')}, or use the quick questions above the code.</div>
+  `;
+  document.getElementById('messages').appendChild(contextMsg);
+  scrollMessages();
+}
+
+function renderModule(mod) {
+  const content = document.getElementById('content');
+
+  const coversHtml = mod.covers.map(c =>
+    `<span class="cover-chip">${c}</span>`
+  ).join('');
+
+  const conceptsHtml = mod.concepts.map(c => `
+    <div class="concept-card">
+      <div class="concept-label">${c.label}</div>
+      <div class="concept-value">${c.value}</div>
+      <div class="concept-sub">${c.sub}</div>
+    </div>
+  `).join('');
+
+  const chipsHtml = mod.chips.map(q =>
+    `<button class="ask-chip" onclick="askQuestion(${JSON.stringify(q)}, ${JSON.stringify(mod.name)})">${q}</button>`
+  ).join('');
+
+  content.innerHTML = `
+    <div class="content-header">
+      <div class="content-eyebrow">Module ${mod.id} · ${mod.tag.toUpperCase()}</div>
+      <h1 class="content-title">${mod.name}</h1>
+      <p class="content-desc">${mod.description}</p>
+    </div>
+    <div class="content-body">
+      <div class="covers">${coversHtml}</div>
+      <div class="concept-grid" style="margin-bottom:24px">${conceptsHtml}</div>
+
+      <div style="font-size:12px;font-family:var(--font-mono);color:var(--text-faint);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Quick Questions</div>
+      <div class="ask-chips">${chipsHtml}</div>
+
+      <div style="font-size:12px;font-family:var(--font-mono);color:var(--text-faint);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">${mod.file}</div>
+      <div class="code-wrap">
+        <div class="code-topbar">
+          <div class="code-dots">
+            <div class="dot dot-r"></div>
+            <div class="dot dot-y"></div>
+            <div class="dot dot-g"></div>
+          </div>
+          <div class="code-filename">${mod.file}</div>
+          <button class="code-copy-btn" onclick="copyCode(${mod.id})">Copy</button>
+        </div>
+        <pre class="code" id="code-${mod.id}">${mod.code}</pre>
+      </div>
+    </div>
+  `;
+}
+
+function copyCode(id) {
+  const pre = document.getElementById(`code-${id}`);
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+/* ── Chat ─────────────────────────────────────────────────────────────────── */
+function askQuestion(question, moduleName) {
+  const input = document.getElementById('chat-input');
+  input.value = question;
+  sendMessage(moduleName);
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function scrollMessages() {
+  const msgs = document.getElementById('messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function appendMessage(role, text) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `
+    <div class="msg-role">${role === 'user' ? 'You' : 'Claude'}</div>
+    <div class="msg-bubble" id="bubble-${Date.now()}"></div>
+  `;
+  msgs.appendChild(div);
+  const bubble = div.querySelector('.msg-bubble');
+  if (role === 'assistant') {
+    bubble.innerHTML = renderMarkdown(text);
+  } else {
+    bubble.textContent = text;
+  }
+  scrollMessages();
+  return bubble;
+}
+
+function renderMarkdown(text) {
+  return text
+    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
+function showThinking() {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.id = 'thinking-indicator';
+  div.className = 'msg assistant';
+  div.innerHTML = `
+    <div class="msg-role">Claude</div>
+    <div class="msg-thinking"><div class="spinner"></div> Thinking…</div>
+  `;
+  msgs.appendChild(div);
+  scrollMessages();
+}
+
+function removeThinking() {
+  const t = document.getElementById('thinking-indicator');
+  if (t) t.remove();
+}
+
+async function sendMessage(moduleContext) {
+  if (isLoading) return;
+  const input = document.getElementById('chat-input');
+  const question = input.value.trim();
+  if (!question) return;
+
+  const mod = MODULES[currentModule];
+  input.value = '';
+  isLoading = true;
+
+  const sendBtn = document.getElementById('send-btn');
+  sendBtn.disabled = true;
+
+  appendMessage('user', question);
+  showThinking();
+
+  // Build context-aware system prompt
+  const systemPrompt = `You are an expert technical educator specialising in the Anthropic SDK, MiniMax M2.7, and agentic AI systems.
+
+The user is currently viewing: Module ${mod.id} — ${mod.name}
+Module covers: ${mod.covers.join(', ')}
+Module description: ${mod.description}
+
+Key technical facts about MiniMax M2.7:
+- Context window: 204,800 tokens, max output 131,072 tokens
+- Pricing: $0.30/1M input, $1.20/1M output
+- Anthropic-compatible endpoint: https://api.minimax.io/anthropic
+- Two variants: MiniMax-M2.7 (standard), MiniMax-M2.7-highspeed
+- Automatic prompt caching — no configuration needed
+- SWE-Pro benchmark: 56.22%, GDPval-AA ELO: 1495
+- Interleaved thinking model — preserve <think> blocks in conversation history
+- Full tool use / function calling support
+
+Code context (current module snippet):
+${mod.code.replace(/<[^>]+>/g, '')}
+
+Be concise and precise. Use code examples when helpful. Format code with backtick fences.`;
+
+  conversationHistory.push({role: 'user', content: question});
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: conversationHistory,
+      })
+    });
+
+    const data = await response.json();
+    removeThinking();
+
+    if (data.error) {
+      appendMessage('assistant', `Error: ${data.error.message}`);
+      conversationHistory.pop();
+    } else {
+      const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
+      appendMessage('assistant', text);
+      conversationHistory.push({role: 'assistant', content: text});
+
+      // Keep history manageable
+      if (conversationHistory.length > 20) {
+        conversationHistory = conversationHistory.slice(-20);
+      }
+    }
+  } catch (err) {
+    removeThinking();
+    appendMessage('assistant', `Network error: ${err.message}. Check your connection and try again.`);
+    conversationHistory.pop();
+  } finally {
+    isLoading = false;
+    sendBtn.disabled = false;
+  }
+}
+
+/* ── Init ─────────────────────────────────────────────────────────────────── */
+renderModule(MODULES[0]);
+</script>
+</body>
+</html>
