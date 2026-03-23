@@ -1,0 +1,97 @@
+name: AI Evals — Code Bug Fix Agent
+
+on:
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "code_eval_workbench/**"
+  push:
+    branches: [main, master]
+    paths:
+      - "code_eval_workbench/**"
+  workflow_dispatch:
+    inputs:
+      threshold:
+        description: "Minimum composite score to pass (0.0–1.0)"
+        default: "0.70"
+        required: false
+      difficulty:
+        description: "Run only specific difficulty (easy/medium/hard/all)"
+        default: "all"
+        required: false
+
+env:
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+jobs:
+  eval:
+    name: Evaluate Claude Bug-Fix Quality
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: code_eval_workbench
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run evaluations
+        id: run_eval
+        run: |
+          THRESHOLD="${{ github.event.inputs.threshold || '0.70' }}"
+          DIFFICULTY="${{ github.event.inputs.difficulty || 'all' }}"
+
+          ARGS="--threshold $THRESHOLD --output eval_output.json"
+
+          if [ "$DIFFICULTY" != "all" ]; then
+            ARGS="$ARGS --difficulty $DIFFICULTY"
+          fi
+
+          echo "Running: python run_eval.py $ARGS"
+          python run_eval.py $ARGS
+        continue-on-error: true
+
+      - name: Parse results
+        if: always()
+        id: parse
+        run: |
+          if [ -f eval_output.json ]; then
+            SCORE=$(python -c "import json; d=json.load(open('eval_output.json')); print(d['avg_composite'])")
+            echo "score=$SCORE" >> $GITHUB_OUTPUT
+            echo "### Eval Results" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Score |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+            python -c "
+          import json
+          d = json.load(open('eval_output.json'))
+          print(f'| Composite | {d[\"avg_composite\"]:.3f} |')
+          print(f'| LLM Judge | {d[\"avg_llm_judge\"]:.3f} |')
+          print(f'| Prog Tests | {d[\"avg_programmatic\"]:.3f} |')
+          print(f'| Similarity | {d[\"avg_levenshtein\"]:.3f} |')
+          print(f'| Examples | {d[\"n_examples\"]} |')
+          " >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No output file found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload eval results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-${{ github.run_number }}
+          path: code_eval_workbench/eval_output.json
+          retention-days: 30
+
+      - name: Fail if below threshold
+        if: steps.run_eval.outcome == 'failure'
+        run: |
+          echo "❌ Evaluation score below threshold. See summary for details."
+          exit 1
