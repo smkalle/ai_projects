@@ -1,17 +1,21 @@
 """
-Claude-powered Code Bug Fix task.
+LLM-powered Code Bug Fix task.
 
-Uses claude-opus-4-6 with adaptive thinking and streaming
-for high-quality, reliable bug fixes.
+Backend is resolved from environment variables at import time:
+  - Default:  claude-opus-4-6  (Anthropic, adaptive thinking)
+  - Override: MiniMax-M2.7     (set ANTHROPIC_BASE_URL to MiniMax endpoint)
+
+See utils.get_model_config() for the full env-var reference.
 """
 import os
 
-import anthropic
-from dotenv import load_dotenv
+from utils import get_model_config
 
-load_dotenv()
-
-client = anthropic.Anthropic()
+_cfg    = get_model_config()
+client  = _cfg["client"]
+_MODEL  = _cfg["model"]
+_THINK  = _cfg["thinking"]
+_MAXTOK = _cfg["max_tokens"]
 
 SYSTEM_PROMPT = """You are an expert Python developer and senior code reviewer with 10+ years of experience.
 Your job is to identify and fix bugs in Python code with precision and clarity.
@@ -50,12 +54,10 @@ Bug description: {input_dict['bug_description']}"""
 
     full_response = ""
 
-    # Stream the response — adaptive thinking ensures deep reasoning
-    # while streaming prevents HTTP timeout on longer responses
     with client.messages.stream(
-        model="claude-opus-4-6",
-        max_tokens=2048,
-        thinking={"type": "adaptive"},
+        model=_MODEL,
+        max_tokens=_MAXTOK,
+        thinking=_THINK,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}],
     ) as stream:
@@ -70,7 +72,6 @@ def fix_code_bug_with_examples(input_dict: dict, few_shot_examples: list[dict]) 
     Fix a bug using few-shot examples for improved accuracy.
     Used when initial scores are low and re-evaluation is triggered.
     """
-    # Build few-shot prefix from passing examples
     shots = ""
     for ex in few_shot_examples[:3]:
         shots += (
@@ -94,9 +95,9 @@ Bug description: {input_dict['bug_description']}"""
 
     full_response = ""
     with client.messages.stream(
-        model="claude-opus-4-6",
-        max_tokens=2048,
-        thinking={"type": "adaptive"},
+        model=_MODEL,
+        max_tokens=_MAXTOK,
+        thinking=_THINK,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}],
     ) as stream:

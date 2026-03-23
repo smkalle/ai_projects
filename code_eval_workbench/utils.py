@@ -6,7 +6,88 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
+import anthropic
+from dotenv import load_dotenv
 from pydantic import BaseModel
+
+load_dotenv()
+
+
+# ─── Model / Client Configuration ────────────────────────────────────────────
+# Supports two backends, selected via environment variables:
+#
+#   Claude (default):
+#     ANTHROPIC_API_KEY=sk-ant-...          ← Anthropic key
+#     (no ANTHROPIC_BASE_URL)
+#
+#   MiniMax M2.7 override:
+#     ANTHROPIC_API_KEY=<minimax key>
+#     ANTHROPIC_BASE_URL=https://api.minimax.io/anthropic
+#     MINIMAX_USE_HIGHSPEED=true            ← optional: use MiniMax-M2.7-highspeed
+#     MODEL_OVERRIDE=MiniMax-M2.7           ← optional: explicit model name
+
+_CLAUDE_DEFAULT  = "claude-opus-4-6"
+_MINIMAX_STD     = "MiniMax-M2.7"
+_MINIMAX_HS      = "MiniMax-M2.7-highspeed"
+_MINIMAX_HOSTS   = ("minimax.io", "minimaxi.com")
+
+# MiniMax uses budget_tokens thinking (fixed-budget); Claude uses adaptive.
+_THINKING_CLAUDE  = {"type": "adaptive"}
+_THINKING_MINIMAX = {"type": "enabled", "budget_tokens": 3000}
+# MiniMax requires max_tokens > budget_tokens; use a safe default.
+_MAX_TOKENS_MINIMAX = 4096
+
+
+def _is_minimax() -> bool:
+    """Return True when ANTHROPIC_BASE_URL points at a MiniMax endpoint."""
+    base_url = os.getenv("ANTHROPIC_BASE_URL", "")
+    return any(host in base_url for host in _MINIMAX_HOSTS)
+
+
+def get_model_config() -> dict:
+    """
+    Return a config dict for the active backend.
+
+    Keys:
+      client        — anthropic.Anthropic instance
+      model         — model ID string
+      thinking      — thinking param dict
+      max_tokens    — safe default max_tokens (task / judge calls may override)
+      backend       — "claude" | "minimax"
+      base_url      — endpoint URL (for display / logging)
+    """
+    api_key  = os.getenv("ANTHROPIC_API_KEY")
+    base_url = os.getenv("ANTHROPIC_BASE_URL", "")
+    minimax  = _is_minimax()
+
+    # Build client — if no base_url, SDK uses Anthropic's default endpoint
+    client_kwargs: dict = {"api_key": api_key} if api_key else {}
+    if base_url:
+        client_kwargs["base_url"] = base_url
+    client = anthropic.Anthropic(**client_kwargs)
+
+    # Resolve model name
+    override = os.getenv("MODEL_OVERRIDE", "").strip()
+    if override:
+        model = override
+    elif minimax:
+        use_hs = os.getenv("MINIMAX_USE_HIGHSPEED", "false").lower() == "true"
+        model = _MINIMAX_HS if use_hs else _MINIMAX_STD
+    else:
+        model = _CLAUDE_DEFAULT
+
+    thinking   = _THINKING_MINIMAX if minimax else _THINKING_CLAUDE
+    max_tokens = _MAX_TOKENS_MINIMAX if minimax else 2048
+    backend    = "minimax" if minimax else "claude"
+
+    return {
+        "client":     client,
+        "model":      model,
+        "thinking":   thinking,
+        "max_tokens": max_tokens,
+        "backend":    backend,
+        "base_url":   base_url or "https://api.anthropic.com (default)",
+    }
 
 
 # ─── Result Models ───────────────────────────────────────────────────────────

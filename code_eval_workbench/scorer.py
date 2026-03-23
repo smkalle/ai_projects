@@ -15,14 +15,12 @@ import subprocess
 import tempfile
 from typing import Optional
 
-import anthropic
-from dotenv import load_dotenv
+from utils import extract_code_block, get_model_config
 
-from utils import extract_code_block
-
-load_dotenv()
-
-client = anthropic.Anthropic()
+_cfg   = get_model_config()
+client = _cfg["client"]
+_MODEL = _cfg["model"]
+_THINK = _cfg["thinking"]
 
 # ─── Weights for composite scorer ────────────────────────────────────────────
 COMPOSITE_WEIGHTS = {
@@ -72,9 +70,9 @@ Respond ONLY with valid JSON (no markdown, no explanation outside JSON):
 
     try:
         response = client.messages.create(
-            model="claude-opus-4-6",
-            max_tokens=512,
-            thinking={"type": "adaptive"},
+            model=_MODEL,
+            max_tokens=_cfg["max_tokens"],
+            thinking=_THINK,
             messages=[{"role": "user", "content": judge_prompt}],
         )
         text = next(b.text for b in response.content if b.type == "text")
