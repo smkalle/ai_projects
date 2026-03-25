@@ -1,0 +1,61 @@
+avestan_word,sanskrit_word,pii_root,domain,meaning_av,meaning_sa,expert_cognate_label,manual_drift_score,drift_type
+vīra,vīra,*wīra-,warfare,warrior/hero,warrior/hero,True,0.0,STABLE
+aēša,iṣu,*išu-,warfare,arrow,arrow,True,0.0,STABLE
+xšaθra,kṣatra,*xšatram,warfare,dominion/rule,warrior power/rule,True,0.1,STABLE
+ərəzu,ṛju,*Hr̥ʒhu-,warfare,straight/upright,straight/upright,True,0.0,STABLE
+išudam,iṣudhī,*išu-dhā-,warfare,quiver (for arrows),quiver (for arrows),True,0.0,STABLE
+aspa,aśva,*aćwa-,warfare,horse,horse,True,0.0,STABLE
+dāθra,dātra,*dā-tra-,warfare,gift/weapon,gift/instrument,True,0.15,STABLE
+hapta,sapta,*saptá,numbers,seven,seven,True,0.0,STABLE
+aēva,eka,*aiwa-,numbers,one,one,True,0.0,STABLE
+dva,dvi,*dwi-,numbers,two,two,True,0.0,STABLE
+θri,tri,*tri-,numbers,three,three,True,0.0,STABLE
+caθru,catur,*čatur-,numbers,four,four,True,0.0,STABLE
+panca,pañca,*panča-,numbers,five,five,True,0.0,STABLE
+xšvaš,ṣaṣ,*kšwakš-,numbers,six,six,True,0.0,STABLE
+ašta,aṣṭa,*aštā,numbers,eight,eight,True,0.0,STABLE
+nava,nava,*náwa-,numbers,nine,nine,True,0.0,STABLE
+dasa,daśa,*daśa-,numbers,ten,ten,True,0.0,STABLE
+pitar,pitṛ,*pitár-,kinship,father,father,True,0.0,STABLE
+mātar,mātṛ,*mātár-,kinship,mother,mother,True,0.0,STABLE
+brātar,bhrātṛ,*bhrātar-,kinship,brother,brother,True,0.0,STABLE
+xvaŋhar,svasar,*swésor-,kinship,sister,sister,True,0.0,STABLE
+puθra,putra,*putra-,kinship,son,son,True,0.0,STABLE
+napāt,napāt,*nepōt-,kinship,grandson/descendant,grandson/descendant,True,0.0,STABLE
+dəmāna,damana,*dáma-,kinship,household,house/taming,True,0.1,STABLE
+ahura,asura,*asura-,religion,lord (benevolent),demon (malevolent),True,0.95,REVERSED
+daeva,deva,*daiwá-,religion,demon (evil spirit),god (deity),True,0.95,REVERSED
+haoma,soma,*sauma-,religion,sacred ritual plant/drink,sacred ritual plant/drink,True,0.25,SHIFTED
+ātar,atharva,*āθr-,religion,fire (sacred),fire priest/fire,True,0.3,SHIFTED
+aša,ṛta,*Hr̥tá-,religion,cosmic truth/order,cosmic truth/order,True,0.1,STABLE
+mazdā,medhā,*mazdha-,religion,wisdom (divine),wisdom/intelligence,True,0.1,STABLE
+yazata,yajata,*yaz-,religion,worthy of worship,worthy of worship,True,0.0,STABLE
+nāman,nāman,*nāman-,religion,name (sacred),name,True,0.0,STABLE
+vāyu,vāyu,*wāyu-,nature,wind (divine),wind/god of wind,True,0.05,STABLE
+āp,āp,*áp-,nature,water,water,True,0.0,STABLE
+bāmya,bhānu,*bhānu-,nature,shining/radiant,sun/radiance,True,0.15,NARROWED
+vāta,vāta,*wāta-,nature,wind/breath,wind/breath,True,0.0,STABLE
+dānu,dānu,*dānu-,nature,river,river/fluid,True,0.1,STABLE
+asman,aśman,*ácman-,nature,sky/stone,stone/sky,True,0.1,STABLE
+zam,kṣam,*ǵʰðhém-,nature,earth/ground,earth/ground,True,0.1,STABLE
+raocah,roca,*rawka-,nature,light/luminous,shining/bright,True,0.1,STABLE
+gao,go,*gwáw-,animals,cow,cow,True,0.0,STABLE
+spā,śvan,*ćwon-,animals,dog,dog,True,0.0,STABLE
+mərəγa,mṛga,*mṛga-,animals,bird,deer/animal,True,0.35,SHIFTED
+uštra,uṣṭra,*uštra-,animals,camel,camel,True,0.0,STABLE
+maēša,meṣa,*maišha-,animals,ram/sheep,ram/sheep,True,0.0,STABLE
+xara,khara,*khar-,animals,donkey,donkey/harsh,True,0.1,STABLE
+gauš,gauḥ,*gwáw-,animals,bull/ox,bull/cow,True,0.05,STABLE
+bərəzant,bṛhant,*bṛhant-,agriculture,high/tall,high/great,True,0.1,STABLE
+haētu,setu,*sáitu-,agriculture,bridge/dam,bridge/dam,True,0.0,STABLE
+yava,yava,*yáwa-,agriculture,grain/barley,grain/barley,True,0.0,STABLE
+karš,kṛṣ,*kár̥š-,agriculture,to plow,to plow/draw,True,0.05,STABLE
+vāstra,vāstra,*wāstra-,agriculture,pasture/meadow,garment/cloth,True,0.55,SHIFTED
+hāiti,sāti,*sā-ti-,agriculture,cultivation/benefit,acquisition/benefit,True,0.2,NARROWED
+dāmi,dhāman,*dhā-,agriculture,creation/settlement,abode/law,True,0.25,SHIFTED
+zafar,jabha,*ǵambha-,body,jaw/mouth,jaw,True,0.1,STABLE
+gaona,gona,*gawna-,body,cheek/color,cheek/color,True,0.1,STABLE
+sruuā,śravan,*ćrawna-,body,ear,ear/hearing,True,0.1,STABLE
+xrūra,krūra,*krūra-,body,blood/gore,cruel/bloody,True,0.3,SHIFTED
+zəm,kṣam,*ǵʰðhém-,body,earth/soil (as ground underfoot),earth/soil,True,0.05,STABLE
+ząθra,jatru,*ǵhatru-,body,jaw/throat,collarbone/throat,True,0.2,NARROWED

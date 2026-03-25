@@ -1,0 +1,126 @@
+{
+  "version": "1.0",
+  "description": "Gold-standard Proto-Indo-Iranian sound correspondences for Sanskrit\u2192Avestan",
+  "rules": [
+    {
+      "id": "SL01",
+      "name": "s-to-h shift (initial)",
+      "sanskrit_phoneme": "s",
+      "avestan_phoneme": "h",
+      "position": "initial",
+      "example_sa": "sapta",
+      "example_av": "hapta",
+      "meaning": "seven",
+      "support": 0.92,
+      "description": "Sanskrit /s/ \u2192 Avestan /h/ in word-initial position. One of the most regular and well-attested correspondences between the two branches, reflecting a Proto-Iranian lenition of *s > h in onset position."
+    },
+    {
+      "id": "SL02",
+      "name": "s-to-h shift (intervocalic)",
+      "sanskrit_phoneme": "s",
+      "avestan_phoneme": "h",
+      "position": "intervocalic",
+      "example_sa": "soma",
+      "example_av": "haoma",
+      "meaning": "sacred ritual plant/drink",
+      "support": 0.87,
+      "description": "Sanskrit /s/ \u2192 Avestan /h/ in intervocalic position. The same Proto-Iranian lenition applies between vowels, though with slightly lower regularity than word-initial position due to occasional competing changes."
+    },
+    {
+      "id": "SL03",
+      "name": "dv-to-b cluster simplification (initial)",
+      "sanskrit_phoneme": "dv",
+      "avestan_phoneme": "b",
+      "position": "initial",
+      "example_sa": "dvi",
+      "example_av": "bi",
+      "meaning": "two",
+      "support": 0.78,
+      "description": "Sanskrit initial cluster /dv/ \u2192 Avestan /b/. The Proto-Indo-Iranian *dw cluster was simplified in Avestan by dropping the dental stop and labializing the resulting onset, whereas Sanskrit preserved the cluster intact."
+    },
+    {
+      "id": "SL04",
+      "name": "shv-to-sp cluster shift (initial)",
+      "sanskrit_phoneme": "\u015bv",
+      "avestan_phoneme": "sp",
+      "position": "initial",
+      "example_sa": "a\u015bva",
+      "example_av": "aspa",
+      "meaning": "horse",
+      "support": 0.90,
+      "description": "Sanskrit initial cluster /\u015bv/ \u2192 Avestan /sp/. Sanskrit depalatalized the proto-language palatal *\u0107 to \u015b before /w/, while Avestan preserved the stop quality and fronted the vowel glide to /p/ in the cluster, yielding sp."
+    },
+    {
+      "id": "SL05",
+      "name": "dental stop fricativization",
+      "sanskrit_phoneme": "t",
+      "avestan_phoneme": "\u03b8",
+      "position": "intervocalic",
+      "example_sa": "pit\u0101",
+      "example_av": "pitar",
+      "meaning": "father",
+      "support": 0.70,
+      "description": "Sanskrit dental /t/ \u2192 Avestan dental fricative /\u03b8/ in certain intervocalic and pre-sonorant environments. This reflects a partial fricativization process in Avestan that did not occur uniformly across all positions; regularity is context-dependent."
+    },
+    {
+      "id": "SL06",
+      "name": "retroflex neutralization",
+      "sanskrit_phoneme": "\u1e63\u1e6d",
+      "avestan_phoneme": "\u0161t",
+      "position": "any",
+      "example_sa": "a\u1e63\u1e6da",
+      "example_av": "\u0161ta",
+      "meaning": "eight",
+      "support": 0.93,
+      "description": "Sanskrit retroflex consonants /\u1e6d, \u1e0d, \u1e47/ \u2192 Avestan corresponding dental or alveolar stops. Avestan did not develop or preserve the retroflex series that Sanskrit inherited from contact with Dravidian substrate languages, neutralizing all retroflex distinctions to their dental counterparts."
+    },
+    {
+      "id": "SL07",
+      "name": "v-to-v stable correspondence",
+      "sanskrit_phoneme": "v",
+      "avestan_phoneme": "v",
+      "position": "any",
+      "example_sa": "v\u0101yu",
+      "example_av": "v\u0101yu",
+      "meaning": "wind / god of wind",
+      "support": 0.97,
+      "description": "Sanskrit /v/ \u2192 Avestan /v/ with no change. The Proto-Indo-Iranian labio-dental or labio-velar approximant *w/v was preserved stably in both branches in most environments, making this one of the most regular and high-confidence correspondences."
+    },
+    {
+      "id": "SL08",
+      "name": "r-to-r stable correspondence (with semantic divergence)",
+      "sanskrit_phoneme": "r",
+      "avestan_phoneme": "r",
+      "position": "any",
+      "example_sa": "\u1e5bta",
+      "example_av": "a\u0161a",
+      "meaning": "cosmic truth / right order",
+      "support": 0.94,
+      "description": "Sanskrit /r/ \u2192 Avestan /r/ with no phonological change. Despite the dramatically different surface forms of \u1e5bta and a\u0161a (cosmic truth), the rhotic consonant itself is stable across branches. The surface divergence of this pair is primarily semantic and morphological rather than phonological, making it an important test case for distinguishing phonological from semantic drift."
+    },
+    {
+      "id": "SL09",
+      "name": "velar fricativization (ksh-to-x)",
+      "sanskrit_phoneme": "k\u1e63",
+      "avestan_phoneme": "x",
+      "position": "initial",
+      "example_sa": "k\u1e63atra",
+      "example_av": "x\u0161a\u03b8ra",
+      "meaning": "warrior power / dominion",
+      "support": 0.82,
+      "description": "Sanskrit velar-sibilant cluster /k\u1e63/ \u2192 Avestan velar fricative /x/ (often followed by /\u0161/). Proto-Indo-Iranian *k\u1e63 was preserved as a cluster in Sanskrit but simplified in Avestan by leniting the stop to a fricative, yielding x or x\u0161 depending on the following environment."
+    },
+    {
+      "id": "SL10",
+      "name": "ai-to-ae diphthong correspondence",
+      "sanskrit_phoneme": "ai",
+      "avestan_phoneme": "ae",
+      "position": "any",
+      "example_sa": "aidhi",
+      "example_av": "aeidi",
+      "meaning": "come! / be! (imperative)",
+      "support": 0.85,
+      "description": "Sanskrit diphthong /ai/ \u2192 Avestan /ae\u0304/. Proto-Indo-Iranian *ai was retained as a full diphthong in Sanskrit but underwent a slight vowel quality shift in Avestan, lowering the first element from /a/ toward a more open front vowel, written ae in standard Avestan transliteration. This is a regular and well-documented vowel correspondence."
+    }
+  ]
+}
