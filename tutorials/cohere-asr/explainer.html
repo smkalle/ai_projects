@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cohere Transcribe — Medical Workbench</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --border: #1f2937;
+      --accent: #6366f1;
+      --accent2: #818cf8;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #a5b4fc, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    header p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ── Section cards ── */
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      color: var(--accent2);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* ── Diagram ── */
+    .diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      padding: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+    .diag-box {
+      background: var(--border);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      text-align: center;
+      min-width: 120px;
+    }
+    .diag-box.highlight { background: rgba(99,102,241,0.15); }
+    .diag-arrow { color: var(--muted); font-size: 1.4rem; }
+
+    /* ── Mode cards ── */
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .mode-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .mode-card:hover, .mode-card.active {
+      border-color: var(--accent);
+      background: rgba(99,102,241,0.08);
+    }
+    .mode-card h3 { font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--accent2); }
+    .mode-card p { font-size: 0.8rem; color: var(--muted); }
+
+    /* ── Language grid ── */
+    .lang-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .lang-chip {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.78rem;
+      text-align: center;
+      color: var(--muted);
+    }
+    .lang-chip.flag::before { content: '●'; margin-right: 4px; color: var(--green); }
+
+    /* ── Feature tabs ── */
+    .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .tab-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { border-color: var(--accent2); color: var(--text); }
+    .tab-btn.active { background: rgba(99,102,241,0.15); border-color: var(--accent); color: var(--accent2); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── Metrics ── */
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .metric {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .metric .num {
+      font-size: 2rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .metric .label { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+    .metric.green .num { color: var(--green); }
+    .metric.amber .num { color: var(--amber); }
+    .metric.accent .num { color: var(--accent2); }
+
+    /* ── Code block ── */
+    pre {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.82rem;
+      margin-top: 1rem;
+      color: #c4b5fd;
+    }
+    code { font-family: 'Cascadia Code', 'Fira Code', monospace; }
+    pre .c { color: #6b7280; }
+    pre .k { color: #a78bfa; }
+    pre .s { color: #86efac; }
+    pre .v { color: #fde68a; }
+
+    /* ── Progress bar demo ── */
+    .progress-demo { margin-top: 1rem; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.4rem; }
+    .progress-track {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      height: 10px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    /* ── Comparison table ── */
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.88rem; }
+    th { text-align: left; color: var(--accent2); border-bottom: 1px solid var(--border); padding: 0.5rem 0.75rem; }
+    td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    .check { color: var(--green); }
+    .cross { color: var(--red); }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+    footer a { color: var(--accent2); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Medical Researcher Workbench</h1>
+  <p>Cohere Transcribe-powered research tool — transcription, analysis, and export for medical researchers</p>
+</header>
+
+<div class="container">
+
+  <!-- How It Works -->
+  <div class="card">
+    <h2>⚙️ How It Works</h2>
+    <div class="diagram">
+      <div class="diag-box highlight">
+        <strong>🎤 Audio</strong><br><small>wav / mp3 / m4a</small>
+      </div>
+      <div class="diag-arrow">→</div>
+      <div class="diag-box highlight">
+        <strong>Cohere Transcribe</strong><br><small>cohere-transcribe-03-2026</small>
+      </div>
+      <div class="diag-arrow">→</div>
+      <div class="diag-box">
+        <strong>Transcript</strong><br><small>text + timestamps</small>
+      </div>
+      <div class="diag-arrow">→</div>
+      <div class="diag-box">
+        <strong>Library / Export</strong><br><small>SQLite / PDF / ZIP</small>
+      </div>
+    </div>
+    <p style="font-size:0.88rem; color:var(--muted); text-align:center;">
+      Three deployment modes — choose how the transcription engine runs
+    </p>
+  </div>
+
+  <!-- Deployment Modes -->
+  <div class="card">
+    <h2>🚀 Deployment Modes</h2>
+    <p style="font-size:0.88rem; color:var(--muted); margin-bottom:0.75rem;">
+      Click a mode to see its configuration
+    </p>
+    <div class="mode-grid">
+      <div class="mode-card active" onclick="setMode('local')">
+        <h3>💻 Local (transformers)</h3>
+        <p>No API key. Runs on your GPU or CPU. Maximum privacy.</p>
+      </div>
+      <div class="mode-card" onclick="setMode('api')">
+        <h3>☁️ Cohere API</h3>
+        <p>Zero-setup. Works on any machine with an internet connection.</p>
+      </div>
+      <div class="mode-card" onclick="setMode('vllm')">
+        <h3>🏭 vLLM (self-hosted)</h3>
+        <p>High-throughput production deployment on your own infrastructure.</p>
+      </div>
+    </div>
+    <div id="mode-config" style="margin-top:1rem;">
+      <pre><code id="mode-code"><span class="c"># .env — Local mode (default)</span>
+<span class="k">TRANSCRIPTION_MODE</span><span class="v">=local</span>
+<span class="k">MODEL_PATH</span><span class="v">=CohereLabs/cohere-transcribe-03-2026</span>
+<span class="k">DEVICE</span><span class="v">=cuda</span>  <span class="c"># or cpu</span></code></pre>
+    </div>
+  </div>
+
+  <!-- Supported Languages -->
+  <div class="card">
+    <h2>🌍 14 Supported Languages</h2>
+    <div class="lang-grid">
+      <div class="lang-chip flag">English</div>
+      <div class="lang-chip flag">French</div>
+      <div class="lang-chip flag">German</div>
+      <div class="lang-chip flag">Italian</div>
+      <div class="lang-chip flag">Spanish</div>
+      <div class="lang-chip flag">Portuguese</div>
+      <div class="lang-chip flag">Greek</div>
+      <div class="lang-chip flag">Dutch</div>
+      <div class="lang-chip flag">Polish</div>
+      <div class="lang-chip flag">Arabic</div>
+      <div class="lang-chip flag">Vietnamese</div>
+      <div class="lang-chip flag">Chinese</div>
+      <div class="lang-chip flag">Japanese</div>
+      <div class="lang-chip flag">Korean</div>
+    </div>
+    <p style="font-size:0.8rem; color:var(--muted); margin-top:0.75rem;">
+      No auto-detection — specify <code>language</code> explicitly per transcription. Toggle punctuation on/off for each session.
+    </p>
+  </div>
+
+  <!-- Benchmarks -->
+  <div class="card">
+    <h2>📊 Model Performance</h2>
+    <div class="metrics">
+      <div class="metric green">
+        <div class="num">5.42%</div>
+        <div class="label">Avg WER (SOTA)</div>
+      </div>
+      <div class="metric accent">
+        <div class="num">3×</div>
+        <div class="label">RTFx vs Whisper</div>
+      </div>
+      <div class="metric">
+        <div class="num">14</div>
+        <div class="label">Languages</div>
+      </div>
+      <div class="metric amber">
+        <div class="num">55+ min</div>
+        <div class="label">Max audio length</div>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Avg WER</th>
+          <th>Speed</th>
+          <th>License</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Cohere Transcribe</strong></td>
+          <td class="check">5.42% ✓</td>
+          <td class="check">3× faster</td>
+          <td>Apache 2.0</td>
+        </tr>
+        <tr>
+          <td>Whisper Large v3</td>
+          <td>7.44%</td>
+          <td>baseline</td>
+          <td>MIT</td>
+        </tr>
+        <tr>
+          <td>ElevenLabs Scribe v2</td>
+          <td>—</td>
+          <td>—</td>
+          <td>Proprietary</td>
+        </tr>
+        <tr>
+          <td>Qwen3-ASR-1.7B</td>
+          <td>—</td>
+          <td>—</td>
+          <td>Apache 2.0</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:0.75rem; color:var(--muted); margin-top:0.5rem;">
+      Source: Hugging Face Open ASR Leaderboard, March 2026. Tested on AMI, Earnings22, GigaSpeech, LibriSpeech, SPGISpeech, TED-LIUM, VoxPopuli.
+    </p>
+  </div>
+
+  <!-- Feature Tour -->
+  <div class="card">
+    <h2>🗂️ Feature Tour</h2>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('tab1')">📁 Transcription</button>
+      <button class="tab-btn" onclick="showTab('tab2')">🎙️ Live Stream</button>
+      <button class="tab-btn" onclick="showTab('tab3')">📚 Library</button>
+      <button class="tab-btn" onclick="showTab('tab4')">📈 Analysis</button>
+      <button class="tab-btn" onclick="showTab('tab5')">🎯 Benchmarking</button>
+      <button class="tab-btn" onclick="showTab('tab6')">📄 Sessions</button>
+    </div>
+
+    <div id="tab1" class="tab-content active">
+      <h3 style="color:var(--accent2); font-size:0.95rem; margin-bottom:0.5rem;">File & Batch Transcription</h3>
+      <p style="font-size:0.85rem; color:var(--muted);">Upload wav/mp3/m4a files. Select language and punctuation. Get timestamped transcripts. Queue multiple files and download all results as a ZIP.</p>
+      <div class="progress-demo">
+        <div class="progress-label"><span>transcribing earnings_call_demo.wav</span><span>87%</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:87%"></div></div>
+      </div>
+    </div>
+
+    <div id="tab2" class="tab-content">
+      <h3 style="color:var(--accent2); font-size:0.95rem; margin-bottom:0.5rem;">Real-Time Microphone</h3>
+      <p style="font-size:0.85rem; color:var(--muted);">Live speech-to-text from your microphone. 16kHz mono, chunked every ~5s. Language selected per session. Rolling transcript display updates in under 3 seconds.</p>
+      <pre><code><span class="k">Recording</span> <span style="color:var(--green);">●</span>  <span class="c">English — 00:23 elapsed</span>
+
+<span class="s">"The patient's blood pressure was"</span>
+<span class="s">"elevated at 145 over 92 and we"</span>
+<span class="s">"recommend starting lisinopril"</span></code></pre>
+    </div>
+
+    <div id="tab3" class="tab-content">
+      <h3 style="color:var(--accent2); font-size:0.95rem; margin-bottom:0.5rem;">Transcript Library</h3>
+      <p style="font-size:0.85rem; color:var(--muted);">All transcripts saved locally in SQLite. Search by keyword. Tag by project or patient cohort. Inline edit the transcript text. Export as .txt or .docx.</p>
+    </div>
+
+    <div id="tab4" class="tab-content">
+      <h3 style="color:var(--accent2); font-size:0.95rem; margin-bottom:0.5rem;">Data Analysis</h3>
+      <p style="font-size:0.85rem; color:var(--muted);">Import clinical CSV/Excel datasets. Preview rows, filter by column values, compute descriptive statistics (n, mean, median, SD). Generate interactive Plotly charts.</p>
+    </div>
+
+    <div id="tab5" class="tab-content">
+      <h3 style="color:var(--accent2); font-size:0.95rem; margin-bottom:0.5rem;">WER Benchmarking</h3>
+      <p style="font-size:0.85rem; color:var(--muted);">Upload your own audio + reference transcript to measure accuracy. See WER (word error rate) and RTFx (real-time factor) per language. Track history across multiple runs.</p>
+    </div>
+
+    <div id="tab6" class="tab-content">
+      <h3 style="color:var(--accent2); font-size:0.95rem; margin-bottom:0.5rem;">Sessions & Export</h3>
+      <p style="font-size:0.85rem; color:var(--muted);">Named workspaces auto-save every 60 seconds. Resume exactly where you left off. Export the full session as a formatted PDF including transcript, metadata, and charts.</p>
+    </div>
+  </div>
+
+  <!-- Quick Install -->
+  <div class="card">
+    <h2>⚡ Quick Install</h2>
+    <pre><code><span class="c"># Clone and enter the project</span>
+<span class="k">git</span> <span class="v">clone</span> &lt;repo-url&gt;
+<span class="k">cd</span> medical-workbench
+
+<span class="c"># Install dependencies (uv handles everything)</span>
+<span class="k">./setup.sh</span>
+
+<span class="c"># Optional: set API key for cloud mode</span>
+<span class="k">$EDITOR</span> .env
+
+<span class="c"># Launch the workbench</span>
+<span class="k">./run.sh</span></code></pre>
+    <p style="font-size:0.82rem; color:var(--muted); margin-top:0.75rem;">
+      Opens at <a href="#" style="color:var(--accent2);">http://localhost:8501</a> — no GPU required for API mode.
+    </p>
+  </div>
+
+</div>
+
+<footer>
+  <p>Built on <a href="https://huggingface.co/CohereLabs/cohere-transcribe-03-2026">Cohere Transcribe</a> · Apache 2.0 · <a href="QUICKSTART.md">Quick Start Guide</a></p>
+</footer>
+
+<script>
+  const modeConfigs = {
+    local: `<span class="c"># .env — Local mode (default)</span>
+<span class="k">TRANSCRIPTION_MODE</span><span class="v">=local</span>
+<span class="k">MODEL_PATH</span><span class="v">=CohereLabs/cohere-transcribe-03-2026</span>
+<span class="k">DEVICE</span><span class="v">=cuda</span>  <span class="c"># or cpu</span>`,
+    api: `<span class="c"># .env — Cohere API mode</span>
+<span class="k">TRANSCRIPTION_MODE</span><span class="v">=api</span>
+<span class="k">COHERE_API_KEY</span><span class="v">=your-key-here</span>
+<span class="k">COHERE_MODEL</span><span class="v">=cohere-transcribe-03-2026</span>`,
+    vllm: `<span class="c"># .env — vLLM self-hosted</span>
+<span class="k">TRANSCRIPTION_MODE</span><span class="v">=vllm</span>
+<span class="k">VLLM_BASE_URL</span><span class="v">=http://localhost:8000</span>`
+  };
+
+  function setMode(mode) {
+    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.getElementById('mode-code').innerHTML = modeConfigs[mode];
+  }
+
+  function showTab(id) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
