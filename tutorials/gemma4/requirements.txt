@@ -1,0 +1,19 @@
+# Gemma 4 CLI — Python dependencies
+# Install with: pip install -r requirements.txt
+
+rich>=13.7.0          # Terminal UI: panels, tables, markdown, live streaming
+requests>=2.31.0      # Ollama REST API calls
+
+# Optional but recommended
+psutil>=5.9.0         # Enables memory stats in get_system_info tool
+
+# ── Ollama (must be installed separately) ─────────────────────────────────────
+# Install: https://ollama.com/download
+#   macOS/Linux:  curl -fsSL https://ollama.com/install.sh | sh
+#   Windows:      download installer from https://ollama.com/download
+#
+# Pull models after install:
+#   ollama pull gemma4:e4b    (sweet spot — 5 GB VRAM)
+#   ollama pull gemma4:e2b    (ultra-light — 3.2 GB VRAM)
+#   ollama pull gemma4:26b    (MoE agent  — 15.6 GB VRAM)
+#   ollama pull gemma4:31b    (best intel — 17.4 GB VRAM)
