@@ -1,0 +1,5 @@
+flask>=3.0
+google-genai>=0.8
+python-dotenv>=1.0
+gunicorn>=22.0
+pytest>=8.0
