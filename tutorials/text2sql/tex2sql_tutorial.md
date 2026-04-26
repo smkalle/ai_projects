@@ -1,6 +1,6 @@
 **Comprehensive Hands-On Tutorial: Building and Deploying Production-Grade Agentic Text-to-SQL with LangChain Deep Agents (Inspired by the text2sql Community Project)**
 
-As an L6 AI Engineer with extensive experience shipping agentic systems at scale, I’ve built this tutorial specifically for AI product engineers and senior ML/AI practitioners. It’s based directly on the LangChain OSS Community Spotlight for the **text2sql** project—an open-source agentic SDK built on LangChain’s Deep Agents framework.
+Tutorial based directly on the LangChain OSS Community Spotlight for the **text2sql** project—an open-source agentic SDK built on LangChain’s Deep Agents framework.
 
 This SDK lets a frontier LLM autonomously:
 - Explore database schemas (via `PRAGMA table_info`, `information_schema`, etc.)
