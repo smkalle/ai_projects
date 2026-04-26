@@ -1,0 +1,18 @@
+# Python / uv
+.venv/
+__pycache__/
+*.pyc
+.python-version
+
+# Notebook outputs
+.ipynb_checkpoints/
+*.html
+executed_*.ipynb
+
+# Env files
+.env
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/

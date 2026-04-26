@@ -1,0 +1,40 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic",
+    "ANTHROPIC_API_KEY": "sk-api-3iqX2G_L-7P6kYM6rECs8BXUpTNW1TNyaFiyWm-4V1ElAL60CunPAmLc-HpGN-MT8o196ffnjD8NqwPpuKCVzwak6zCpj7a2O9fwmgJY3mFR3yrnA1wLITc",
+    "MINIMAX_USE_HIGHSPEED": "false"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(ollama serve*)",
+      "Bash(ollama run*)"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "opus",
+  "enabledPlugins": {
+    "claude-code-dev-commands@se-rakuten": true
+  },
+  "extraKnownMarketplaces": {
+    "se-rakuten": {
+      "source": {
+        "source": "file",
+        "path": "/home/devuser/.claude/plugins/marketplaces/se-rakuten/marketplace.json"
+      }
+    }
+  },
+  "theme": "auto",
+  "skipAutoPermissionPrompt": true
+}
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic",
+    "ANTHROPIC_API_KEY": "sk-api-3iqX2G_L-7P6kYM6rECs8BXUpTNW1TNyaFiyWm-4V1ElAL60CunPAmLc-HpGN-MT8o196ffnjD8NqwPpuKCVzwak6zCpj7a2O9fwmgJY3mFR3yrnA1wLITc",
+    "API_TIMEOUT_MS": "3000000",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "ANTHROPIC_MODEL": "MiniMax-M2.7",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "MiniMax-M2.7",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "MiniMax-M2.7",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "MiniMax-M2.7"
+  }
+}
