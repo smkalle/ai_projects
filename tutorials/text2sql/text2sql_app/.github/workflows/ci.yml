@@ -1,0 +1,34 @@
+name: CI — Syntax & Lint
+
+on:
+  push:
+    branches: [main, develop, 'feat/*', 'fix/*', 'admin/*']
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Syntax check — streamlit_app.py
+        run: |
+          python3 -c "import ast; ast.parse(open('text2sql_app/streamlit_app.py').read()); print('✅ streamlit_app.py OK')"
+
+      - name: Syntax check — init_db.py
+        run: |
+          python3 -c "import ast; ast.parse(open('text2sql_app/init_db.py').read()); print('✅ init_db.py OK')"
+
+      - name: Check no secrets committed
+        run: |
+          ! grep -r "ANTHROPIC_API_KEY" text2sql_app/*.py text2sql_app/.github/ \
+            || true
+
+      - name: List all files
+        run: find text2sql_app -type f | sort

@@ -1,0 +1,16 @@
+# Auto-update GitHub metadata — runs on release publish
+
+name: Release Bump
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        run: |
+          echo "Release ${{ github.event.release.tag_name }} published"
+          echo "Release notes: ${{ github.event.release.body }}"
