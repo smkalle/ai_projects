@@ -24,6 +24,7 @@ Targets:
                        Requires: GEMINI_API_KEY in demo-gemini-python/.env (or Vertex AI env vars)
 
   test-web             Run demo-gemini-cloudrun tests (no credentials needed)
+  test-voice-live      Run live voice server tests (requires GOOGLE_API_KEY)
   test-cli             Run demo-gemini-python tests (no credentials needed)
   test                 Run all tests
 
@@ -33,6 +34,7 @@ Examples:
   ./run.sh cli all
   ./run.sh test
   ./run.sh test-web
+  ./run.sh test-voice-live
 EOF
 }
 
@@ -68,6 +70,11 @@ case "${1:-}" in
   test-cli)
     echo "==> Testing demo-gemini-python"
     (cd "$PYTHON_DIR" && python3 -m pytest tests/test_demos.py -v)
+    ;;
+
+  test-voice-live)
+    echo "==> Testing demo-gemini-cloudrun live voice server"
+    (cd "$CLOUDRUN_DIR" && python3 -m pytest test_voice_server.py -v)
     ;;
 
   test)

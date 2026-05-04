@@ -583,7 +583,6 @@ class TestGetClient:
     def test_uses_gemini_api_key_when_set(self, mock_genai_modules):
         _, mock_genai, _ = mock_genai_modules
         with patch.dict(os.environ, {"GEMINI_API_KEY": "test-key-123"}, clear=False):
-            # Force re-import so get_client picks up the patched env
             sys.modules.pop("main", None)
             import main
             main.get_client()
@@ -593,7 +592,103 @@ class TestGetClient:
         _, mock_genai, _ = mock_genai_modules
         import main
         mock_genai.Client.reset_mock()
-        # Patch os.getenv inside main's namespace so load_dotenv can't interfere
         with patch("main.os.getenv", return_value=None):
             main.get_client()
         mock_genai.Client.assert_called_with()
+
+
+# ---------------------------------------------------------------------------
+# 11. Insurance Claims Intake Workflow
+# ---------------------------------------------------------------------------
+
+class TestInsuranceClaims:
+    def _claim_resp(self, **fields):
+        """Return a mock response whose .parsed is a plain dict."""
+        resp = _make_response()
+        resp.parsed = fields
+        return resp
+
+    def _full_resp(self, claim=None, classification=None, coverage=None, fraud=None, checklist=None):
+        """Five mock responses for the five LLM steps, returned in sequence."""
+        claim = claim or {}
+        classification = classification or {"claim_type": "auto", "severity": "medium", "policy_line": "Personal Auto"}
+        coverage = coverage or {"coverage_applies": True, "evidence_required": ["Police report"], "deductible_applies": True, "notes": "Covered."}
+        fraud = fraud or {"fraud_risk": False, "siu_referral_required": False, "safety_concerns": False, "escalation_type": "ready_for_adjuster"}
+        checklist = checklist or {"required_documents": ["Police report", "Photos"], "optional_documents": ["Medical records"]}
+        resp1 = self._claim_resp(**claim)
+        resp2 = self._claim_resp(**classification)
+        resp3 = self._claim_resp(**coverage)
+        resp4 = self._claim_resp(**fraud)
+        resp5 = self._claim_resp(**checklist)
+        return [resp1, resp2, resp3, resp4, resp5]
+
+    def test_extraction_output_printed(self, capsys):
+        responses = self._full_resp(
+            claim={"claimant_name": "Jane Doe", "policy_number": "P-999",
+                   "incident_date": "2024-12-01", "incident_location": "I-95",
+                   "incident_description": "Rear-ended at stop.", "damage_items": ["Bumper"]},
+        )
+        client = MagicMock(name="client")
+        client.models.generate_content.side_effect = responses
+        from demos import insurance_claims
+        insurance_claims.run(client)
+        out = capsys.readouterr().out
+        assert "Jane Doe" in out
+        assert "P-999" in out
+        assert client.models.generate_content.call_count == 5
+
+    def test_validation_detects_missing_fields(self, capsys):
+        responses = self._full_resp(
+            claim={"claimant_name": "Bob", "policy_number": "X",
+                   "incident_date": None,  # missing
+                   "incident_location": "",  # missing
+                   "incident_description": "Crash"},
+        )
+        client = MagicMock(name="client")
+        client.models.generate_content.side_effect = responses
+        from demos import insurance_claims
+        insurance_claims.run(client)
+        out = capsys.readouterr().out
+        assert "MISSING" in out
+        assert "incident_date" in out
+        assert "incident_location" in out
+
+    def test_routing_siu_flag(self, capsys):
+        responses = self._full_resp(
+            fraud={"fraud_risk": True, "siu_referral_required": True,
+                   "safety_concerns": False, "escalation_type": "special_investigation"},
+        )
+        client = MagicMock(name="client")
+        client.models.generate_content.side_effect = responses
+        from demos import insurance_claims
+        insurance_claims.run(client)
+        out = capsys.readouterr().out
+        assert "SIU" in out
+        assert "special_investigation" in out
+        assert "priority : 90" in out
+
+    def test_final_packet_printed(self, capsys):
+        responses = self._full_resp(
+            claim={"claimant_name": "John Doe", "policy_number": "POL-2024-789456",
+                   "incident_date": "last Tuesday", "incident_location": "I-95 exit 42",
+                   "incident_description": "Car accident", "damage_items": ["Bumper", "Door"]},
+        )
+        client = MagicMock(name="client")
+        client.models.generate_content.side_effect = responses
+        from demos import insurance_claims
+        insurance_claims.run(client)
+        out = capsys.readouterr().out
+        assert "FINAL CLAIM INTAKE PACKET" in out
+        assert "Ready for human adjuster review" in out
+
+    def test_config_uses_response_schema_and_json_mime(self, mock_genai_modules):
+        _, _, mock_types = mock_genai_modules
+        responses = self._full_resp()
+        client = MagicMock(name="client")
+        client.models.generate_content.side_effect = responses
+        from demos import insurance_claims
+        insurance_claims.run(client)
+        mock_types.GenerateContentConfig.assert_called()
+        call_kwargs = mock_types.GenerateContentConfig.call_args.kwargs
+        assert call_kwargs.get("response_mime_type") == "application/json"
+        assert "response_schema" in call_kwargs or "responseJsonSchema" in call_kwargs

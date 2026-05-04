@@ -1,3 +1,23 @@
 # Scratch / construction notes — not for version control
 instructions.txt
 plan.md
+
+# Python caches and build artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Local environments
+.venv/
+venv/
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Editor and OS junk
+.DS_Store
+.idea/
+.vscode/

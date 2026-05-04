@@ -2,6 +2,11 @@
 
 Installable knowledge packs for Google Cloud products and workflows, consumed by AI agents via the [`skills.sh`](https://github.com/skills-sh/ecosystem) runtime.
 
+This repository also includes two runnable Gemini demo apps:
+
+- `demo-gemini-cloudrun/` — Flask API demo plus a live voice intake server
+- `demo-gemini-python/` — CLI demo that showcases multiple Gemini capabilities
+
 ## Installation
 
 ```bash
@@ -25,6 +30,40 @@ Once installed, reference the skill by name in your agent's request. For example
 > "Help me authenticate to Google Cloud locally" → the agent loads `google-cloud-recipe-auth`
 
 > "Review my infrastructure for cost savings" → the agent loads `google-cloud-waf-cost-optimization`
+
+## Local Demo Apps
+
+Install dependencies first:
+
+```bash
+./setup.sh
+```
+
+Run demos:
+
+```bash
+./run.sh web
+./run.sh cli text --prompt "Hello"
+python3 demo-gemini-cloudrun/voice_server.py
+```
+
+## Testing
+
+Credential-free suites:
+
+```bash
+./run.sh test
+./run.sh test-web
+./run.sh test-cli
+```
+
+Live voice integration suite (real API + audio flow):
+
+```bash
+./run.sh test-voice-live
+```
+
+`test-voice-live` requires `GOOGLE_API_KEY` and network access.
 
 ## Usage Examples
 

@@ -13,48 +13,64 @@ An **Agent Skills archive** — installable knowledge packs for Google Cloud, co
   products/              # Per-service skills (gemini-api, alloydb, bigquery, cloud-run, cloud-sql, firebase, gke)
   recipes/               # Multi-step workflow skills (onboarding, auth, networking-observability)
   well-architected-framework/  # WAF pillar skills (security, reliability, cost-optimization)
-demo-gemini-cloudrun/    # Flask web API demo, deployable to Cloud Run (pip / venv)
+demo-gemini-cloudrun/    # Flask web API demo, deployable to Cloud Run (system Python, no venv)
 demo-gemini-python/      # Argparse CLI demo, exercises 10 Gemini capabilities (uv-managed)
-CLAUDE.md                # Primary agent instruction file — read this first
+CLAUDE.md                # Agent instruction file (describes upstream layout; cloud/ dir does NOT exist locally)
 gemini-api-tutorial.md   # 20-section Gemini API reference (multi-language)
 google-cloud-skills-tutorial.md  # When/how to use each skill, decision tree
-instructions.txt, plan.md       # Scratch notes from repo construction — not authoritative
+run.sh                   # Unified runner — use this for running, testing, and dev
+setup.sh                 # One-time dependency install (uv required)
 ```
 
 **`cloud/` does NOT exist locally.** `CLAUDE.md` references it as the upstream GitHub layout. Locally, only `.claude/skills/` is present.
 
+## Setup
+
+```bash
+# One-time install (requires uv; installs into system Python — no venvs)
+./setup.sh
+```
+
+`setup.sh` uses `uv pip install --system` for both apps. Do not create venvs — this repo targets Termux/Android where the `lib64` symlink venvs need is blocked.
+
 ## Running tests
 
-No credentials required. Both test suites use full mocking.
+Credential-free suites use mocking and do not require API keys.
 
-### demo-gemini-cloudrun (pip/venv)
 ```bash
-python3 -m venv /tmp/venv && . /tmp/venv/bin/activate
-pip install -r demo-gemini-cloudrun/requirements.txt
-python -m pytest demo-gemini-cloudrun/test_app.py -v
+# Preferred — uses run.sh
+./run.sh test          # both suites
+./run.sh test-web      # demo-gemini-cloudrun only
+./run.sh test-cli      # demo-gemini-python only
+
+# Live voice integration (real API; requires key)
+./run.sh test-voice-live
+
+# Direct equivalents
+python3 -m pytest demo-gemini-cloudrun/test_app.py -v
+python3 -m pytest demo-gemini-python/tests/test_demos.py -v  # must run from repo root
+python3 -m pytest demo-gemini-cloudrun/test_voice_server.py -v
 ```
 
-### demo-gemini-python (uv)
-```bash
-# from demo-gemini-python/
-uv run pytest tests/test_demos.py -v
-```
-Requires Python 3.12+. The project uses `uv` (not pip) — do not use `pip install` inside this directory.
-
-No lint, typecheck, or formatting toolchain is configured.
+`demo-gemini-python` requires Python 3.12+. Do not use `pip install` inside that directory — use `uv`.
 
 ## Local dev (requires API key)
 
 ```bash
 # Flask web API — http://localhost:8080
 export GOOGLE_API_KEY=your-key
-python demo-gemini-cloudrun/app.py
+./run.sh web
 
-# CLI demo (uv-managed)
-cd demo-gemini-python
-uv run python main.py text --prompt "Hello"
+# CLI demo
+./run.sh cli text --prompt "Hello"
 # Commands: text chat stream json tools code embed thinking safety grounding all
+
+# Live voice claims server
+python3 demo-gemini-cloudrun/voice_server.py
+# UI: http://localhost:8765
 ```
+
+`demo-gemini-python` CLI must be run from its own directory (or via `run.sh`) — `demos.*` is a relative package.
 
 ## Deploy to Cloud Run
 
@@ -62,7 +78,7 @@ uv run python main.py text --prompt "Hello"
 # Quick deploy
 gcloud run deploy gemini-demo --source demo-gemini-cloudrun/ --region=us-central1 --allow-unauthenticated
 
-# Full deploy with resource flags (min=0, max=5, 512Mi, 1 cpu, 60s timeout)
+# Full deploy with resource flags (min=0, max=5, 512Mi, 1 cpu, 60s timeout, concurrency=80)
 cd demo-gemini-cloudrun && ./deploy.sh
 ```
 
@@ -88,7 +104,7 @@ No GitHub Actions, no pre-commit hooks. Testing and deployment are fully manual.
 | Variable | When needed |
 |---|---|
 | `GOOGLE_API_KEY` | Local dev with direct API mode (`demo-gemini-cloudrun`) |
-| `GEMINI_API_KEY` | Local dev for `demo-gemini-python` (loaded from `.env`) |
+| `GEMINI_API_KEY` | Local dev for `demo-gemini-python` (loaded from `.env` in that directory) |
 | `GOOGLE_GENAI_USE_VERTEXAI=true` | Vertex AI / Agent Platform mode |
 | `GOOGLE_CLOUD_PROJECT` | Vertex AI mode |
 | `GOOGLE_CLOUD_LOCATION` | Vertex AI mode (default: `global`) |
@@ -97,4 +113,4 @@ No GitHub Actions, no pre-commit hooks. Testing and deployment are fully manual.
 ## Known issues
 
 - `demo-gemini-python/.env` has a real API key committed — treat it as compromised and rotate before use.
-- `cloud-run-basics/SKILL.md` line ~100 contains a garbled `--region` value (`usxxxxxxxxxx...`); fix on sight.
+- `.claude/skills/products/cloud-run-basics/SKILL.md` line ~100 contains a garbled `--region` value (`usxxxxxxxxxx...`); fix on sight.

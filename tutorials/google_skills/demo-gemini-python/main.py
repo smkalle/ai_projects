@@ -19,10 +19,11 @@ Commands:
 
 Options:
     --prompt TEXT   Override the default prompt for the selected demo
-    --model  MODEL  Override the default model (default: gemini-3-flash-preview)
+    --model  MODEL  Override the default model (default: $GEMINI_MODEL or gemini-3-flash-preview)
 
-Auth (.env file in this directory, or export env vars directly):
+Auth/config (.env file in this directory, or export env vars directly):
     GEMINI_API_KEY              — API key (preferred, loaded from .env)
+    GEMINI_MODEL                — default model ID (overrides built-in default)
     GOOGLE_GENAI_USE_VERTEXAI   — set "true" to use Vertex AI / Agent Platform
     GOOGLE_CLOUD_PROJECT        — GCP project (Vertex AI mode)
     GOOGLE_CLOUD_LOCATION       — region (Vertex AI mode, default: global)
@@ -49,6 +50,7 @@ DEMOS = {
     "thinking":   "Extended thinking / reasoning",
     "safety":     "Safety settings",
     "grounding":  "Google Search grounding",
+    "insurance":  "Insurance claims workflow",
 }
 
 # Maps CLI short names to their actual module filenames under demos/
@@ -63,6 +65,7 @@ _MODULE_MAP = {
     "thinking":  "thinking",
     "safety":    "safety",
     "grounding": "search_grounding",
+    "insurance": "insurance_claims",
 }
 
 
@@ -114,8 +117,8 @@ def main(argv=None) -> int:
     parser.add_argument("--prompt", default=None, help="Override default prompt")
     parser.add_argument(
         "--model",
-        default="gemini-3-flash-preview",
-        help="Gemini model ID (default: gemini-3-flash-preview)",
+        default=os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"),
+        help="Gemini model ID (default: $GEMINI_MODEL or gemini-3-flash-preview)",
     )
     args = parser.parse_args(argv)
 

@@ -12,19 +12,27 @@ Environment variables:
   GOOGLE_CLOUD_PROJECT    — GCP project when using Vertex AI
   GOOGLE_CLOUD_LOCATION   — region when using Vertex AI (default: "global")
   PORT                    — HTTP port (default: 8080, set by Cloud Run)
+  GEMINI_MODEL            — default generation model (default: gemini-3-flash-preview)
+  GEMINI_EMBED_MODEL      — default embedding model (default: gemini-embedding-001)
 """
 
 import os
 import sys
 
 from flask import Flask, jsonify, request, render_template
+from pathlib import Path
+
 from dotenv import load_dotenv
 
-# Load .env for local development
-load_dotenv()
+# Load .env from app directory so it works regardless of cwd
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
 PORT = int(os.getenv("PORT", 8080))
 HOST = "0.0.0.0"
+
+# Model defaults — override via .env or environment variables
+DEFAULT_GENERATE_MODEL = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+DEFAULT_EMBED_MODEL = os.getenv("GEMINI_EMBED_MODEL", "gemini-embedding-001")
 
 app = Flask(__name__, template_folder="templates")
 
@@ -55,7 +63,7 @@ def generate():
 
     Body (JSON):
       prompt   — string, required
-      model    — string, optional  (default: gemini-3-flash-preview)
+      model    — string, optional  (default: $GEMINI_MODEL or gemini-3-flash-preview)
       max_tokens — int, optional
       temperature — float, optional
 
@@ -70,7 +78,7 @@ def generate():
     if not prompt:
         return jsonify(error="prompt is required"), 400
 
-    model = body.get("model", "gemini-3-flash-preview")
+    model = body.get("model", DEFAULT_GENERATE_MODEL)
     max_tokens = body.get("max_tokens")
     temperature = body.get("temperature")
 
@@ -117,7 +125,7 @@ def embed():
 
     Body (JSON):
       texts    — list[str], required
-      model    — string, optional (default: gemini-embedding-001)
+      model    — string, optional (default: $GEMINI_EMBED_MODEL or gemini-embedding-001)
       task_type — string, optional (default: RETRIEVAL_DOCUMENT)
 
     Returns:
@@ -133,7 +141,7 @@ def embed():
     if isinstance(texts, str):
         texts = [texts]
 
-    model = body.get("model", "gemini-embedding-001")
+    model = body.get("model", DEFAULT_EMBED_MODEL)
     task_type = body.get("task_type", "RETRIEVAL_DOCUMENT")
 
     try:
