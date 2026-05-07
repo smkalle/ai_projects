@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+
+# Logs and runtime artifacts
+*.log
+backend.dev.log
+frontend/frontend.dev.log
+
+# Frontend build artifacts
+frontend/node_modules/
+frontend/dist/
+
+# OS/editor
+.DS_Store
+*.swp
+*.swo
