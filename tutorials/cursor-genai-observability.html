@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inside the Cursor Agent: GenAI Observability with OpenTelemetry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+    --bg: #f4f6f9;
+    --surface: #ffffff;
+    --surface-elevated: #ffffff;
+    --border: rgba(30, 58, 95, 0.10);
+    --border-bright: rgba(30, 58, 95, 0.20);
+    --text: #0f1e34;
+    --text-dim: #5a6b80;
+    --accent: #1e3a5f;
+    --accent-dim: rgba(30, 58, 95, 0.08);
+    --gold: #b8860b;
+    --gold-dim: rgba(184, 134, 11, 0.10);
+    --teal: #0d6e6e;
+    --teal-dim: rgba(13, 110, 110, 0.10);
+    --rust: #9c4221;
+    --rust-dim: rgba(156, 66, 33, 0.10);
+    --grid: rgba(30, 58, 95, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a1320;
+      --surface: #111c2e;
+      --surface-elevated: #16243a;
+      --border: rgba(180, 200, 230, 0.08);
+      --border-bright: rgba(180, 200, 230, 0.18);
+      --text: #e6edf6;
+      --text-dim: #8a9cb5;
+      --accent: #7ab3e8;
+      --accent-dim: rgba(122, 179, 232, 0.10);
+      --gold: #e4b441;
+      --gold-dim: rgba(228, 180, 65, 0.12);
+      --teal: #5ed4d4;
+      --teal-dim: rgba(94, 212, 212, 0.10);
+      --rust: #e08458;
+      --rust-dim: rgba(224, 132, 88, 0.10);
+      --grid: rgba(180, 200, 230, 0.04);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--bg);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+
+  /* Header */
+  .preheader {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .preheader::before, .preheader::after {
+    content: '';
+    height: 1px;
+    background: var(--border-bright);
+    flex: 1;
+  }
+
+  h1 {
+    font-size: clamp(28px, 4.5vw, 44px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    font-weight: 700;
+  }
+
+  .lede {
+    font-size: 18px;
+    color: var(--text-dim);
+    max-width: 70ch;
+    margin: 0 0 32px;
+  }
+
+  .meta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 48px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+  .meta strong { color: var(--text); font-weight: 600; }
+  .meta a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+
+  /* Callout */
+  .callout {
+    border-left: 3px solid var(--gold);
+    background: var(--gold-dim);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .callout-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .callout p { margin: 0; font-size: 15px; }
+
+  /* Sections */
+  h2 {
+    font-size: 26px;
+    margin: 56px 0 8px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  h2::before {
+    content: attr(data-step);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  h3 {
+    font-size: 18px;
+    margin: 32px 0 12px;
+    font-weight: 600;
+  }
+
+  p { margin: 12px 0; }
+  a { color: var(--accent); }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--accent-dim);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--text);
+  }
+
+  pre {
+    font-family: var(--font-mono);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+    margin: 16px 0;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+
+  .pre-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: -8px;
+    margin-top: 16px;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  td code { font-size: 12px; }
+
+  /* Pipeline diagram */
+  .pipeline {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px 20px;
+    margin: 24px 0 32px;
+    overflow-x: auto;
+  }
+  .pipeline-inner {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    min-width: 100%;
+  }
+  .pipe-node {
+    flex: 1;
+    min-width: 140px;
+    background: var(--bg);
+    border: 1px solid var(--border-bright);
+    border-radius: 6px;
+    padding: 14px 12px;
+    text-align: center;
+    position: relative;
+  }
+  .pipe-node-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .pipe-node-title {
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+  .pipe-node-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .pipe-arrow {
+    display: flex;
+    align-items: center;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    padding: 0 4px;
+    font-size: 16px;
+  }
+  .pipe-node[data-kind="source"] { border-color: var(--teal); }
+  .pipe-node[data-kind="source"] .pipe-node-label { color: var(--teal); }
+  .pipe-node[data-kind="bridge"] { border-color: var(--gold); }
+  .pipe-node[data-kind="bridge"] .pipe-node-label { color: var(--gold); }
+  .pipe-node[data-kind="export"] { border-color: var(--accent); }
+  .pipe-node[data-kind="export"] .pipe-node-label { color: var(--accent); }
+  .pipe-node[data-kind="sink"] { border-color: var(--rust); }
+  .pipe-node[data-kind="sink"] .pipe-node-label { color: var(--rust); }
+
+  @media (max-width: 720px) {
+    .pipeline-inner { flex-direction: column; }
+    .pipe-arrow { justify-content: center; transform: rotate(90deg); padding: 4px 0; }
+  }
+
+  /* Attribute grid */
+  .attr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .attr {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .attr-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 4px;
+    word-break: break-all;
+  }
+  .attr-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Comparison */
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .compare-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .compare-card[data-tone="upstream"] { border-top: 3px solid var(--teal); }
+  .compare-card[data-tone="custom"] { border-top: 3px solid var(--gold); }
+  .compare-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .compare-title { font-weight: 600; font-size: 15px; margin-bottom: 10px; }
+  .compare-card ul { padding-left: 18px; margin: 8px 0; font-size: 13px; }
+  .compare-card li { margin: 4px 0; color: var(--text-dim); }
+
+  @media (max-width: 640px) {
+    .comparison { grid-template-columns: 1fr; }
+  }
+
+  /* Steps */
+  ol.steps {
+    list-style: none;
+    counter-reset: step;
+    padding: 0;
+    margin: 16px 0;
+  }
+  ol.steps li {
+    counter-increment: step;
+    position: relative;
+    padding: 10px 0 10px 44px;
+    border-bottom: 1px solid var(--border);
+  }
+  ol.steps li:last-child { border-bottom: none; }
+  ol.steps li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    background: var(--accent-dim);
+    width: 30px;
+    height: 22px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+  footer a { color: var(--text-dim); }
+
+  /* Subtle entrance */
+  @media (prefers-reduced-motion: no-preference) {
+    h2, .pipeline, .comparison, .attr-grid, table, .callout {
+      animation: fadeUp 0.5s ease-out backwards;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="preheader">OpenTelemetry · GenAI Semantic Conventions · Cursor Edition</div>
+
+    <h1>Inside the Cursor Agent: GenAI Observability with OpenTelemetry</h1>
+
+    <p class="lede">
+      Your Cursor agent just spent 90 seconds editing one file. Was it the model? A slow MCP call?
+      A retry loop? Without observability, you're guessing. This walkthrough wires OpenTelemetry
+      into Cursor so every model call, tool invocation, and token exchange becomes a span you can inspect.
+    </p>
+
+    <div class="meta">
+      <span><strong>Adapted from:</strong> <a href="https://opentelemetry.io/blog/2026/genai-observability/">opentelemetry.io · GenAI Observability</a></span>
+      <span><strong>IDE:</strong> Cursor</span>
+      <span><strong>Bridge:</strong> cursor-otel-hook</span>
+      <span><strong>Backend:</strong> Aspire Dashboard (local)</span>
+    </div>
+
+    <p>
+      The original OpenTelemetry post uses VS Code Copilot, which emits GenAI telemetry natively from
+      settings. Cursor takes a different path: it doesn't yet ship a built-in OTLP exporter, but it
+      <em>does</em> expose a rich hook system (<code>~/.cursor/hooks.json</code>) that fires on
+      every agent event &mdash; session start, tool use, shell exec, MCP call, file edit, prompt submit.
+      A community Python bridge, <code>cursor-otel-hook</code>, listens on those hooks and emits spans
+      using the official <a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/">GenAI semantic
+      conventions</a>. The rest of the pipeline &mdash; OTLP transport, collector, dashboard &mdash;
+      is identical to the upstream tutorial.
+    </p>
+
+    <div class="callout">
+      <div class="callout-title">What you'll have at the end</div>
+      <p>
+        Every Cursor agent interaction recorded as a trace tree: session &rarr; prompt &rarr; LLM
+        chat &rarr; tool calls &rarr; shell commands &rarr; file edits, with model names, token
+        counts, durations, and (optionally) full prompts and responses, all viewable in a local
+        dashboard at <code>localhost:18888</code>.
+      </p>
+    </div>
+
+    <h2 data-step="The Architecture">How the pieces fit together</h2>
+
+    <p>
+      Four moving parts. Cursor fires hook events, the Python bridge converts them to OTLP, the
+      Aspire Dashboard receives them on port 4318, and you explore traces and metrics in the browser.
+    </p>
+
+    <div class="pipeline">
+      <div class="pipeline-inner">
+        <div class="pipe-node" data-kind="source">
+          <div class="pipe-node-label">Source</div>
+          <div class="pipe-node-title">Cursor IDE</div>
+          <div class="pipe-node-desc">Fires hook events on agent activity</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-node" data-kind="bridge">
+          <div class="pipe-node-label">Bridge</div>
+          <div class="pipe-node-title">cursor-otel-hook</div>
+          <div class="pipe-node-desc">Python process maps events to GenAI spans</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-node" data-kind="export">
+          <div class="pipe-node-label">Transport</div>
+          <div class="pipe-node-title">OTLP / 4318</div>
+          <div class="pipe-node-desc">HTTP/Protobuf or gRPC over localhost</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-node" data-kind="sink">
+          <div class="pipe-node-label">Sink</div>
+          <div class="pipe-node-title">Aspire Dashboard</div>
+          <div class="pipe-node-desc">Traces, metrics, structured logs at :18888</div>
+        </div>
+      </div>
+    </div>
+
+    <h2 data-step="Step 1">Run the observability backend</h2>
+
+    <p>
+      The Aspire Dashboard is a free Docker container that accepts OTLP and ships with a trace
+      viewer, metrics explorer, and a GenAI visualizer that renders conversations as chat bubbles
+      instead of raw JSON. No cloud account, no auth setup, ideal for local development.
+    </p>
+
+    <div class="pre-label">Terminal</div>
+<pre><code>docker run --rm -d --name aspire-dashboard \
+  -p 18888:18888 \
+  -p 4317:18889 \
+  -p 4318:18890 \
+  -e ASPIRE_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true \
+  mcr.microsoft.com/dotnet/aspire-dashboard:latest</code></pre>
+
+    <p>
+      Open <a href="http://localhost:18888">http://localhost:18888</a> &mdash; you should see the
+      empty dashboard. The container listens for OTLP on <code>localhost:4318</code> (HTTP) and
+      <code>localhost:4317</code> (gRPC).
+    </p>
+
+    <div class="callout">
+      <div class="callout-title">Any OTLP backend works</div>
+      <p>
+        Prefer Jaeger, Grafana Tempo, SigNoz, Honeycomb, Langfuse, or your existing observability
+        platform? They all accept OTLP. Just point the bridge's endpoint at the right URL and adjust
+        protocol/headers. Aspire is recommended here because it has the best out-of-the-box GenAI
+        visualizer for local work.
+      </p>
+    </div>
+
+    <h2 data-step="Step 2">Install the Cursor &rarr; OTel bridge</h2>
+
+    <p>
+      The bridge is a small Python package that registers itself as a Cursor hook handler. On every
+      agent event, Cursor invokes it via stdin; the bridge converts the event into one or more OTel
+      spans and emits them via OTLP.
+    </p>
+
+    <div class="pre-label">macOS / Linux</div>
+<pre><code>git clone https://github.com/LangGuard-AI/cursor-otel-hook.git
+cd cursor-otel-hook
+./setup.sh</code></pre>
+
+    <div class="pre-label">Windows (PowerShell)</div>
+<pre><code>git clone https://github.com/LangGuard-AI/cursor-otel-hook.git
+cd cursor-otel-hook
+powershell -ExecutionPolicy Bypass -File setup.ps1</code></pre>
+
+    <p>The setup script does five things:</p>
+
+    <ol class="steps">
+      <li>Creates a Python venv (requires Python 3.8+).</li>
+      <li>Installs the <code>cursor-otel-hook</code> package and its OTel dependencies.</li>
+      <li>Drops a wrapper script at <code>~/.cursor/hooks/otel_hook.sh</code>.</li>
+      <li>Writes a default config at <code>~/.cursor/hooks/otel_config.json</code>.</li>
+      <li>Registers the wrapper in <code>~/.cursor/hooks.json</code> for every relevant event.</li>
+    </ol>
+
+    <h2 data-step="Step 3">Configure telemetry export</h2>
+
+    <p>
+      Edit <code>~/.cursor/hooks/otel_config.json</code> to point at the Aspire Dashboard. For local
+      dev, HTTP/Protobuf on port 4318 is the simplest path &mdash; matches the original tutorial and
+      avoids any TLS setup.
+    </p>
+
+    <div class="pre-label">~/.cursor/hooks/otel_config.json</div>
+<pre><code>{
+  "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4318",
+  "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+  "OTEL_EXPORTER_OTLP_INSECURE": "true",
+  "OTEL_SERVICE_NAME": "cursor-agent",
+  "CURSOR_OTEL_MASK_PROMPTS": "false",
+  "OTEL_EXPORTER_OTLP_TIMEOUT": "30"
+}</code></pre>
+
+    <p>The two settings that matter most for what you'll actually see:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Setting</th>
+          <th>Purpose</th>
+          <th>Recommended</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>OTEL_EXPORTER_OTLP_ENDPOINT</code></td>
+          <td>Where OTLP is sent</td>
+          <td><code>http://localhost:4318</code></td>
+        </tr>
+        <tr>
+          <td><code>CURSOR_OTEL_MASK_PROMPTS</code></td>
+          <td>Hide prompts, tool I/O, file paths, email</td>
+          <td><code>"false"</code> locally · <code>"true"</code> in shared environments</td>
+        </tr>
+        <tr>
+          <td><code>OTEL_EXPORTER_OTLP_PROTOCOL</code></td>
+          <td>Transport encoding</td>
+          <td><code>http/protobuf</code> for Aspire; <code>http/json</code> for Langfuse/LangSmith</td>
+        </tr>
+        <tr>
+          <td><code>OTEL_SERVICE_NAME</code></td>
+          <td>Service label in the dashboard</td>
+          <td><code>cursor-agent</code> (filterable later)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="callout-title">The privacy tradeoff is the same</div>
+      <p>
+        Just like the upstream tutorial's <code>captureContent</code> setting in VS Code Copilot,
+        <code>MASK_PROMPTS</code> controls whether prompts, tool arguments, and tool results are
+        captured. With masking off, you get rich debugging context. With masking on, you keep
+        durations, token counts, and tool names but redact the content. The bridge never sends API
+        keys, raw file contents, or full source code regardless of this setting.
+      </p>
+    </div>
+
+    <h3>Restart Cursor</h3>
+    <p>
+      Quit Cursor fully and reopen it so the new <code>hooks.json</code> registration takes effect.
+      Then ask the agent any question &mdash; "summarise this file", "add a unit test", anything
+      that triggers tool use.
+    </p>
+
+    <h2 data-step="Step 4">Explore the traces</h2>
+
+    <p>
+      Open <a href="http://localhost:18888">http://localhost:18888</a> and click <strong>Traces</strong>.
+      Each Cursor agent turn appears as its own trace. Selecting one reveals the span tree.
+    </p>
+
+    <p>Where the upstream OpenTelemetry tutorial shows VS Code Copilot's hierarchy:</p>
+
+    <div class="comparison">
+      <div class="compare-card" data-tone="upstream">
+        <div class="compare-label">Upstream (VS Code Copilot)</div>
+        <div class="compare-title">invoke_agent &rarr; chat &rarr; execute_tool</div>
+        <ul>
+          <li><code>invoke_agent</code> &mdash; the agent turn</li>
+          <li><code>chat</code> &mdash; LLM call</li>
+          <li><code>execute_tool</code> &mdash; each tool invocation</li>
+        </ul>
+      </div>
+      <div class="compare-card" data-tone="custom">
+        <div class="compare-label">Cursor (via cursor-otel-hook)</div>
+        <div class="compare-title">sessionStart &rarr; beforeSubmitPrompt &rarr; preToolUse</div>
+        <ul>
+          <li><code>sessionStart</code> &mdash; the conversation</li>
+          <li><code>beforeSubmitPrompt</code> &mdash; the prompt turn (root for that exchange)</li>
+          <li><code>preToolUse</code> / <code>beforeShellExecution</code> / <code>beforeMCPExecution</code> &mdash; tool calls, each with a matching <code>postToolUse</code> child</li>
+          <li><code>subagentStart</code> &mdash; when Cursor spawns a subagent</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>
+      The semantics are the same &mdash; agent turn, LLM call, tool call &mdash; just labeled with
+      Cursor's native event names so the bridge stays a transparent pass-through. Span attributes
+      follow the official GenAI conventions, so the dashboard's GenAI visualizer recognizes them.
+    </p>
+
+    <h3>GenAI attributes you'll see on spans</h3>
+
+    <div class="attr-grid">
+      <div class="attr">
+        <div class="attr-name">gen_ai.system</div>
+        <div class="attr-desc">Provider: <code>anthropic</code>, <code>openai</code>, or <code>cursor</code>.</div>
+      </div>
+      <div class="attr">
+        <div class="attr-name">gen_ai.request.model</div>
+        <div class="attr-desc">Model identifier, e.g. <code>claude-sonnet-4-5</code>, <code>gpt-4o</code>.</div>
+      </div>
+      <div class="attr">
+        <div class="attr-name">gen_ai.response.model</div>
+        <div class="attr-desc">Actual model that served the response.</div>
+      </div>
+      <div class="attr">
+        <div class="attr-name">gen_ai.operation.name</div>
+        <div class="attr-desc">Operation type: <code>chat</code>, <code>tool</code>, <code>chain</code>, <code>session</code>.</div>
+      </div>
+      <div class="attr">
+        <div class="attr-name">gen_ai.tool.name</div>
+        <div class="attr-desc">Tool invoked: <code>Read</code>, <code>edit_file</code>, <code>bash</code>, or <code>{server}.{tool}</code> for MCP.</div>
+      </div>
+      <div class="attr">
+        <div class="attr-name">gen_ai.tool.arguments</div>
+        <div class="attr-desc">Tool input as JSON (subject to masking).</div>
+      </div>
+      <div class="attr">
+        <div class="attr-name">gen_ai.prompt.0.content</div>
+        <div class="attr-desc">User prompt text (subject to masking).</div>
+      </div>
+      <div class="attr">
+        <div class="attr-name">langsmith.metadata.duration_ms</div>
+        <div class="attr-desc">Event duration &mdash; the number you'll stare at when an agent feels slow.</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">A caveat worth knowing</div>
+      <p>
+        The bridge does not currently emit <code>gen_ai.usage.input_tokens</code> /
+        <code>output_tokens</code>, because Cursor's hook payload doesn't expose them. You get
+        latency, model, tool, and content visibility &mdash; but for token-level cost analysis
+        you'll need to instrument your own LLM calls (next section) or wait for upstream to surface
+        token counts in hook events. Track <a href="https://github.com/LangGuard-AI/cursor-otel-hook/issues">the issues page</a> if this matters to you.
+      </p>
+    </div>
+
+    <h2 data-step="Step 5">Use the GenAI visualizer</h2>
+
+    <p>
+      Raw span attributes are useful but noisy. The Aspire Dashboard ships with a
+      <a href="https://aspire.dev/dashboard/explore/#genai-telemetry-visualization">GenAI telemetry
+      visualizer</a> that recognizes the <code>gen_ai.*</code> conventions and renders the
+      conversation as chat bubbles: system prompts, user messages, assistant responses, and tool
+      calls with their arguments and results, in order.
+    </p>
+
+    <p>
+      For each trace, click the GenAI tab. Where you would otherwise be scrolling JSON, you'll see
+      something that looks like a chat transcript with timing, model, and tool data layered on top.
+      This is the payoff of using the GenAI semantic conventions instead of bespoke attribute names.
+    </p>
+
+    <h2 data-step="Step 6">Beyond the IDE: your own GenAI apps</h2>
+
+    <p>
+      Monitoring Cursor is one use of the GenAI conventions. The same conventions apply to any LLM
+      call in your own code &mdash; including the work you do in Cursor's chat. If you instrument
+      your Python or Node app with the OpenTelemetry SDK and the OpenAI/Anthropic instrumentation
+      libraries, your application's LLM calls produce the same span shape and show up in the same
+      dashboard, alongside Cursor's. You get end-to-end traces from the developer's prompt down
+      through the app code's model calls.
+    </p>
+
+    <p>Some entry points if you go down that path:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Language</th>
+          <th>Package</th>
+          <th>What it instruments</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Python</td>
+          <td><code>opentelemetry-instrumentation-openai-v2</code></td>
+          <td>OpenAI SDK calls with GenAI semantic conventions</td>
+        </tr>
+        <tr>
+          <td>Python</td>
+          <td><code>opentelemetry-instrumentation-anthropic</code></td>
+          <td>Anthropic SDK calls (community)</td>
+        </tr>
+        <tr>
+          <td>Node / TS</td>
+          <td><code>@traceloop/instrumentation-openai</code></td>
+          <td>OpenAI SDK in JS, OTel-compatible</td>
+        </tr>
+        <tr>
+          <td>Any</td>
+          <td>OpenLLMetry / OpenInference</td>
+          <td>Auto-instrumentation across multiple providers</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 data-step="Troubleshooting">When traces don't show up</h2>
+
+    <ol class="steps">
+      <li>Check the bridge log: <code>tail -f ~/.cursor/hooks/cursor_otel_hook.log</code>. Most issues surface here first.</li>
+      <li>Confirm hooks are registered: <code>cat ~/.cursor/hooks.json</code> should list <code>otel_hook.sh</code> against the events you care about.</li>
+      <li>Test the wrapper manually: <code>echo '{"hook_event_name":"test"}' | ~/.cursor/hooks/otel_hook.sh</code>.</li>
+      <li>Verify the dashboard is reachable: <code>curl -v http://localhost:4318/v1/traces</code> should connect, even if it 405s on GET.</li>
+      <li>Make sure you fully quit and reopened Cursor after running <code>setup.sh</code>.</li>
+      <li>If still nothing, enable debug mode by editing <code>~/.cursor/hooks/otel_hook.sh</code> and adding <code>--debug</code> to the <code>cursor-otel-hook</code> invocation.</li>
+    </ol>
+
+    <h2 data-step="What changed from upstream">Diff against the original tutorial</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Concern</th>
+          <th>VS Code Copilot (upstream)</th>
+          <th>Cursor (this guide)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Enabling export</td>
+          <td>Toggle <code>github.copilot.chat.otel.enabled</code> in Settings</td>
+          <td>Install <code>cursor-otel-hook</code>, edit <code>otel_config.json</code></td>
+        </tr>
+        <tr>
+          <td>Content capture</td>
+          <td><code>otel.captureContent: true</code></td>
+          <td><code>CURSOR_OTEL_MASK_PROMPTS: "false"</code></td>
+        </tr>
+        <tr>
+          <td>Span hierarchy</td>
+          <td><code>invoke_agent &rarr; chat &rarr; execute_tool</code></td>
+          <td><code>sessionStart &rarr; beforeSubmitPrompt &rarr; preToolUse / postToolUse</code></td>
+        </tr>
+        <tr>
+          <td>Token usage metrics</td>
+          <td>Native: <code>gen_ai.client.token.usage</code></td>
+          <td>Not exposed by Cursor hooks &mdash; instrument your own LLM calls</td>
+        </tr>
+        <tr>
+          <td>OTLP backend</td>
+          <td>Aspire Dashboard</td>
+          <td>Aspire Dashboard (unchanged)</td>
+        </tr>
+        <tr>
+          <td>Semantic conventions</td>
+          <td>OpenTelemetry GenAI SemConv</td>
+          <td>OpenTelemetry GenAI SemConv (same)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 data-step="Next">Where to go from here</h2>
+
+    <p>
+      The Cursor bridge captures the IDE side. For full coverage of your AI workflows, the natural
+      next steps are: (a) instrument your own application code with the OpenTelemetry GenAI
+      conventions so your app's LLM calls join the same trace view; (b) point the bridge at a
+      durable backend like Tempo or SigNoz so you keep history across sessions; (c) wire token
+      counts and cost into custom metrics if you're running this in a team setting.
+    </p>
+
+    <p>
+      The GenAI semantic conventions are under active development. If something you need is missing
+      &mdash; like first-class token usage from Cursor &mdash; the <a href="https://github.com/open-telemetry/semantic-conventions/issues">semantic-conventions
+      repo</a> and the <a href="https://github.com/LangGuard-AI/cursor-otel-hook/issues">cursor-otel-hook
+      issues page</a> are the right places to push.
+    </p>
+
+    <footer>
+      Adapted from <a href="https://opentelemetry.io/blog/2026/genai-observability/">"Inside the LLM
+      Call: GenAI Observability with OpenTelemetry"</a> by James Newton-King (Microsoft), May 2026.
+      Cursor-specific integration uses the open-source <a href="https://github.com/LangGuard-AI/cursor-otel-hook">cursor-otel-hook</a> bridge (MIT-licensed).
+    </footer>
+
+  </div>
+</body>
+</html>
