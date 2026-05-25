@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+infographic_agent/.env
+infographic_agent/.adk/
+execution_log.txt
+generated_infographics/
+infographic_output.png

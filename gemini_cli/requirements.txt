@@ -1,0 +1,7 @@
+google-adk
+google-genai
+requests
+beautifulsoup4
+pillow
+python-dotenv
+streamlit

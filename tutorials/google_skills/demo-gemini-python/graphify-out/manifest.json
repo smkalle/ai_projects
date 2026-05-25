@@ -1,0 +1,70 @@
+{
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/main.py": {
+    "mtime": 1777781286.6978402,
+    "hash": "dccc9cefc23d7e1159b01e94c58a2055"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/demos/__init__.py": {
+    "mtime": 1777773199.0465174,
+    "hash": "0aa57dfa54acef509bee2cd6645d28fe"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/demos/chat.py": {
+    "mtime": 1777773199.0465174,
+    "hash": "09dbedfca380181db616ebffb91ba6fe"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/demos/code_execution.py": {
+    "mtime": 1777773199.0465174,
+    "hash": "44666389cfac2c5db4d692a43ebe3a4f"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/demos/embeddings.py": {
+    "mtime": 1777773199.0465174,
+    "hash": "928400ad8b791364ba833d4f266099e0"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/demos/function_calling.py": {
+    "mtime": 1777773199.0465174,
+    "hash": "ec8fe3d26f5f4271a5ccc2cb1ba7b788"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/demos/safety.py": {
+    "mtime": 1777773199.0505173,
+    "hash": "be64ef3e4b034747e38910a5e5d10a63"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/demos/search_grounding.py": {
+    "mtime": 1777773199.0505173,
+    "hash": "7da61c1a2ebf0d1fb27106f9e621269b"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/demos/streaming.py": {
+    "mtime": 1777773199.0505173,
+    "hash": "0bcbd6c07cec6180861c8bcf0014a8d2"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/demos/structured_output.py": {
+    "mtime": 1777773199.0505173,
+    "hash": "39516a2a6192e1c092068deb0f456c25"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/demos/text_generation.py": {
+    "mtime": 1777773199.0505173,
+    "hash": "178eba3cde4eb1b56aeca922173a19e4"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/demos/thinking.py": {
+    "mtime": 1777773199.0505173,
+    "hash": "6eeb85c3f2b9a438eb37c1423a11b4ab"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/demos/insurance_claims.py": {
+    "mtime": 1777783318.0806873,
+    "hash": "5afa5b7554686d67ea35d3e5b805d38b"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/tests/__init__.py": {
+    "mtime": 1777773199.0505173,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/tests/test_demos.py": {
+    "mtime": 1777786072.8601937,
+    "hash": "c225decf70139c6259f23e00f558fb96"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/AGENTS.md": {
+    "mtime": 1777916708.8819723,
+    "hash": "8ee39dcfe68a23b3797b02648930d699"
+  },
+  "/home/userland/workspace/ai_projects/tutorials/google_skills/demo-gemini-python/insurance-flow-spec.md": {
+    "mtime": 1777917246.4659722,
+    "hash": "3bc5ccdc4d4d02fb41f0700ad771ccce"
+  }
+}

@@ -1,0 +1,244 @@
+{
+  "communities": {
+    "0": [
+      "tests_test_demos_make_client",
+      "tests_test_demos_make_response",
+      "tests_test_demos_testcodeexecution",
+      "tests_test_demos_testcodeexecution_test_code_execution_tool_passed",
+      "tests_test_demos_testcodeexecution_test_falls_back_to_text",
+      "tests_test_demos_testcodeexecution_test_prints_code_and_result",
+      "tests_test_demos_testsafety",
+      "tests_test_demos_testsafety_test_prints_safety_ratings",
+      "tests_test_demos_testsafety_test_prints_text_response",
+      "tests_test_demos_testsafety_test_reports_blocked_response",
+      "tests_test_demos_testsafety_test_safety_settings_sent",
+      "tests_test_demos_testsearchgrounding",
+      "tests_test_demos_testsearchgrounding_test_calls_generate_with_search_tool",
+      "tests_test_demos_testsearchgrounding_test_prints_grounding_metadata",
+      "tests_test_demos_testsearchgrounding_test_prints_response_text",
+      "tests_test_demos_teststructuredoutput",
+      "tests_test_demos_teststructuredoutput_test_config_passes_json_schema",
+      "tests_test_demos_teststructuredoutput_test_falls_back_to_text_when_no_parsed",
+      "tests_test_demos_teststructuredoutput_test_parsed_recipes_printed",
+      "tests_test_demos_testthinking",
+      "tests_test_demos_testthinking_test_falls_back_to_text_when_no_candidates",
+      "tests_test_demos_testthinking_test_splits_thought_from_answer",
+      "tests_test_demos_testthinking_test_thinking_config_passed"
+    ],
+    "1": [
+      "basemodel",
+      "demos_insurance_claims_claimclassification",
+      "demos_insurance_claims_claimnarrative",
+      "demos_insurance_claims_coveragedecision",
+      "demos_insurance_claims_documentchecklist",
+      "demos_insurance_claims_fraudsignals",
+      "demos_insurance_claims_parse_response",
+      "demos_insurance_claims_py",
+      "demos_insurance_claims_rationale_1",
+      "demos_insurance_claims_rationale_103",
+      "demos_insurance_claims_rationale_112",
+      "demos_insurance_claims_rationale_78",
+      "demos_insurance_claims_routing_decision",
+      "demos_insurance_claims_run",
+      "demos_insurance_claims_validate_fields",
+      "demos_structured_output_py",
+      "demos_structured_output_rationale_1",
+      "demos_structured_output_recipe",
+      "demos_structured_output_run"
+    ],
+    "2": [
+      "tests_test_demos_build_stubs",
+      "tests_test_demos_mock_genai_modules",
+      "tests_test_demos_py",
+      "tests_test_demos_rationale_1",
+      "tests_test_demos_rationale_53",
+      "tests_test_demos_testchat",
+      "tests_test_demos_testchat_test_custom_first_prompt",
+      "tests_test_demos_testchat_test_sends_two_turns",
+      "tests_test_demos_testgetclient",
+      "tests_test_demos_testgetclient_test_falls_back_to_default_client_when_no_key",
+      "tests_test_demos_testgetclient_test_uses_gemini_api_key_when_set",
+      "tests_test_demos_teststreaming",
+      "tests_test_demos_teststreaming_test_consumes_stream",
+      "tests_test_demos_teststreaming_test_custom_prompt_forwarded",
+      "tests_test_demos_testtextgeneration",
+      "tests_test_demos_testtextgeneration_test_custom_prompt_and_model",
+      "tests_test_demos_testtextgeneration_test_uses_default_prompt"
+    ],
+    "3": [
+      "demos_embeddings_cosine_similarity",
+      "demos_embeddings_py",
+      "demos_embeddings_rationale_1",
+      "demos_embeddings_rationale_17",
+      "demos_embeddings_run",
+      "tests_test_demos_testembeddings",
+      "tests_test_demos_testembeddings_make_embed_response",
+      "tests_test_demos_testembeddings_test_cosine_similarity_computed",
+      "tests_test_demos_testembeddings_test_cosine_similarity_helper",
+      "tests_test_demos_testembeddings_test_custom_prompt_prepended",
+      "tests_test_demos_testembeddings_test_embed_called_with_correct_args"
+    ],
+    "4": [
+      "demos_function_calling_get_current_weather",
+      "demos_function_calling_py",
+      "demos_function_calling_rationale_1",
+      "demos_function_calling_rationale_15",
+      "demos_function_calling_run",
+      "tests_test_demos_testfunctioncalling",
+      "tests_test_demos_testfunctioncalling_test_executes_tool_calls",
+      "tests_test_demos_testfunctioncalling_test_prints_text_when_no_tool_calls",
+      "tests_test_demos_testfunctioncalling_test_weather_tool_boston",
+      "tests_test_demos_testfunctioncalling_test_weather_tool_tokyo",
+      "tests_test_demos_testfunctioncalling_test_weather_tool_unknown"
+    ],
+    "5": [
+      "tests_test_demos_rationale_606",
+      "tests_test_demos_rationale_612",
+      "tests_test_demos_testinsuranceclaims",
+      "tests_test_demos_testinsuranceclaims_claim_resp",
+      "tests_test_demos_testinsuranceclaims_full_resp",
+      "tests_test_demos_testinsuranceclaims_test_config_uses_response_schema_and_json_mime",
+      "tests_test_demos_testinsuranceclaims_test_extraction_output_printed",
+      "tests_test_demos_testinsuranceclaims_test_final_packet_printed",
+      "tests_test_demos_testinsuranceclaims_test_routing_siu_flag",
+      "tests_test_demos_testinsuranceclaims_test_validation_detects_missing_fields"
+    ],
+    "6": [
+      "demo_gemini_python_main_get_client",
+      "demo_gemini_python_main_import_demo",
+      "demo_gemini_python_main_main",
+      "demo_gemini_python_main_rationale_1",
+      "demo_gemini_python_main_rationale_79",
+      "demo_gemini_python_main_rationale_95",
+      "demo_gemini_python_main_run_demo",
+      "demo_gemini_python_main_separator",
+      "main_py"
+    ],
+    "7": [
+      "tests_test_demos_testcli",
+      "tests_test_demos_testcli_test_all_command_returns_1_on_error",
+      "tests_test_demos_testcli_test_all_command_runs_every_demo",
+      "tests_test_demos_testcli_test_model_flag_forwarded",
+      "tests_test_demos_testcli_test_prompt_flag_forwarded",
+      "tests_test_demos_testcli_test_routes_to_text_demo",
+      "tests_test_demos_testcli_test_unknown_command_exits"
+    ],
+    "8": [
+      "demos_chat_py",
+      "demos_chat_rationale_1",
+      "demos_chat_run"
+    ],
+    "9": [
+      "demos_code_execution_py",
+      "demos_code_execution_rationale_1",
+      "demos_code_execution_run"
+    ],
+    "10": [
+      "demos_safety_py",
+      "demos_safety_rationale_1",
+      "demos_safety_run"
+    ],
+    "11": [
+      "demos_search_grounding_py",
+      "demos_search_grounding_rationale_1",
+      "demos_search_grounding_run"
+    ],
+    "12": [
+      "demos_streaming_py",
+      "demos_streaming_rationale_1",
+      "demos_streaming_run"
+    ],
+    "13": [
+      "demos_text_generation_py",
+      "demos_text_generation_rationale_1",
+      "demos_text_generation_run"
+    ],
+    "14": [
+      "demos_thinking_py",
+      "demos_thinking_rationale_1",
+      "demos_thinking_run"
+    ],
+    "15": [
+      "demos_init_py"
+    ],
+    "16": [
+      "tests_init_py"
+    ]
+  },
+  "cohesion": {
+    "0": 0.19,
+    "1": 0.15,
+    "2": 0.12,
+    "3": 0.25,
+    "4": 0.24,
+    "5": 0.33,
+    "6": 0.33,
+    "7": 0.29,
+    "8": 0.67,
+    "9": 0.67,
+    "10": 0.67,
+    "11": 0.67,
+    "12": 0.67,
+    "13": 0.67,
+    "14": 0.67,
+    "15": 1.0,
+    "16": 1.0
+  },
+  "gods": [
+    {
+      "id": "tests_test_demos_make_response",
+      "label": "_make_response()",
+      "degree": 24
+    },
+    {
+      "id": "tests_test_demos_make_client",
+      "label": "_make_client()",
+      "degree": 22
+    },
+    {
+      "id": "tests_test_demos_testinsuranceclaims",
+      "label": "TestInsuranceClaims",
+      "degree": 8
+    },
+    {
+      "id": "tests_test_demos_testcli",
+      "label": "TestCLI",
+      "degree": 7
+    },
+    {
+      "id": "demos_function_calling_get_current_weather",
+      "label": "get_current_weather()",
+      "degree": 6
+    },
+    {
+      "id": "tests_test_demos_testfunctioncalling",
+      "label": "TestFunctionCalling",
+      "degree": 6
+    },
+    {
+      "id": "tests_test_demos_testembeddings",
+      "label": "TestEmbeddings",
+      "degree": 6
+    },
+    {
+      "id": "tests_test_demos_testsafety",
+      "label": "TestSafety",
+      "degree": 5
+    },
+    {
+      "id": "demo_gemini_python_main_main",
+      "label": "main()",
+      "degree": 4
+    },
+    {
+      "id": "demos_embeddings_cosine_similarity",
+      "label": "cosine_similarity()",
+      "degree": 4
+    }
+  ],
+  "surprises": [],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}

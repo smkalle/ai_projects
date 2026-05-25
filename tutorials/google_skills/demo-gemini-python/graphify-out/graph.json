@@ -1,0 +1,3107 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "main.py",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L1",
+      "id": "main_py",
+      "community": 6,
+      "norm_label": "main.py"
+    },
+    {
+      "label": "_separator()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L72",
+      "id": "demo_gemini_python_main_separator",
+      "community": 6,
+      "norm_label": "_separator()"
+    },
+    {
+      "label": "get_client()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L78",
+      "id": "demo_gemini_python_main_get_client",
+      "community": 6,
+      "norm_label": "get_client()"
+    },
+    {
+      "label": "_import_demo()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L94",
+      "id": "demo_gemini_python_main_import_demo",
+      "community": 6,
+      "norm_label": "_import_demo()"
+    },
+    {
+      "label": "run_demo()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L101",
+      "id": "demo_gemini_python_main_run_demo",
+      "community": 6,
+      "norm_label": "run_demo()"
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "main.py",
+      "source_location": "L106",
+      "id": "demo_gemini_python_main_main",
+      "community": 6,
+      "norm_label": "main()"
+    },
+    {
+      "label": "Gemini API demo CLI \u2014 exercises 10 capabilities from the tutorial.  Usage:     p",
+      "file_type": "rationale",
+      "source_file": "main.py",
+      "source_location": "L1",
+      "id": "demo_gemini_python_main_rationale_1",
+      "community": 6,
+      "norm_label": "gemini api demo cli \u2014 exercises 10 capabilities from the tutorial.  usage:     p"
+    },
+    {
+      "label": "Return a google.genai.Client.      Auth priority:       1. GEMINI_API_KEY  \u2014 set",
+      "file_type": "rationale",
+      "source_file": "main.py",
+      "source_location": "L79",
+      "id": "demo_gemini_python_main_rationale_79",
+      "community": 6,
+      "norm_label": "return a google.genai.client.      auth priority:       1. gemini_api_key  \u2014 set"
+    },
+    {
+      "label": "Import a demo module by short name.",
+      "file_type": "rationale",
+      "source_file": "main.py",
+      "source_location": "L95",
+      "id": "demo_gemini_python_main_rationale_95",
+      "community": 6,
+      "norm_label": "import a demo module by short name."
+    },
+    {
+      "label": "__init__.py",
+      "file_type": "code",
+      "source_file": "demos/__init__.py",
+      "source_location": "L1",
+      "id": "demos_init_py",
+      "community": 15,
+      "norm_label": "__init__.py"
+    },
+    {
+      "label": "chat.py",
+      "file_type": "code",
+      "source_file": "demos/chat.py",
+      "source_location": "L1",
+      "id": "demos_chat_py",
+      "community": 8,
+      "norm_label": "chat.py"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "demos/chat.py",
+      "source_location": "L9",
+      "id": "demos_chat_run",
+      "community": 8,
+      "norm_label": "run()"
+    },
+    {
+      "label": "Section 2 \u2014 Chat (Multi-turn Conversations) Maintain conversation history across",
+      "file_type": "rationale",
+      "source_file": "demos/chat.py",
+      "source_location": "L1",
+      "id": "demos_chat_rationale_1",
+      "community": 8,
+      "norm_label": "section 2 \u2014 chat (multi-turn conversations) maintain conversation history across"
+    },
+    {
+      "label": "code_execution.py",
+      "file_type": "code",
+      "source_file": "demos/code_execution.py",
+      "source_location": "L1",
+      "id": "demos_code_execution_py",
+      "community": 9,
+      "norm_label": "code_execution.py"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "demos/code_execution.py",
+      "source_location": "L10",
+      "id": "demos_code_execution_run",
+      "community": 9,
+      "norm_label": "run()"
+    },
+    {
+      "label": "Section 8 \u2014 Code Execution Let the model write and run Python code to compute a",
+      "file_type": "rationale",
+      "source_file": "demos/code_execution.py",
+      "source_location": "L1",
+      "id": "demos_code_execution_rationale_1",
+      "community": 9,
+      "norm_label": "section 8 \u2014 code execution let the model write and run python code to compute a"
+    },
+    {
+      "label": "embeddings.py",
+      "file_type": "code",
+      "source_file": "demos/embeddings.py",
+      "source_location": "L1",
+      "id": "demos_embeddings_py",
+      "community": 3,
+      "norm_label": "embeddings.py"
+    },
+    {
+      "label": "cosine_similarity()",
+      "file_type": "code",
+      "source_file": "demos/embeddings.py",
+      "source_location": "L16",
+      "id": "demos_embeddings_cosine_similarity",
+      "community": 3,
+      "norm_label": "cosine_similarity()"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "demos/embeddings.py",
+      "source_location": "L24",
+      "id": "demos_embeddings_run",
+      "community": 3,
+      "norm_label": "run()"
+    },
+    {
+      "label": "Section 9 \u2014 Text Embeddings Generate vector embeddings for semantic search and s",
+      "file_type": "rationale",
+      "source_file": "demos/embeddings.py",
+      "source_location": "L1",
+      "id": "demos_embeddings_rationale_1",
+      "community": 3,
+      "norm_label": "section 9 \u2014 text embeddings generate vector embeddings for semantic search and s"
+    },
+    {
+      "label": "Compute cosine similarity between two vectors.",
+      "file_type": "rationale",
+      "source_file": "demos/embeddings.py",
+      "source_location": "L17",
+      "id": "demos_embeddings_rationale_17",
+      "community": 3,
+      "norm_label": "compute cosine similarity between two vectors."
+    },
+    {
+      "label": "function_calling.py",
+      "file_type": "code",
+      "source_file": "demos/function_calling.py",
+      "source_location": "L1",
+      "id": "demos_function_calling_py",
+      "community": 4,
+      "norm_label": "function_calling.py"
+    },
+    {
+      "label": "get_current_weather()",
+      "file_type": "code",
+      "source_file": "demos/function_calling.py",
+      "source_location": "L14",
+      "id": "demos_function_calling_get_current_weather",
+      "community": 4,
+      "norm_label": "get_current_weather()"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "demos/function_calling.py",
+      "source_location": "L28",
+      "id": "demos_function_calling_run",
+      "community": 4,
+      "norm_label": "run()"
+    },
+    {
+      "label": "Section 6 \u2014 Function Calling Let the model decide when to invoke a Python functi",
+      "file_type": "rationale",
+      "source_file": "demos/function_calling.py",
+      "source_location": "L1",
+      "id": "demos_function_calling_rationale_1",
+      "community": 4,
+      "norm_label": "section 6 \u2014 function calling let the model decide when to invoke a python functi"
+    },
+    {
+      "label": "Return the current weather for a city (mock data).",
+      "file_type": "rationale",
+      "source_file": "demos/function_calling.py",
+      "source_location": "L15",
+      "id": "demos_function_calling_rationale_15",
+      "community": 4,
+      "norm_label": "return the current weather for a city (mock data)."
+    },
+    {
+      "label": "safety.py",
+      "file_type": "code",
+      "source_file": "demos/safety.py",
+      "source_location": "L1",
+      "id": "demos_safety_py",
+      "community": 10,
+      "norm_label": "safety.py"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "demos/safety.py",
+      "source_location": "L10",
+      "id": "demos_safety_run",
+      "community": 10,
+      "norm_label": "run()"
+    },
+    {
+      "label": "Section 18 \u2014 Safety Settings Adjust harm-category thresholds and inspect per-cat",
+      "file_type": "rationale",
+      "source_file": "demos/safety.py",
+      "source_location": "L1",
+      "id": "demos_safety_rationale_1",
+      "community": 10,
+      "norm_label": "section 18 \u2014 safety settings adjust harm-category thresholds and inspect per-cat"
+    },
+    {
+      "label": "search_grounding.py",
+      "file_type": "code",
+      "source_file": "demos/search_grounding.py",
+      "source_location": "L1",
+      "id": "demos_search_grounding_py",
+      "community": 11,
+      "norm_label": "search_grounding.py"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "demos/search_grounding.py",
+      "source_location": "L10",
+      "id": "demos_search_grounding_run",
+      "community": 11,
+      "norm_label": "run()"
+    },
+    {
+      "label": "Section 7 \u2014 Search Grounding Ground model responses in live Google Search result",
+      "file_type": "rationale",
+      "source_file": "demos/search_grounding.py",
+      "source_location": "L1",
+      "id": "demos_search_grounding_rationale_1",
+      "community": 11,
+      "norm_label": "section 7 \u2014 search grounding ground model responses in live google search result"
+    },
+    {
+      "label": "streaming.py",
+      "file_type": "code",
+      "source_file": "demos/streaming.py",
+      "source_location": "L1",
+      "id": "demos_streaming_py",
+      "community": 12,
+      "norm_label": "streaming.py"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "demos/streaming.py",
+      "source_location": "L10",
+      "id": "demos_streaming_run",
+      "community": 12,
+      "norm_label": "run()"
+    },
+    {
+      "label": "Section 3 \u2014 Streaming Get responses streamed token-by-token for lower perceived",
+      "file_type": "rationale",
+      "source_file": "demos/streaming.py",
+      "source_location": "L1",
+      "id": "demos_streaming_rationale_1",
+      "community": 12,
+      "norm_label": "section 3 \u2014 streaming get responses streamed token-by-token for lower perceived"
+    },
+    {
+      "label": "structured_output.py",
+      "file_type": "code",
+      "source_file": "demos/structured_output.py",
+      "source_location": "L1",
+      "id": "demos_structured_output_py",
+      "community": 1,
+      "norm_label": "structured_output.py"
+    },
+    {
+      "label": "Recipe",
+      "file_type": "code",
+      "source_file": "demos/structured_output.py",
+      "source_location": "L12",
+      "id": "demos_structured_output_recipe",
+      "community": 1,
+      "norm_label": "recipe"
+    },
+    {
+      "label": "BaseModel",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "id": "basemodel",
+      "community": 1,
+      "norm_label": "basemodel"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "demos/structured_output.py",
+      "source_location": "L17",
+      "id": "demos_structured_output_run",
+      "community": 1,
+      "norm_label": "run()"
+    },
+    {
+      "label": "Section 5 \u2014 Structured Output (JSON) Generate responses that conform to a Pydant",
+      "file_type": "rationale",
+      "source_file": "demos/structured_output.py",
+      "source_location": "L1",
+      "id": "demos_structured_output_rationale_1",
+      "community": 1,
+      "norm_label": "section 5 \u2014 structured output (json) generate responses that conform to a pydant"
+    },
+    {
+      "label": "text_generation.py",
+      "file_type": "code",
+      "source_file": "demos/text_generation.py",
+      "source_location": "L1",
+      "id": "demos_text_generation_py",
+      "community": 13,
+      "norm_label": "text_generation.py"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "demos/text_generation.py",
+      "source_location": "L10",
+      "id": "demos_text_generation_run",
+      "community": 13,
+      "norm_label": "run()"
+    },
+    {
+      "label": "Section 1 \u2014 Text Generation Send a text prompt and receive a single text respons",
+      "file_type": "rationale",
+      "source_file": "demos/text_generation.py",
+      "source_location": "L1",
+      "id": "demos_text_generation_rationale_1",
+      "community": 13,
+      "norm_label": "section 1 \u2014 text generation send a text prompt and receive a single text respons"
+    },
+    {
+      "label": "thinking.py",
+      "file_type": "code",
+      "source_file": "demos/thinking.py",
+      "source_location": "L1",
+      "id": "demos_thinking_py",
+      "community": 14,
+      "norm_label": "thinking.py"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "demos/thinking.py",
+      "source_location": "L15",
+      "id": "demos_thinking_run",
+      "community": 14,
+      "norm_label": "run()"
+    },
+    {
+      "label": "Section 17 \u2014 Thinking / Reasoning Control how deeply the model reasons before re",
+      "file_type": "rationale",
+      "source_file": "demos/thinking.py",
+      "source_location": "L1",
+      "id": "demos_thinking_rationale_1",
+      "community": 14,
+      "norm_label": "section 17 \u2014 thinking / reasoning control how deeply the model reasons before re"
+    },
+    {
+      "label": "insurance_claims.py",
+      "file_type": "code",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L1",
+      "id": "demos_insurance_claims_py",
+      "community": 1,
+      "norm_label": "insurance_claims.py"
+    },
+    {
+      "label": "ClaimNarrative",
+      "file_type": "code",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L38",
+      "id": "demos_insurance_claims_claimnarrative",
+      "community": 1,
+      "norm_label": "claimnarrative"
+    },
+    {
+      "label": "ClaimClassification",
+      "file_type": "code",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L47",
+      "id": "demos_insurance_claims_claimclassification",
+      "community": 1,
+      "norm_label": "claimclassification"
+    },
+    {
+      "label": "CoverageDecision",
+      "file_type": "code",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L53",
+      "id": "demos_insurance_claims_coveragedecision",
+      "community": 1,
+      "norm_label": "coveragedecision"
+    },
+    {
+      "label": "FraudSignals",
+      "file_type": "code",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L60",
+      "id": "demos_insurance_claims_fraudsignals",
+      "community": 1,
+      "norm_label": "fraudsignals"
+    },
+    {
+      "label": "DocumentChecklist",
+      "file_type": "code",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L68",
+      "id": "demos_insurance_claims_documentchecklist",
+      "community": 1,
+      "norm_label": "documentchecklist"
+    },
+    {
+      "label": "_parse_response()",
+      "file_type": "code",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L77",
+      "id": "demos_insurance_claims_parse_response",
+      "community": 1,
+      "norm_label": "_parse_response()"
+    },
+    {
+      "label": "_validate_fields()",
+      "file_type": "code",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L102",
+      "id": "demos_insurance_claims_validate_fields",
+      "community": 1,
+      "norm_label": "_validate_fields()"
+    },
+    {
+      "label": "_routing_decision()",
+      "file_type": "code",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L111",
+      "id": "demos_insurance_claims_routing_decision",
+      "community": 1,
+      "norm_label": "_routing_decision()"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L129",
+      "id": "demos_insurance_claims_run",
+      "community": 1,
+      "norm_label": "run()"
+    },
+    {
+      "label": "Section 11 \u2014 Insurance Claims Intake Workflow Structured extraction + determinis",
+      "file_type": "rationale",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L1",
+      "id": "demos_insurance_claims_rationale_1",
+      "community": 1,
+      "norm_label": "section 11 \u2014 insurance claims intake workflow structured extraction + determinis"
+    },
+    {
+      "label": "Normalise a generate_content response to a plain dict.      response.parsed may",
+      "file_type": "rationale",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L78",
+      "id": "demos_insurance_claims_rationale_78",
+      "community": 1,
+      "norm_label": "normalise a generate_content response to a plain dict.      response.parsed may"
+    },
+    {
+      "label": "Check that minimum intake fields are present.",
+      "file_type": "rationale",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L103",
+      "id": "demos_insurance_claims_rationale_103",
+      "community": 1,
+      "norm_label": "check that minimum intake fields are present."
+    },
+    {
+      "label": "Return (decision, team, priority_score) without calling the LLM.",
+      "file_type": "rationale",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L112",
+      "id": "demos_insurance_claims_rationale_112",
+      "community": 1,
+      "norm_label": "return (decision, team, priority_score) without calling the llm."
+    },
+    {
+      "label": "__init__.py",
+      "file_type": "code",
+      "source_file": "tests/__init__.py",
+      "source_location": "L1",
+      "id": "tests_init_py",
+      "community": 16,
+      "norm_label": "__init__.py"
+    },
+    {
+      "label": "test_demos.py",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L1",
+      "id": "tests_test_demos_py",
+      "community": 2,
+      "norm_label": "test_demos.py"
+    },
+    {
+      "label": "_build_stubs()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L26",
+      "id": "tests_test_demos_build_stubs",
+      "community": 2,
+      "norm_label": "_build_stubs()"
+    },
+    {
+      "label": "mock_genai_modules()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L52",
+      "id": "tests_test_demos_mock_genai_modules",
+      "community": 2,
+      "norm_label": "mock_genai_modules()"
+    },
+    {
+      "label": "_make_response()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L76",
+      "id": "tests_test_demos_make_response",
+      "community": 0,
+      "norm_label": "_make_response()"
+    },
+    {
+      "label": "_make_client()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L87",
+      "id": "tests_test_demos_make_client",
+      "community": 0,
+      "norm_label": "_make_client()"
+    },
+    {
+      "label": "TestTextGeneration",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L99",
+      "id": "tests_test_demos_testtextgeneration",
+      "community": 2,
+      "norm_label": "testtextgeneration"
+    },
+    {
+      "label": ".test_uses_default_prompt()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L100",
+      "id": "tests_test_demos_testtextgeneration_test_uses_default_prompt",
+      "community": 2,
+      "norm_label": ".test_uses_default_prompt()"
+    },
+    {
+      "label": ".test_custom_prompt_and_model()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L107",
+      "id": "tests_test_demos_testtextgeneration_test_custom_prompt_and_model",
+      "community": 2,
+      "norm_label": ".test_custom_prompt_and_model()"
+    },
+    {
+      "label": "TestChat",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L120",
+      "id": "tests_test_demos_testchat",
+      "community": 2,
+      "norm_label": "testchat"
+    },
+    {
+      "label": ".test_sends_two_turns()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L121",
+      "id": "tests_test_demos_testchat_test_sends_two_turns",
+      "community": 2,
+      "norm_label": ".test_sends_two_turns()"
+    },
+    {
+      "label": ".test_custom_first_prompt()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L132",
+      "id": "tests_test_demos_testchat_test_custom_first_prompt",
+      "community": 2,
+      "norm_label": ".test_custom_first_prompt()"
+    },
+    {
+      "label": "TestStreaming",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L149",
+      "id": "tests_test_demos_teststreaming",
+      "community": 2,
+      "norm_label": "teststreaming"
+    },
+    {
+      "label": ".test_consumes_stream()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L150",
+      "id": "tests_test_demos_teststreaming_test_consumes_stream",
+      "community": 2,
+      "norm_label": ".test_consumes_stream()"
+    },
+    {
+      "label": ".test_custom_prompt_forwarded()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L163",
+      "id": "tests_test_demos_teststreaming_test_custom_prompt_forwarded",
+      "community": 2,
+      "norm_label": ".test_custom_prompt_forwarded()"
+    },
+    {
+      "label": "TestStructuredOutput",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L178",
+      "id": "tests_test_demos_teststructuredoutput",
+      "community": 0,
+      "norm_label": "teststructuredoutput"
+    },
+    {
+      "label": ".test_parsed_recipes_printed()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L179",
+      "id": "tests_test_demos_teststructuredoutput_test_parsed_recipes_printed",
+      "community": 0,
+      "norm_label": ".test_parsed_recipes_printed()"
+    },
+    {
+      "label": ".test_falls_back_to_text_when_no_parsed()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L193",
+      "id": "tests_test_demos_teststructuredoutput_test_falls_back_to_text_when_no_parsed",
+      "community": 0,
+      "norm_label": ".test_falls_back_to_text_when_no_parsed()"
+    },
+    {
+      "label": ".test_config_passes_json_schema()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L204",
+      "id": "tests_test_demos_teststructuredoutput_test_config_passes_json_schema",
+      "community": 0,
+      "norm_label": ".test_config_passes_json_schema()"
+    },
+    {
+      "label": "TestFunctionCalling",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L222",
+      "id": "tests_test_demos_testfunctioncalling",
+      "community": 4,
+      "norm_label": "testfunctioncalling"
+    },
+    {
+      "label": ".test_executes_tool_calls()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L223",
+      "id": "tests_test_demos_testfunctioncalling_test_executes_tool_calls",
+      "community": 4,
+      "norm_label": ".test_executes_tool_calls()"
+    },
+    {
+      "label": ".test_prints_text_when_no_tool_calls()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L238",
+      "id": "tests_test_demos_testfunctioncalling_test_prints_text_when_no_tool_calls",
+      "community": 4,
+      "norm_label": ".test_prints_text_when_no_tool_calls()"
+    },
+    {
+      "label": ".test_weather_tool_boston()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L248",
+      "id": "tests_test_demos_testfunctioncalling_test_weather_tool_boston",
+      "community": 4,
+      "norm_label": ".test_weather_tool_boston()"
+    },
+    {
+      "label": ".test_weather_tool_tokyo()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L253",
+      "id": "tests_test_demos_testfunctioncalling_test_weather_tool_tokyo",
+      "community": 4,
+      "norm_label": ".test_weather_tool_tokyo()"
+    },
+    {
+      "label": ".test_weather_tool_unknown()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L258",
+      "id": "tests_test_demos_testfunctioncalling_test_weather_tool_unknown",
+      "community": 4,
+      "norm_label": ".test_weather_tool_unknown()"
+    },
+    {
+      "label": "TestCodeExecution",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L268",
+      "id": "tests_test_demos_testcodeexecution",
+      "community": 0,
+      "norm_label": "testcodeexecution"
+    },
+    {
+      "label": ".test_prints_code_and_result()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L269",
+      "id": "tests_test_demos_testcodeexecution_test_prints_code_and_result",
+      "community": 0,
+      "norm_label": ".test_prints_code_and_result()"
+    },
+    {
+      "label": ".test_falls_back_to_text()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L282",
+      "id": "tests_test_demos_testcodeexecution_test_falls_back_to_text",
+      "community": 0,
+      "norm_label": ".test_falls_back_to_text()"
+    },
+    {
+      "label": ".test_code_execution_tool_passed()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L293",
+      "id": "tests_test_demos_testcodeexecution_test_code_execution_tool_passed",
+      "community": 0,
+      "norm_label": ".test_code_execution_tool_passed()"
+    },
+    {
+      "label": "TestEmbeddings",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L311",
+      "id": "tests_test_demos_testembeddings",
+      "community": 3,
+      "norm_label": "testembeddings"
+    },
+    {
+      "label": "._make_embed_response()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L312",
+      "id": "tests_test_demos_testembeddings_make_embed_response",
+      "community": 3,
+      "norm_label": "._make_embed_response()"
+    },
+    {
+      "label": ".test_embed_called_with_correct_args()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L320",
+      "id": "tests_test_demos_testembeddings_test_embed_called_with_correct_args",
+      "community": 3,
+      "norm_label": ".test_embed_called_with_correct_args()"
+    },
+    {
+      "label": ".test_cosine_similarity_computed()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L332",
+      "id": "tests_test_demos_testembeddings_test_cosine_similarity_computed",
+      "community": 3,
+      "norm_label": ".test_cosine_similarity_computed()"
+    },
+    {
+      "label": ".test_cosine_similarity_helper()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L341",
+      "id": "tests_test_demos_testembeddings_test_cosine_similarity_helper",
+      "community": 3,
+      "norm_label": ".test_cosine_similarity_helper()"
+    },
+    {
+      "label": ".test_custom_prompt_prepended()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L350",
+      "id": "tests_test_demos_testembeddings_test_custom_prompt_prepended",
+      "community": 3,
+      "norm_label": ".test_custom_prompt_prepended()"
+    },
+    {
+      "label": "TestThinking",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L365",
+      "id": "tests_test_demos_testthinking",
+      "community": 0,
+      "norm_label": "testthinking"
+    },
+    {
+      "label": ".test_splits_thought_from_answer()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L366",
+      "id": "tests_test_demos_testthinking_test_splits_thought_from_answer",
+      "community": 0,
+      "norm_label": ".test_splits_thought_from_answer()"
+    },
+    {
+      "label": ".test_falls_back_to_text_when_no_candidates()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L391",
+      "id": "tests_test_demos_testthinking_test_falls_back_to_text_when_no_candidates",
+      "community": 0,
+      "norm_label": ".test_falls_back_to_text_when_no_candidates()"
+    },
+    {
+      "label": ".test_thinking_config_passed()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L401",
+      "id": "tests_test_demos_testthinking_test_thinking_config_passed",
+      "community": 0,
+      "norm_label": ".test_thinking_config_passed()"
+    },
+    {
+      "label": "TestSafety",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L417",
+      "id": "tests_test_demos_testsafety",
+      "community": 0,
+      "norm_label": "testsafety"
+    },
+    {
+      "label": ".test_prints_text_response()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L418",
+      "id": "tests_test_demos_testsafety_test_prints_text_response",
+      "community": 0,
+      "norm_label": ".test_prints_text_response()"
+    },
+    {
+      "label": ".test_reports_blocked_response()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L428",
+      "id": "tests_test_demos_testsafety_test_reports_blocked_response",
+      "community": 0,
+      "norm_label": ".test_reports_blocked_response()"
+    },
+    {
+      "label": ".test_safety_settings_sent()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L442",
+      "id": "tests_test_demos_testsafety_test_safety_settings_sent",
+      "community": 0,
+      "norm_label": ".test_safety_settings_sent()"
+    },
+    {
+      "label": ".test_prints_safety_ratings()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L457",
+      "id": "tests_test_demos_testsafety_test_prints_safety_ratings",
+      "community": 0,
+      "norm_label": ".test_prints_safety_ratings()"
+    },
+    {
+      "label": "TestSearchGrounding",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L479",
+      "id": "tests_test_demos_testsearchgrounding",
+      "community": 0,
+      "norm_label": "testsearchgrounding"
+    },
+    {
+      "label": ".test_calls_generate_with_search_tool()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L480",
+      "id": "tests_test_demos_testsearchgrounding_test_calls_generate_with_search_tool",
+      "community": 0,
+      "norm_label": ".test_calls_generate_with_search_tool()"
+    },
+    {
+      "label": ".test_prints_response_text()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L492",
+      "id": "tests_test_demos_testsearchgrounding_test_prints_response_text",
+      "community": 0,
+      "norm_label": ".test_prints_response_text()"
+    },
+    {
+      "label": ".test_prints_grounding_metadata()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L502",
+      "id": "tests_test_demos_testsearchgrounding_test_prints_grounding_metadata",
+      "community": 0,
+      "norm_label": ".test_prints_grounding_metadata()"
+    },
+    {
+      "label": "TestCLI",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L528",
+      "id": "tests_test_demos_testcli",
+      "community": 7,
+      "norm_label": "testcli"
+    },
+    {
+      "label": ".test_routes_to_text_demo()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L529",
+      "id": "tests_test_demos_testcli_test_routes_to_text_demo",
+      "community": 7,
+      "norm_label": ".test_routes_to_text_demo()"
+    },
+    {
+      "label": ".test_unknown_command_exits()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L539",
+      "id": "tests_test_demos_testcli_test_unknown_command_exits",
+      "community": 7,
+      "norm_label": ".test_unknown_command_exits()"
+    },
+    {
+      "label": ".test_all_command_runs_every_demo()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L544",
+      "id": "tests_test_demos_testcli_test_all_command_runs_every_demo",
+      "community": 7,
+      "norm_label": ".test_all_command_runs_every_demo()"
+    },
+    {
+      "label": ".test_all_command_returns_1_on_error()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L553",
+      "id": "tests_test_demos_testcli_test_all_command_returns_1_on_error",
+      "community": 7,
+      "norm_label": ".test_all_command_returns_1_on_error()"
+    },
+    {
+      "label": ".test_model_flag_forwarded()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L561",
+      "id": "tests_test_demos_testcli_test_model_flag_forwarded",
+      "community": 7,
+      "norm_label": ".test_model_flag_forwarded()"
+    },
+    {
+      "label": ".test_prompt_flag_forwarded()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L569",
+      "id": "tests_test_demos_testcli_test_prompt_flag_forwarded",
+      "community": 7,
+      "norm_label": ".test_prompt_flag_forwarded()"
+    },
+    {
+      "label": "TestGetClient",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L582",
+      "id": "tests_test_demos_testgetclient",
+      "community": 2,
+      "norm_label": "testgetclient"
+    },
+    {
+      "label": ".test_uses_gemini_api_key_when_set()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L583",
+      "id": "tests_test_demos_testgetclient_test_uses_gemini_api_key_when_set",
+      "community": 2,
+      "norm_label": ".test_uses_gemini_api_key_when_set()"
+    },
+    {
+      "label": ".test_falls_back_to_default_client_when_no_key()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L591",
+      "id": "tests_test_demos_testgetclient_test_falls_back_to_default_client_when_no_key",
+      "community": 2,
+      "norm_label": ".test_falls_back_to_default_client_when_no_key()"
+    },
+    {
+      "label": "TestInsuranceClaims",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L604",
+      "id": "tests_test_demos_testinsuranceclaims",
+      "community": 5,
+      "norm_label": "testinsuranceclaims"
+    },
+    {
+      "label": "._claim_resp()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L605",
+      "id": "tests_test_demos_testinsuranceclaims_claim_resp",
+      "community": 5,
+      "norm_label": "._claim_resp()"
+    },
+    {
+      "label": "._full_resp()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L611",
+      "id": "tests_test_demos_testinsuranceclaims_full_resp",
+      "community": 5,
+      "norm_label": "._full_resp()"
+    },
+    {
+      "label": ".test_extraction_output_printed()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L625",
+      "id": "tests_test_demos_testinsuranceclaims_test_extraction_output_printed",
+      "community": 5,
+      "norm_label": ".test_extraction_output_printed()"
+    },
+    {
+      "label": ".test_validation_detects_missing_fields()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L640",
+      "id": "tests_test_demos_testinsuranceclaims_test_validation_detects_missing_fields",
+      "community": 5,
+      "norm_label": ".test_validation_detects_missing_fields()"
+    },
+    {
+      "label": ".test_routing_siu_flag()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L656",
+      "id": "tests_test_demos_testinsuranceclaims_test_routing_siu_flag",
+      "community": 5,
+      "norm_label": ".test_routing_siu_flag()"
+    },
+    {
+      "label": ".test_final_packet_printed()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L670",
+      "id": "tests_test_demos_testinsuranceclaims_test_final_packet_printed",
+      "community": 5,
+      "norm_label": ".test_final_packet_printed()"
+    },
+    {
+      "label": ".test_config_uses_response_schema_and_json_mime()",
+      "file_type": "code",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L684",
+      "id": "tests_test_demos_testinsuranceclaims_test_config_uses_response_schema_and_json_mime",
+      "community": 5,
+      "norm_label": ".test_config_uses_response_schema_and_json_mime()"
+    },
+    {
+      "label": "Tests for all Gemini API demo modules.  All google.genai calls are fully mocked",
+      "file_type": "rationale",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L1",
+      "id": "tests_test_demos_rationale_1",
+      "community": 2,
+      "norm_label": "tests for all gemini api demo modules.  all google.genai calls are fully mocked"
+    },
+    {
+      "label": "Inject google / google.genai / google.genai.types stubs for every test.",
+      "file_type": "rationale",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L53",
+      "id": "tests_test_demos_rationale_53",
+      "community": 2,
+      "norm_label": "inject google / google.genai / google.genai.types stubs for every test."
+    },
+    {
+      "label": "Return a mock response whose .parsed is a plain dict.",
+      "file_type": "rationale",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L606",
+      "id": "tests_test_demos_rationale_606",
+      "community": 5,
+      "norm_label": "return a mock response whose .parsed is a plain dict."
+    },
+    {
+      "label": "Five mock responses for the five LLM steps, returned in sequence.",
+      "file_type": "rationale",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L612",
+      "id": "tests_test_demos_rationale_612",
+      "community": 5,
+      "norm_label": "five mock responses for the five llm steps, returned in sequence."
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L72",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "main_py",
+      "target": "demo_gemini_python_main_separator"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L78",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "main_py",
+      "target": "demo_gemini_python_main_get_client"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L94",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "main_py",
+      "target": "demo_gemini_python_main_import_demo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L101",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "main_py",
+      "target": "demo_gemini_python_main_run_demo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L106",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "main_py",
+      "target": "demo_gemini_python_main_main"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demo_gemini_python_main_rationale_1",
+      "target": "main_py"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L130",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demo_gemini_python_main_main",
+      "target": "demo_gemini_python_main_separator"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L125",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demo_gemini_python_main_main",
+      "target": "demo_gemini_python_main_get_client"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L79",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demo_gemini_python_main_rationale_79",
+      "target": "demo_gemini_python_main_get_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L102",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demo_gemini_python_main_run_demo",
+      "target": "demo_gemini_python_main_import_demo"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L95",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demo_gemini_python_main_rationale_95",
+      "target": "demo_gemini_python_main_import_demo"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.py",
+      "source_location": "L132",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demo_gemini_python_main_main",
+      "target": "demo_gemini_python_main_run_demo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/chat.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_chat_py",
+      "target": "demos_chat_run"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/chat.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_chat_rationale_1",
+      "target": "demos_chat_py"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/code_execution.py",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_code_execution_py",
+      "target": "demos_code_execution_run"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/code_execution.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_code_execution_rationale_1",
+      "target": "demos_code_execution_py"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/embeddings.py",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_embeddings_py",
+      "target": "demos_embeddings_cosine_similarity"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/embeddings.py",
+      "source_location": "L24",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_embeddings_py",
+      "target": "demos_embeddings_run"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/embeddings.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_embeddings_rationale_1",
+      "target": "demos_embeddings_py"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/embeddings.py",
+      "source_location": "L49",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_embeddings_run",
+      "target": "demos_embeddings_cosine_similarity"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/embeddings.py",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_embeddings_rationale_17",
+      "target": "demos_embeddings_cosine_similarity"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "tests/test_demos.py",
+      "source_location": "L345",
+      "weight": 1.0,
+      "source": "tests_test_demos_testembeddings_test_cosine_similarity_helper",
+      "target": "demos_embeddings_cosine_similarity"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/function_calling.py",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_function_calling_py",
+      "target": "demos_function_calling_get_current_weather"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/function_calling.py",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_function_calling_py",
+      "target": "demos_function_calling_run"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/function_calling.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_function_calling_rationale_1",
+      "target": "demos_function_calling_py"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/function_calling.py",
+      "source_location": "L44",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_function_calling_run",
+      "target": "demos_function_calling_get_current_weather"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/function_calling.py",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_function_calling_rationale_15",
+      "target": "demos_function_calling_get_current_weather"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "tests/test_demos.py",
+      "source_location": "L250",
+      "weight": 1.0,
+      "source": "tests_test_demos_testfunctioncalling_test_weather_tool_boston",
+      "target": "demos_function_calling_get_current_weather"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "tests/test_demos.py",
+      "source_location": "L255",
+      "weight": 1.0,
+      "source": "tests_test_demos_testfunctioncalling_test_weather_tool_tokyo",
+      "target": "demos_function_calling_get_current_weather"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "tests/test_demos.py",
+      "source_location": "L260",
+      "weight": 1.0,
+      "source": "tests_test_demos_testfunctioncalling_test_weather_tool_unknown",
+      "target": "demos_function_calling_get_current_weather"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/safety.py",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_safety_py",
+      "target": "demos_safety_run"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/safety.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_safety_rationale_1",
+      "target": "demos_safety_py"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/search_grounding.py",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_search_grounding_py",
+      "target": "demos_search_grounding_run"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/search_grounding.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_search_grounding_rationale_1",
+      "target": "demos_search_grounding_py"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/streaming.py",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_streaming_py",
+      "target": "demos_streaming_run"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/streaming.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_streaming_rationale_1",
+      "target": "demos_streaming_py"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/structured_output.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_structured_output_py",
+      "target": "demos_structured_output_recipe"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/structured_output.py",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_structured_output_py",
+      "target": "demos_structured_output_run"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/structured_output.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_structured_output_rationale_1",
+      "target": "demos_structured_output_py"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/structured_output.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_structured_output_recipe",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_claimnarrative",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L47",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_claimclassification",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L53",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_coveragedecision",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L60",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_fraudsignals",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L68",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_documentchecklist",
+      "target": "basemodel"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/text_generation.py",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_text_generation_py",
+      "target": "demos_text_generation_run"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/text_generation.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_text_generation_rationale_1",
+      "target": "demos_text_generation_py"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/thinking.py",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_thinking_py",
+      "target": "demos_thinking_run"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/thinking.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_thinking_rationale_1",
+      "target": "demos_thinking_py"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_py",
+      "target": "demos_insurance_claims_claimnarrative"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L47",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_py",
+      "target": "demos_insurance_claims_claimclassification"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L53",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_py",
+      "target": "demos_insurance_claims_coveragedecision"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L60",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_py",
+      "target": "demos_insurance_claims_fraudsignals"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L68",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_py",
+      "target": "demos_insurance_claims_documentchecklist"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L77",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_py",
+      "target": "demos_insurance_claims_parse_response"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L102",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_py",
+      "target": "demos_insurance_claims_validate_fields"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L111",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_py",
+      "target": "demos_insurance_claims_routing_decision"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L129",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_py",
+      "target": "demos_insurance_claims_run"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_rationale_1",
+      "target": "demos_insurance_claims_py"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L158",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_run",
+      "target": "demos_insurance_claims_parse_response"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L78",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_rationale_78",
+      "target": "demos_insurance_claims_parse_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L192",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_run",
+      "target": "demos_insurance_claims_validate_fields"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L103",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_rationale_103",
+      "target": "demos_insurance_claims_validate_fields"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L250",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_run",
+      "target": "demos_insurance_claims_routing_decision"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "demos/insurance_claims.py",
+      "source_location": "L112",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "demos_insurance_claims_rationale_112",
+      "target": "demos_insurance_claims_routing_decision"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_build_stubs"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L52",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_mock_genai_modules"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L76",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L87",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L99",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_testtextgeneration"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L120",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_testchat"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L149",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_teststreaming"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L178",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_teststructuredoutput"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L222",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_testfunctioncalling"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L268",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_testcodeexecution"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L311",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_testembeddings"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L365",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_testthinking"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L417",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_testsafety"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L479",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_testsearchgrounding"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L528",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_testcli"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L582",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_testgetclient"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L604",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_py",
+      "target": "tests_test_demos_testinsuranceclaims"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_rationale_1",
+      "target": "tests_test_demos_py"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L54",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_mock_genai_modules",
+      "target": "tests_test_demos_build_stubs"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L53",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_rationale_53",
+      "target": "tests_test_demos_mock_genai_modules"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L89",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_make_client",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L124",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testchat_test_sends_two_turns",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L135",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testchat_test_custom_first_prompt",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L151",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststreaming_test_consumes_stream",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L165",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststreaming_test_custom_prompt_forwarded",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L180",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststructuredoutput_test_parsed_recipes_printed",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L194",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststructuredoutput_test_falls_back_to_text_when_no_parsed",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L206",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststructuredoutput_test_config_passes_json_schema",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L224",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testfunctioncalling_test_executes_tool_calls",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L239",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testfunctioncalling_test_prints_text_when_no_tool_calls",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L270",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcodeexecution_test_prints_code_and_result",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L283",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcodeexecution_test_falls_back_to_text",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L295",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcodeexecution_test_code_execution_tool_passed",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L367",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testthinking_test_splits_thought_from_answer",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L392",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testthinking_test_falls_back_to_text_when_no_candidates",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L403",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testthinking_test_thinking_config_passed",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L419",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsafety_test_prints_text_response",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L444",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsafety_test_safety_settings_sent",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L458",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsafety_test_prints_safety_ratings",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L482",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsearchgrounding_test_calls_generate_with_search_tool",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L493",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsearchgrounding_test_prints_response_text",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L503",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsearchgrounding_test_prints_grounding_metadata",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L607",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims_claim_resp",
+      "target": "tests_test_demos_make_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L101",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testtextgeneration_test_uses_default_prompt",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L108",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testtextgeneration_test_custom_prompt_and_model",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L186",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststructuredoutput_test_parsed_recipes_printed",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L196",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststructuredoutput_test_falls_back_to_text_when_no_parsed",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L208",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststructuredoutput_test_config_passes_json_schema",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L230",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testfunctioncalling_test_executes_tool_calls",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L241",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testfunctioncalling_test_prints_text_when_no_tool_calls",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L274",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcodeexecution_test_prints_code_and_result",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L286",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcodeexecution_test_falls_back_to_text",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L298",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcodeexecution_test_code_execution_tool_passed",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L381",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testthinking_test_splits_thought_from_answer",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L394",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testthinking_test_falls_back_to_text_when_no_candidates",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L405",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testthinking_test_thinking_config_passed",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L421",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsafety_test_prints_text_response",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L436",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsafety_test_reports_blocked_response",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L446",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsafety_test_safety_settings_sent",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L467",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsafety_test_prints_safety_ratings",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L484",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsearchgrounding_test_calls_generate_with_search_tool",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L495",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsearchgrounding_test_prints_response_text",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L515",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsearchgrounding_test_prints_grounding_metadata",
+      "target": "tests_test_demos_make_client"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L100",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testtextgeneration",
+      "target": "tests_test_demos_testtextgeneration_test_uses_default_prompt"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L107",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testtextgeneration",
+      "target": "tests_test_demos_testtextgeneration_test_custom_prompt_and_model"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L121",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testchat",
+      "target": "tests_test_demos_testchat_test_sends_two_turns"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L132",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testchat",
+      "target": "tests_test_demos_testchat_test_custom_first_prompt"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L150",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststreaming",
+      "target": "tests_test_demos_teststreaming_test_consumes_stream"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L163",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststreaming",
+      "target": "tests_test_demos_teststreaming_test_custom_prompt_forwarded"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L179",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststructuredoutput",
+      "target": "tests_test_demos_teststructuredoutput_test_parsed_recipes_printed"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L193",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststructuredoutput",
+      "target": "tests_test_demos_teststructuredoutput_test_falls_back_to_text_when_no_parsed"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L204",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_teststructuredoutput",
+      "target": "tests_test_demos_teststructuredoutput_test_config_passes_json_schema"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L223",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testfunctioncalling",
+      "target": "tests_test_demos_testfunctioncalling_test_executes_tool_calls"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L238",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testfunctioncalling",
+      "target": "tests_test_demos_testfunctioncalling_test_prints_text_when_no_tool_calls"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L248",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testfunctioncalling",
+      "target": "tests_test_demos_testfunctioncalling_test_weather_tool_boston"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L253",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testfunctioncalling",
+      "target": "tests_test_demos_testfunctioncalling_test_weather_tool_tokyo"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L258",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testfunctioncalling",
+      "target": "tests_test_demos_testfunctioncalling_test_weather_tool_unknown"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L269",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcodeexecution",
+      "target": "tests_test_demos_testcodeexecution_test_prints_code_and_result"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L282",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcodeexecution",
+      "target": "tests_test_demos_testcodeexecution_test_falls_back_to_text"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L293",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcodeexecution",
+      "target": "tests_test_demos_testcodeexecution_test_code_execution_tool_passed"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L312",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testembeddings",
+      "target": "tests_test_demos_testembeddings_make_embed_response"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L320",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testembeddings",
+      "target": "tests_test_demos_testembeddings_test_embed_called_with_correct_args"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L332",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testembeddings",
+      "target": "tests_test_demos_testembeddings_test_cosine_similarity_computed"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L341",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testembeddings",
+      "target": "tests_test_demos_testembeddings_test_cosine_similarity_helper"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L350",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testembeddings",
+      "target": "tests_test_demos_testembeddings_test_custom_prompt_prepended"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L322",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testembeddings_test_embed_called_with_correct_args",
+      "target": "tests_test_demos_testembeddings_make_embed_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L334",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testembeddings_test_cosine_similarity_computed",
+      "target": "tests_test_demos_testembeddings_make_embed_response"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L352",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testembeddings_test_custom_prompt_prepended",
+      "target": "tests_test_demos_testembeddings_make_embed_response"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L366",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testthinking",
+      "target": "tests_test_demos_testthinking_test_splits_thought_from_answer"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L391",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testthinking",
+      "target": "tests_test_demos_testthinking_test_falls_back_to_text_when_no_candidates"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L401",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testthinking",
+      "target": "tests_test_demos_testthinking_test_thinking_config_passed"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L418",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsafety",
+      "target": "tests_test_demos_testsafety_test_prints_text_response"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L428",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsafety",
+      "target": "tests_test_demos_testsafety_test_reports_blocked_response"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L442",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsafety",
+      "target": "tests_test_demos_testsafety_test_safety_settings_sent"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L457",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsafety",
+      "target": "tests_test_demos_testsafety_test_prints_safety_ratings"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L480",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsearchgrounding",
+      "target": "tests_test_demos_testsearchgrounding_test_calls_generate_with_search_tool"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L492",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsearchgrounding",
+      "target": "tests_test_demos_testsearchgrounding_test_prints_response_text"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L502",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testsearchgrounding",
+      "target": "tests_test_demos_testsearchgrounding_test_prints_grounding_metadata"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L529",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcli",
+      "target": "tests_test_demos_testcli_test_routes_to_text_demo"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L539",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcli",
+      "target": "tests_test_demos_testcli_test_unknown_command_exits"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L544",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcli",
+      "target": "tests_test_demos_testcli_test_all_command_runs_every_demo"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L553",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcli",
+      "target": "tests_test_demos_testcli_test_all_command_returns_1_on_error"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L561",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcli",
+      "target": "tests_test_demos_testcli_test_model_flag_forwarded"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L569",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testcli",
+      "target": "tests_test_demos_testcli_test_prompt_flag_forwarded"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L583",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testgetclient",
+      "target": "tests_test_demos_testgetclient_test_uses_gemini_api_key_when_set"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L591",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testgetclient",
+      "target": "tests_test_demos_testgetclient_test_falls_back_to_default_client_when_no_key"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L605",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims",
+      "target": "tests_test_demos_testinsuranceclaims_claim_resp"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L611",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims",
+      "target": "tests_test_demos_testinsuranceclaims_full_resp"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L625",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims",
+      "target": "tests_test_demos_testinsuranceclaims_test_extraction_output_printed"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L640",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims",
+      "target": "tests_test_demos_testinsuranceclaims_test_validation_detects_missing_fields"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L656",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims",
+      "target": "tests_test_demos_testinsuranceclaims_test_routing_siu_flag"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L670",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims",
+      "target": "tests_test_demos_testinsuranceclaims_test_final_packet_printed"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L684",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims",
+      "target": "tests_test_demos_testinsuranceclaims_test_config_uses_response_schema_and_json_mime"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L618",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims_full_resp",
+      "target": "tests_test_demos_testinsuranceclaims_claim_resp"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L606",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_rationale_606",
+      "target": "tests_test_demos_testinsuranceclaims_claim_resp"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L626",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims_test_extraction_output_printed",
+      "target": "tests_test_demos_testinsuranceclaims_full_resp"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L641",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims_test_validation_detects_missing_fields",
+      "target": "tests_test_demos_testinsuranceclaims_full_resp"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L657",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims_test_routing_siu_flag",
+      "target": "tests_test_demos_testinsuranceclaims_full_resp"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L671",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims_test_final_packet_printed",
+      "target": "tests_test_demos_testinsuranceclaims_full_resp"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L686",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_testinsuranceclaims_test_config_uses_response_schema_and_json_mime",
+      "target": "tests_test_demos_testinsuranceclaims_full_resp"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_demos.py",
+      "source_location": "L612",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_demos_rationale_612",
+      "target": "tests_test_demos_testinsuranceclaims_full_resp"
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "2c45431d4f87bfa2a0bb0082ef97cf9f5540bb1b"
+}
