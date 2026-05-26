@@ -1,0 +1,112 @@
+{
+  "consent": {
+    "attestation": true,
+    "provided_by": "Jane Alvarez",
+    "relationship": "daughter",
+    "notes": "Reviewed with Maria where possible."
+  },
+  "person": {
+    "preferred_name": "Maria",
+    "full_name": "Maria Alvarez",
+    "pronouns": "she/her",
+    "birth_decade": "1940s",
+    "primary_language": "English",
+    "reading_level_preference": "plain"
+  },
+  "contacts": [
+    {
+      "name": "Jane",
+      "relationship": "daughter",
+      "phone_label": "Call Jane"
+    },
+    {
+      "name": "Luis",
+      "relationship": "son",
+      "phone_label": "Call Luis"
+    }
+  ],
+  "life_events": [
+    {
+      "year_or_period": "1968",
+      "event": "Moved to Chicago",
+      "source": "caregiver"
+    },
+    {
+      "year_or_period": "1972",
+      "event": "Opened a small neighborhood bakery",
+      "source": "caregiver"
+    },
+    {
+      "year_or_period": "1980s",
+      "event": "Hosted Sunday dinners for extended family",
+      "source": "caregiver"
+    },
+    {
+      "year_or_period": "2005",
+      "event": "Started volunteering in St. Mary's garden",
+      "source": "caregiver"
+    }
+  ],
+  "favorite_places": [
+    "Chicago lakefront",
+    "family kitchen",
+    "St. Mary's garden"
+  ],
+  "favorite_topics": [
+    "gardening",
+    "baking pan dulce",
+    "old neighborhood stories"
+  ],
+  "daily_routine": [
+    {
+      "time_label": "Morning",
+      "activity": "Breakfast, tea, and newspaper"
+    },
+    {
+      "time_label": "Afternoon",
+      "activity": "Short walk or garden visit"
+    },
+    {
+      "time_label": "Evening",
+      "activity": "Music and family phone call"
+    }
+  ],
+  "calming_phrases": [
+    "You are safe. Jane will visit this afternoon.",
+    "Your tea is ready and your family knows where you are."
+  ],
+  "confusion_triggers": [
+    "Too many people speaking at once",
+    "Rushed schedule changes"
+  ],
+  "privacy_exclusions": [
+    "Do not mention finances",
+    "Do not mention estranged relatives"
+  ],
+  "style_preferences": {
+    "tone": "warm, calm, respectful",
+    "visual_style": "simple, high contrast, gentle colors",
+    "avoid": [
+      "childlike language",
+      "busy backgrounds"
+    ]
+  },
+  "caregiver_notes": "Use large text. Avoid medical claims.",
+  "patient_onboarding": {
+    "observed_symptoms": [
+      "Occasional confusion in busy rooms",
+      "Repeats questions when schedule changes",
+      "Looks for daughter in late afternoon"
+    ],
+    "symptom_context": [
+      "More comfortable with one speaker at a time",
+      "Calmer after tea and familiar music"
+    ],
+    "staff_goals": [
+      "Create orientation board for room",
+      "Create prompts for family visits",
+      "Create handoff notes for new staff"
+    ],
+    "non_diagnostic_notes": "Use facility protocol for any clinical concern."
+  }
+}

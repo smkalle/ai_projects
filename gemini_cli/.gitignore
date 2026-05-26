@@ -6,4 +6,6 @@ infographic_agent/.env
 infographic_agent/.adk/
 execution_log.txt
 generated_infographics/
+generated_memory_kits/*
+!generated_memory_kits/.gitkeep
 infographic_output.png

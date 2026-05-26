@@ -1,0 +1,22 @@
+{
+  "consent": {
+    "attestation": false,
+    "provided_by": "Jane Alvarez",
+    "relationship": "daughter"
+  },
+  "person": {
+    "preferred_name": "Maria"
+  },
+  "contacts": [
+    {"name": "Jane", "relationship": "daughter", "phone_label": "Call Jane"}
+  ],
+  "life_events": [
+    {"year_or_period": "1968", "event": "Moved to Chicago"},
+    {"year_or_period": "1972", "event": "Opened a small bakery"},
+    {"year_or_period": "2005", "event": "Started volunteering in a garden"}
+  ],
+  "daily_routine": [
+    {"time_label": "Morning", "activity": "Breakfast and tea"}
+  ],
+  "privacy_exclusions": []
+}
