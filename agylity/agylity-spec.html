@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agylity — Product Spec v0.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --border-bright: #2e2e4e;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --accent: #7c6af7;
+    --accent2: #3dd8a0;
+    --accent3: #f7c06a;
+    --accent4: #f76a8a;
+    --glow: rgba(124,106,247,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* GRID LINES */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,106,247,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,106,247,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 5rem 0 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3.5rem, 8vw, 5.5rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 .dim { color: var(--muted); }
+  h1 .lit { color: var(--accent); }
+
+  .hero-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 1.5rem;
+    margin-bottom: 2.5rem;
+    max-width: 560px;
+  }
+
+  .hero-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 2px;
+    border: 1px solid;
+    letter-spacing: 0.05em;
+  }
+  .pill-v { color: var(--accent); border-color: var(--accent); background: rgba(124,106,247,0.07); }
+  .pill-g { color: var(--accent2); border-color: var(--accent2); background: rgba(61,216,160,0.07); }
+  .pill-y { color: var(--accent3); border-color: var(--accent3); background: rgba(247,192,106,0.07); }
+  .pill-r { color: var(--accent4); border-color: var(--accent4); background: rgba(247,106,138,0.07); }
+
+  /* PROBLEM BOX */
+  .problem-box {
+    background: linear-gradient(135deg, rgba(247,106,138,0.05), rgba(247,106,138,0.02));
+    border: 1px solid rgba(247,106,138,0.2);
+    border-left: 3px solid var(--accent4);
+    padding: 1.5rem 2rem;
+    margin: 3rem 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .problem-box .label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent4);
+    margin-bottom: 0.75rem;
+  }
+
+  .err { color: var(--accent4); }
+  .ok { color: var(--accent2); }
+  .dim-mono { color: var(--muted); }
+
+  /* SECTION */
+  section {
+    padding: 3.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+    line-height: 1.15;
+  }
+
+  h2 .accent { color: var(--accent); }
+  h2 .accent2 { color: var(--accent2); }
+  h2 .accent3 { color: var(--accent3); }
+
+  .section-lead {
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin-bottom: 2rem;
+    max-width: 620px;
+  }
+
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 2rem 0 0.75rem;
+    color: var(--text);
+  }
+
+  p {
+    color: var(--text);
+    font-size: 0.92rem;
+    margin-bottom: 1rem;
+    max-width: 680px;
+  }
+
+  /* ARCH DIAGRAM */
+  .arch {
+    background: var(--surface);
+    border: 1px solid var(--border-bright);
+    padding: 2rem;
+    margin: 2rem 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 2;
+    overflow-x: auto;
+  }
+
+  .arch-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.25rem 0;
+  }
+
+  .box {
+    padding: 0.35rem 0.9rem;
+    border-radius: 2px;
+    border: 1px solid;
+    white-space: nowrap;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+  }
+
+  .box-v { background: rgba(124,106,247,0.1); border-color: var(--accent); color: var(--accent); }
+  .box-g { background: rgba(61,216,160,0.08); border-color: var(--accent2); color: var(--accent2); }
+  .box-y { background: rgba(247,192,106,0.08); border-color: var(--accent3); color: var(--accent3); }
+  .box-r { background: rgba(247,106,138,0.08); border-color: var(--accent4); color: var(--accent4); }
+  .box-w { background: rgba(232,232,240,0.05); border-color: var(--border-bright); color: var(--muted); }
+
+  .arrow { color: var(--muted); padding: 0 0.25rem; }
+  .arrow-d { display: block; text-align: center; color: var(--muted); margin: 0.2rem 0; }
+
+  /* FEATURE GRID */
+  .feat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  .feat-card {
+    background: var(--surface);
+    padding: 1.5rem;
+  }
+
+  .feat-icon {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .feat-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .feat-desc {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: none;
+  }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: #0d0d14;
+    border: 1px solid var(--border-bright);
+    border-left: 3px solid var(--accent);
+    padding: 1.25rem 1.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.9;
+    overflow-x: auto;
+    margin: 1.25rem 0;
+  }
+
+  .code-block .comment { color: var(--muted); }
+  .code-block .key { color: var(--accent3); }
+  .code-block .val { color: var(--accent2); }
+  .code-block .fn { color: var(--accent); }
+  .code-block .str { color: var(--accent4); }
+
+  /* TABLE */
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    margin: 1.5rem 0;
+  }
+
+  .spec-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border-bright);
+    padding: 0.6rem 1rem;
+    text-align: left;
+  }
+
+  .spec-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text);
+    max-width: none;
+  }
+
+  .spec-table tr:hover td { background: rgba(124,106,247,0.03); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+  }
+  .tag-v { background: rgba(124,106,247,0.15); color: var(--accent); }
+  .tag-g { background: rgba(61,216,160,0.12); color: var(--accent2); }
+  .tag-y { background: rgba(247,192,106,0.12); color: var(--accent3); }
+
+  /* PHASE TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin: 2rem 0;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent);
+  }
+
+  .tl-item {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -2.35rem;
+    top: 0.4rem;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .tl-item:nth-child(2)::before { background: var(--accent2); box-shadow: 0 0 8px var(--accent2); }
+  .tl-item:nth-child(3)::before { background: var(--accent3); box-shadow: 0 0 8px var(--accent3); }
+
+  .tl-phase {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+
+  .tl-item:nth-child(2) .tl-phase { color: var(--accent2); }
+  .tl-item:nth-child(3) .tl-phase { color: var(--accent3); }
+
+  .tl-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+
+  .tl-desc {
+    font-size: 0.83rem;
+    color: var(--muted);
+    max-width: 600px;
+  }
+
+  .tl-items-list {
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+    list-style: none;
+  }
+
+  .tl-items-list li {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    padding: 0.15rem 0;
+  }
+
+  .tl-items-list li::before {
+    content: '→ ';
+    color: var(--accent);
+  }
+
+  .tl-item:nth-child(2) .tl-items-list li::before { color: var(--accent2); }
+  .tl-item:nth-child(3) .tl-items-list li::before { color: var(--accent3); }
+
+  /* CONSTRAINT CALLOUT */
+  .callout {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    background: rgba(124,106,247,0.04);
+    border: 1px solid rgba(124,106,247,0.2);
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    font-size: 0.85rem;
+  }
+
+  .callout-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .callout-text { color: var(--muted); line-height: 1.7; max-width: none; }
+  .callout-text strong { color: var(--text); font-weight: 500; }
+
+  /* FOOTER */
+  .doc-footer {
+    padding: 3rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+  }
+
+  .footer-left {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .footer-right {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--border-bright);
+    letter-spacing: -0.03em;
+  }
+
+  /* DIVIDER */
+  .rule {
+    height: 1px;
+    background: linear-gradient(to right, var(--accent), transparent);
+    margin: 0.5rem 0 1.5rem;
+    opacity: 0.4;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .wrapper { padding: 0 1.25rem; }
+    .feat-grid { grid-template-columns: 1fr; }
+    .arch { font-size: 0.65rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">Product Spec · v0.1 · May 2026</div>
+    <h1>
+      <span class="lit">Agylity</span><br>
+      <span class="dim">Lite Bridge</span>
+    </h1>
+    <div class="hero-sub">
+      A web UI + CLI shim that delivers Antigravity-style agentic workflows<br>
+      on environments where the <code>agy</code> binary can't run.
+    </div>
+    <div class="hero-pills">
+      <span class="pill pill-v">Gemini API</span>
+      <span class="pill pill-g">Managed Agents</span>
+      <span class="pill pill-y">antigravity-sdk-python</span>
+      <span class="pill pill-r">ARM64 / Android / proot</span>
+      <span class="pill pill-v">FastAPI</span>
+      <span class="pill pill-g">React TUI</span>
+    </div>
+  </div>
+
+  <!-- PROBLEM -->
+  <section>
+    <div class="section-num">00 · Origin</div>
+    <h2>Why <span class="accent">agy</span> breaks on mobile Linux</h2>
+    <p class="section-lead">Two separate failure modes on two separate runtimes — both root-caused to the same thing: a glibc-linked Go binary that assumes a full Linux userland.</p>
+
+    <div class="problem-box">
+      <div class="label">Failure Log — UserLAnd / proot</div>
+      <span class="err">MmapAligned() failed</span> — unable to allocate with tag<br>
+      <span class="dim-mono">hint=0x4ed1c0000000, size=1073741824, alignment=1073741824</span><br>
+      <span class="dim-mono">→ tcmalloc requires 1 GB aligned VA reservation; Android restricts proot VA space</span>
+    </div>
+
+    <div class="problem-box">
+      <div class="label">Failure Log — Termux (native)</div>
+      <span class="err">CANNOT LINK EXECUTABLE "/data/.../agy"</span><br>
+      <span class="dim-mono">library "libresolv.so.2" not found: needed by main executable</span><br>
+      <span class="dim-mono">→ agy binary is glibc-linked; Termux uses bionic. No glibc present.</span>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon">💡</span>
+      <span class="callout-text">
+        <strong>The insight:</strong> agy is a Go binary with glibc + tcmalloc dependencies. But its <em>capabilities</em> — multi-step reasoning, subagent dispatch, tool calling, JSON hooks — are all available through the <strong>Gemini Managed Agents API</strong> and the <strong>antigravity-sdk-python</strong>. Python has no such linking constraints and runs cleanly on any ARM64 Android environment.
+      </span>
+    </div>
+  </section>
+
+  <!-- WHAT IS AGYLITY -->
+  <section>
+    <div class="section-num">01 · Product</div>
+    <h2><span class="accent2">Agylity</span> — What it is</h2>
+    <p class="section-lead">A lightweight proxy layer that replicates the core agy UX surface using managed APIs, Python SDK, and a minimal web UI — deployable on any Android proot Debian environment or remote server.</p>
+
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">⚡</div>
+        <div class="feat-title">CLI Shim</div>
+        <div class="feat-desc">A Python script aliased to <code>agy</code> that accepts the same flags as Antigravity CLI: <code>--print</code>, <code>--continue</code>, <code>--model</code>, <code>--add-dir</code>. Zero Go, zero glibc.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🌐</div>
+        <div class="feat-title">Web TUI</div>
+        <div class="feat-desc">A React-based terminal-aesthetic web app served locally. Conversation history, subagent status, tool call log, artifact viewer. Accessible from the phone browser.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🤖</div>
+        <div class="feat-title">Managed Agent Bridge</div>
+        <div class="feat-desc">Uses the Gemini Managed Agents API — one API call spins a full isolated Linux sandbox with reasoning loop, code execution, file system, and tool dispatch managed by Google.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🪝</div>
+        <div class="feat-title">JSON Hook Engine</div>
+        <div class="feat-desc">Implements the same JSON hook format as agy: intercept before tool call, after model call, on loop stop. Drop-in compatible with existing .hooks/ configs.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📦</div>
+        <div class="feat-title">Skills / GEMINI.md</div>
+        <div class="feat-desc">Reads GEMINI.md and .agents/agents.md from working directory. Injects them as system context per session — same convention as native agy.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔀</div>
+        <div class="feat-title">Model Switching</div>
+        <div class="feat-desc">Supports <code>/model</code> mid-session. Routes to Gemini 3.5 Flash by default; configurable to Gemini 3.1 Pro, Claude 3.5 Sonnet, or other supported backends via API key.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section>
+    <div class="section-num">02 · Architecture</div>
+    <h2>System <span class="accent">Architecture</span></h2>
+    <p class="section-lead">Three-layer design: a Python CLI shim surface, a FastAPI bridge server, and the Gemini Managed Agents API as the execution runtime.</p>
+
+    <div class="arch">
+      <div style="color: var(--muted); margin-bottom:1rem; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase;">Agylity — Runtime Topology</div>
+
+      <div class="arch-row">
+        <div class="box box-v">CLI: agy shim (Python)</div>
+        <span class="arrow">──</span>
+        <div class="box box-g">Web TUI (React/Vite)</div>
+        <span class="arrow">──</span>
+        <div class="box box-y">REST Client</div>
+      </div>
+
+      <div class="arrow-d">│ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; │</div>
+      <div class="arrow-d">▼ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ▼</div>
+
+      <div class="arch-row" style="justify-content: center;">
+        <div class="box box-v" style="padding: 0.5rem 2rem;">FastAPI Bridge Server (localhost:7474)</div>
+      </div>
+
+      <div style="margin: 0.5rem 0; display:flex; justify-content:center; gap:3rem; font-size:0.7rem; color: var(--muted);">
+        <span>│ /session/new</span>
+        <span>│ /session/prompt</span>
+        <span>│ /session/status</span>
+        <span>│ /hooks</span>
+      </div>
+
+      <div class="arrow-d">│</div>
+      <div class="arrow-d">▼</div>
+
+      <div class="arch-row" style="justify-content:center; gap:1rem;">
+        <div class="box box-g">Hook Engine (JSON)</div>
+        <div class="box box-g">Context Injector (GEMINI.md)</div>
+        <div class="box box-g">Session Store (SQLite)</div>
+      </div>
+
+      <div class="arrow-d">│</div>
+      <div class="arrow-d">▼</div>
+
+      <div class="arch-row" style="justify-content:center;">
+        <div class="box box-y" style="padding:0.5rem 2rem;">antigravity-sdk-python → Gemini Managed Agents API</div>
+      </div>
+
+      <div class="arrow-d">│</div>
+      <div class="arrow-d">▼</div>
+
+      <div class="arch-row" style="justify-content:center; gap:1rem;">
+        <div class="box box-r">Isolated Linux Sandbox (Google Cloud)</div>
+        <div class="box box-r">Code Exec + File System</div>
+        <div class="box box-r">Tool Dispatch</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon">📍</span>
+      <span class="callout-text">
+        <strong>Deployment target:</strong> FastAPI server + React app both run inside your proot Debian on the OnePlus 13. The Gemini Managed Agents API runs the heavy execution in Google's cloud. Your device only needs Python ≥3.10, pip, and a Gemini API key.
+      </span>
+    </div>
+  </section>
+
+  <!-- CLI SPEC -->
+  <section>
+    <div class="section-num">03 · CLI Surface</div>
+    <h2>CLI <span class="accent3">Compatibility</span> Spec</h2>
+    <p class="section-lead">The <code>agy</code> shim implements the most-used agy flags. Not a full 1:1 port — focused on the interactive, print, and session-management surfaces.</p>
+
+    <table class="spec-table">
+      <thead>
+        <tr>
+          <th>Command / Flag</th>
+          <th>Native agy</th>
+          <th>Agylity impl</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>agy</code> (bare)</td>
+          <td>Launch interactive TUI</td>
+          <td>Opens Web TUI in default browser; falls back to terminal readline loop</td>
+          <td><span class="tag tag-g">v1</span></td>
+        </tr>
+        <tr>
+          <td><code>-p / --print "prompt"</code></td>
+          <td>Non-interactive single prompt, print response</td>
+          <td>Posts to <code>/session/prompt?mode=print</code>, streams to stdout</td>
+          <td><span class="tag tag-g">v1</span></td>
+        </tr>
+        <tr>
+          <td><code>-i / --prompt-interactive</code></td>
+          <td>Run initial prompt then continue</td>
+          <td>Same as bare + pre-seeds conversation</td>
+          <td><span class="tag tag-g">v1</span></td>
+        </tr>
+        <tr>
+          <td><code>-c / --continue</code></td>
+          <td>Resume most recent conversation</td>
+          <td>Loads latest session_id from SQLite store</td>
+          <td><span class="tag tag-g">v1</span></td>
+        </tr>
+        <tr>
+          <td><code>--conversation &lt;id&gt;</code></td>
+          <td>Resume conversation by ID</td>
+          <td>Loads session by ID from store</td>
+          <td><span class="tag tag-g">v1</span></td>
+        </tr>
+        <tr>
+          <td><code>--add-dir &lt;path&gt;</code></td>
+          <td>Add directory to workspace context</td>
+          <td>Reads file tree, injects as document context in system prompt</td>
+          <td><span class="tag tag-g">v1</span></td>
+        </tr>
+        <tr>
+          <td><code>--model &lt;name&gt;</code></td>
+          <td>Set model for session</td>
+          <td>Maps to Gemini API model string; supports gemini-flash, gemini-pro, claude-sonnet</td>
+          <td><span class="tag tag-g">v1</span></td>
+        </tr>
+        <tr>
+          <td><code>--dangerously-skip-permissions</code></td>
+          <td>Auto-approve all tool calls</td>
+          <td>Sets <code>auto_approve=true</code> on session config</td>
+          <td><span class="tag tag-y">v2</span></td>
+        </tr>
+        <tr>
+          <td><code>/agent refactor "…"</code></td>
+          <td>Spawn background subagent</td>
+          <td>Creates child Managed Agent session; reports via WebSocket</td>
+          <td><span class="tag tag-y">v2</span></td>
+        </tr>
+        <tr>
+          <td><code>/model</code></td>
+          <td>Switch model mid-session</td>
+          <td>Updates session config, next turn uses new model</td>
+          <td><span class="tag tag-y">v2</span></td>
+        </tr>
+        <tr>
+          <td><code>/export</code></td>
+          <td>Export conversation</td>
+          <td>Dumps session as Markdown or JSON</td>
+          <td><span class="tag tag-y">v2</span></td>
+        </tr>
+        <tr>
+          <td><code>--log-file</code></td>
+          <td>Override log path</td>
+          <td>Passes through to FastAPI logger</td>
+          <td><span class="tag tag-y">v2</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- JSON HOOK SPEC -->
+  <section>
+    <div class="section-num">04 · Hook Engine</div>
+    <h2>JSON <span class="accent">Hook</span> Engine</h2>
+    <p class="section-lead">Agylity implements the same JSON hook format as native agy — intercept lifecycle events, modify behavior, short-circuit execution.</p>
+
+    <h3>Hook Lifecycle Events</h3>
+
+    <div class="code-block">
+<span class="comment">// .hooks/agylity.json — drop-in compatible with agy hook format</span>
+{
+  <span class="key">"hooks"</span>: [
+    {
+      <span class="key">"event"</span>: <span class="str">"before_tool_call"</span>,          <span class="comment">// before any tool is invoked</span>
+      <span class="key">"match"</span>: { <span class="key">"tool"</span>: <span class="str">"shell_exec"</span> },   <span class="comment">// optional filter</span>
+      <span class="key">"action"</span>: <span class="str">"confirm"</span>               <span class="comment">// confirm | block | log | mutate</span>
+    },
+    {
+      <span class="key">"event"</span>: <span class="str">"after_model_call"</span>,          <span class="comment">// after each LLM turn</span>
+      <span class="key">"action"</span>: <span class="str">"log"</span>,
+      <span class="key">"log_to"</span>: <span class="str">"~/.agylity/turns.jsonl"</span>
+    },
+    {
+      <span class="key">"event"</span>: <span class="str">"on_loop_stop"</span>,             <span class="comment">// agent decides it's done</span>
+      <span class="key">"action"</span>: <span class="str">"notify"</span>,               <span class="comment">// POST to webhook URL</span>
+      <span class="key">"webhook"</span>: <span class="str">"http://localhost:9999/done"</span>
+    },
+    {
+      <span class="key">"event"</span>: <span class="str">"after_file_edit"</span>,           <span class="comment">// after any file write</span>
+      <span class="key">"action"</span>: <span class="str">"log"</span>
+    }
+  ]
+}
+    </div>
+
+    <h3>Hook Actions</h3>
+    <table class="spec-table">
+      <thead><tr><th>Action</th><th>Behaviour</th><th>Applies to</th></tr></thead>
+      <tbody>
+        <tr><td><code>confirm</code></td><td>Pause execution, prompt user Y/N before proceeding</td><td>before_tool_call</td></tr>
+        <tr><td><code>block</code></td><td>Cancel the tool call entirely, return synthetic error to agent</td><td>before_tool_call</td></tr>
+        <tr><td><code>log</code></td><td>Append event JSON to specified log file (or default)</td><td>all events</td></tr>
+        <tr><td><code>mutate</code></td><td>Apply JSON Patch to the tool call args before execution</td><td>before_tool_call</td></tr>
+        <tr><td><code>notify</code></td><td>POST event payload to a webhook URL</td><td>all events</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- WEB TUI SPEC -->
+  <section>
+    <div class="section-num">05 · Web TUI</div>
+    <h2>Web <span class="accent2">TUI</span> Spec</h2>
+    <p class="section-lead">A terminal-aesthetic React app served at localhost:7474. Designed for use from the Android phone browser when working in proot. IBM Plex Mono. Dark. Dense.</p>
+
+    <h3>Layout Panels</h3>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">💬</div>
+        <div class="feat-title">Conversation Panel</div>
+        <div class="feat-desc">Full message thread with user / assistant turns. Markdown rendering. Code blocks with syntax highlight. Streaming via SSE.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔧</div>
+        <div class="feat-title">Tool Call Log</div>
+        <div class="feat-desc">Right sidebar. Shows every tool invoked by the agent: name, args (collapsed), result status, duration. Hook intercepts shown inline.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📋</div>
+        <div class="feat-title">Artifact Viewer</div>
+        <div class="feat-desc">Files written by the agent appear as tabbed artifacts — HTML renders in iframe, code files syntax-highlighted, CSVs as table. Download button per artifact.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🤖</div>
+        <div class="feat-title">Subagent Tracker</div>
+        <div class="feat-desc">Status bar cards for each background subagent: progress indicator, model, current tool, elapsed time. Click to expand full subagent thread.</div>
+      </div>
+    </div>
+
+    <h3>Slash Commands (Web TUI)</h3>
+    <div class="code-block">
+<span class="comment"># Available in the prompt input bar</span>
+<span class="fn">/model</span> gemini-3.5-flash        <span class="comment"># switch model mid-session</span>
+<span class="fn">/agent</span> <span class="str">"refactor handlers"</span>      <span class="comment"># spawn background subagent</span>
+<span class="fn">/fork</span>                         <span class="comment"># fork conversation at current turn</span>
+<span class="fn">/rewind</span> 3                     <span class="comment"># rewind 3 turns</span>
+<span class="fn">/clear</span>                        <span class="comment"># clear current context</span>
+<span class="fn">/export</span> md                    <span class="comment"># export as markdown</span>
+<span class="fn">/fast</span>                         <span class="comment"># skip planning step, direct execution</span>
+<span class="fn">/permissions</span>                  <span class="comment"># show/edit tool permission config</span>
+    </div>
+  </section>
+
+  <!-- API SPEC -->
+  <section>
+    <div class="section-num">06 · Bridge API</div>
+    <h2>FastAPI <span class="accent3">Bridge</span> Endpoints</h2>
+    <p class="section-lead">The FastAPI server is the integration core — CLI shim, web TUI, and any external tooling all talk to these endpoints.</p>
+
+    <table class="spec-table">
+      <thead>
+        <tr><th>Method</th><th>Path</th><th>Description</th><th>Phase</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>POST</code></td><td><code>/session/new</code></td><td>Create new agent session; accepts model, context_dirs, hooks_path, auto_approve</td><td><span class="tag tag-g">v1</span></td></tr>
+        <tr><td><code>POST</code></td><td><code>/session/{id}/prompt</code></td><td>Send a prompt turn; returns SSE stream of assistant delta + tool events</td><td><span class="tag tag-g">v1</span></td></tr>
+        <tr><td><code>GET</code></td><td><code>/session/{id}/status</code></td><td>Session metadata, current model, subagent list, hook state</td><td><span class="tag tag-g">v1</span></td></tr>
+        <tr><td><code>GET</code></td><td><code>/session/{id}/history</code></td><td>Full turn history as JSON array</td><td><span class="tag tag-g">v1</span></td></tr>
+        <tr><td><code>GET</code></td><td><code>/sessions</code></td><td>List all sessions (from SQLite) with last updated, title, model</td><td><span class="tag tag-g">v1</span></td></tr>
+        <tr><td><code>POST</code></td><td><code>/session/{id}/fork</code></td><td>Fork at a specific turn index</td><td><span class="tag tag-y">v2</span></td></tr>
+        <tr><td><code>POST</code></td><td><code>/session/{id}/subagent</code></td><td>Spawn background subagent with a goal string</td><td><span class="tag tag-y">v2</span></td></tr>
+        <tr><td><code>GET</code></td><td><code>/subagent/{id}/stream</code></td><td>WebSocket stream for subagent progress events</td><td><span class="tag tag-y">v2</span></td></tr>
+        <tr><td><code>GET</code></td><td><code>/artifacts/{session_id}</code></td><td>List artifacts written by agent in this session</td><td><span class="tag tag-y">v2</span></td></tr>
+        <tr><td><code>POST</code></td><td><code>/hooks/test</code></td><td>Dry-run a hook config against a synthetic event</td><td><span class="tag tag-y">v2</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- SDK USAGE -->
+  <section>
+    <div class="section-num">07 · SDK Integration</div>
+    <h2>SDK <span class="accent">Integration</span> Pattern</h2>
+    <p class="section-lead">How Agylity talks to the Gemini Managed Agents API via antigravity-sdk-python.</p>
+
+    <div class="code-block">
+<span class="comment"># agylity/agent_bridge.py — core integration</span>
+<span class="fn">from</span> antigravity <span class="fn">import</span> Agent, AgentConfig
+<span class="fn">from</span> antigravity.hooks <span class="fn">import</span> HookRunner
+<span class="fn">import</span> asyncio, json, pathlib
+
+<span class="fn">async def</span> <span class="fn">create_session</span>(config: dict) -> <span class="val">str</span>:
+    <span class="comment"># Read project context files</span>
+    ctx = <span class="val">""</span>
+    <span class="fn">for</span> p <span class="fn">in</span> [<span class="str">"GEMINI.md"</span>, <span class="str">".agents/agents.md"</span>]:
+        <span class="fn">if</span> pathlib.Path(p).exists():
+            ctx += pathlib.Path(p).read_text()
+
+    agent = Agent(AgentConfig(
+        <span class="key">model</span>=config.get(<span class="str">"model"</span>, <span class="str">"gemini-3.5-flash"</span>),
+        <span class="key">system_instruction</span>=ctx,
+        <span class="key">managed</span>=<span class="val">True</span>,          <span class="comment"># ← Managed Agents API</span>
+        <span class="key">tools</span>=[<span class="str">"code_execution"</span>, <span class="str">"file_system"</span>, <span class="str">"web_search"</span>],
+        <span class="key">auto_approve</span>=config.get(<span class="str">"auto_approve"</span>, <span class="val">False</span>),
+    ))
+
+    hook_runner = HookRunner.from_json(config.get(<span class="str">"hooks_path"</span>))
+
+    <span class="fn">return</span> await agent.create_session(hooks=hook_runner)
+
+<span class="fn">async def</span> <span class="fn">stream_prompt</span>(session_id: <span class="val">str</span>, prompt: <span class="val">str</span>):
+    <span class="fn">async for</span> event <span class="fn">in</span> session.stream(prompt):
+        <span class="fn">yield</span> event          <span class="comment"># text_delta | tool_call | tool_result | done</span>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon">🔑</span>
+      <span class="callout-text">
+        <strong>Auth:</strong> Set <code>GEMINI_API_KEY</code> env var in proot Debian. The Managed Agents API runs on the Gemini API billing tier — free during preview with generous rate limits, same model as the <code>agy</code> binary would use. No GCP project required for personal use.
+      </span>
+    </div>
+  </section>
+
+  <!-- PHASES -->
+  <section>
+    <div class="section-num">08 · Roadmap</div>
+    <h2>Build <span class="accent2">Phases</span></h2>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-phase">Phase 1 — v1 · Week 1</div>
+        <div class="tl-title">Core Bridge</div>
+        <div class="tl-desc">Everything needed to replace <code>agy -p</code> and interactive mode on proot Debian.</div>
+        <ul class="tl-items-list">
+          <li>FastAPI server scaffold + SQLite session store</li>
+          <li>antigravity-sdk-python integration with Managed Agents API</li>
+          <li>Python CLI shim: <code>--print</code>, <code>--continue</code>, <code>--add-dir</code>, <code>--model</code></li>
+          <li>SSE streaming to stdout and API clients</li>
+          <li>GEMINI.md + .agents/agents.md context injection</li>
+          <li>JSON hook engine: log + confirm actions</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-phase">Phase 2 — v2 · Week 2-3</div>
+        <div class="tl-title">Web TUI + Subagents</div>
+        <div class="tl-desc">Full browser-accessible interface and async background agent support.</div>
+        <ul class="tl-items-list">
+          <li>React Web TUI: conversation panel, tool log, artifact viewer</li>
+          <li>WebSocket subagent tracker</li>
+          <li>Slash commands: /model, /fork, /rewind, /agent, /fast</li>
+          <li>Hook actions: block, mutate, notify</li>
+          <li>Session history browser with fork/resume</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-phase">Phase 3 — v3 · Week 4+</div>
+        <div class="tl-title">Commerce AI Extensions</div>
+        <div class="tl-desc">Rakuten-specific agent skills and MCP tool integrations for Commerce Analytics Agent Builder use cases.</div>
+        <ul class="tl-items-list">
+          <li>CDP/PDP MCP tool bridge (expose as Managed Agent tools)</li>
+          <li>Commerce analytics skill package (.agents/skills.md)</li>
+          <li>Scheduled task runner (cron-style /schedule)</li>
+          <li>Artifact export to Notion / Google Drive</li>
+          <li>Multi-model routing: Gemini Flash default → Pro for complex tasks</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section>
+    <div class="section-num">09 · Stack</div>
+    <h2>Technology <span class="accent3">Stack</span></h2>
+
+    <table class="spec-table">
+      <thead><tr><th>Layer</th><th>Choice</th><th>Rationale</th></tr></thead>
+      <tbody>
+        <tr><td>Agent runtime</td><td>Gemini Managed Agents API</td><td>Full Linux sandbox, reasoning loop, tools — zero local infra. Runs in cloud.</td></tr>
+        <tr><td>SDK</td><td>antigravity-sdk-python</td><td>First-party SDK, pure Python, pip-installable on any ARM64 proot</td></tr>
+        <tr><td>Bridge server</td><td>FastAPI + uvicorn</td><td>Async-native, SSE built-in, OpenAPI docs free, proven on proot stack</td></tr>
+        <tr><td>Session store</td><td>SQLite via SQLModel</td><td>Zero server, file-based, works in proot with no root</td></tr>
+        <tr><td>Web TUI</td><td>React + Vite + IBM Plex Mono</td><td>Fast rebuild cycle, SSE consumer, terminal aesthetic</td></tr>
+        <tr><td>CLI shim</td><td>Python + Click</td><td>Argparse-compatible, zero dependencies beyond stdlib + requests</td></tr>
+        <tr><td>Streaming</td><td>SSE (HTTP) + WebSocket</td><td>SSE for main prompt stream; WS for subagent async events</td></tr>
+        <tr><td>Hook config</td><td>JSON (agy-compatible format)</td><td>Drop-in for existing agy .hooks/ configs</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="doc-footer">
+    <div class="footer-left">
+      Agylity Spec v0.1 · May 27, 2026<br>
+      agy bridge for Android proot / Termux<br>
+      <span style="color: var(--accent)">Phase 1 ready to build</span>
+    </div>
+    <div class="footer-right">AGY</div>
+  </div>
+
+</div>
+</body>
+</html>
