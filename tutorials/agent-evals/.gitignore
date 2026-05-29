@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+eval_runs.db
+artifacts/
+frontend/dist/
+frontend/node_modules/
+frontend/test-results/
+frontend/playwright-report/
